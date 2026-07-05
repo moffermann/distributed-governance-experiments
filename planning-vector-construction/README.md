@@ -26,7 +26,7 @@ Its correlation with latent public value should be derived from mechanisms such 
 
 - electoral participation;
 - winner vote share;
-- approval;
+- approval across a broad legitimacy distribution, including crisis and global-south cases;
 - supporter versus non-supporter alignment;
 - program-to-plan fidelity;
 - agenda bandwidth;
@@ -67,6 +67,7 @@ Instead of assigning these values arbitrarily, this experiment estimates plausib
 - [`DESIGN_BASELINE.md`](DESIGN_BASELINE.md) — research question, model overview, and experiment structure.
 - [`REPRESENTATIVE_PLANNING_MODEL.md`](REPRESENTATIVE_PLANNING_MODEL.md) — central/representative planning information-loss model.
 - [`AGENDA_COMPRESSION_MODEL.md`](AGENDA_COMPRESSION_MODEL.md) — agenda bandwidth and off-agenda responsiveness as representative information-loss mechanisms.
+- [`CENTRAL_APPROVAL_CALIBRATION.md`](CENTRAL_APPROVAL_CALIBRATION.md) — broader approval/legitimacy calibration including crisis, Latin American, African, and institutionally complex contexts.
 - [`CORE_V0_PLANNING_CHANNEL_MODEL.md`](CORE_V0_PLANNING_CHANNEL_MODEL.md) — Core v0 planning from attentive citizens, delegates, and optional authority mandate.
 - [`TRUSTED_MICRODELEGATION_MODEL.md`](TRUSTED_MICRODELEGATION_MODEL.md) — trusted person-to-person delegation as the Core v0 baseline, with broker capture as stress case.
 - [`OPEN_MODE_PLANNING_MODEL.md`](OPEN_MODE_PLANNING_MODEL.md) — open-mode planning with and without participation mandate.
