@@ -1,7 +1,7 @@
 {
   "scenario_id": "baseline-medium",
-  "scenario_version": "0.2",
-  "description": "Medium adversarial baseline for the first paired architecture comparison, including a full-budget participatory variant and unspent-budget accounting.",
+  "scenario_version": "0.3",
+  "description": "Medium adversarial baseline with low-information central planning, higher-information distributed parallel planning, weak participatory variants, and budget-absorption accounting.",
   "seed": 1,
   "runs": 20,
   "cycles": 24,
@@ -19,7 +19,8 @@
     "scarcity": 3.0,
     "latentValue": { "dist": "beta", "alpha": 2, "beta": 2 },
     "salienceCorrelation": 0.2,
-    "planningWeightCorrelation": 0.5,
+    "centralPlanningSignalMix": 0.15,
+    "distributedPlanningSignalMix": 0.70,
     "verificationDifficulty": { "dist": "beta", "alpha": 2, "beta": 2 },
     "executionDifficulty": { "dist": "beta", "alpha": 2, "beta": 3 },
     "fraudOpportunity": { "dist": "beta", "alpha": 1.5, "beta": 3 }
@@ -46,7 +47,8 @@
     "status_quo",
     "participatory_weak_verification",
     "participatory_weak_verification_full_budget",
-    "core_v0_simple"
+    "core_v0_tutored_central_planning",
+    "core_v0_tutored_distributed_planning"
   ],
   "outputs": {
     "rawJson": true,
