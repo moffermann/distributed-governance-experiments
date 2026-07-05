@@ -15,8 +15,8 @@ The script is dependency-free Node.js and:
 - generates public needs / planning targets;
 - constructs an individual expected-value matrix;
 - computes the latent social-value vector;
-- builds representative central planning vectors;
-- builds Core v0 planning vectors from attentive citizens, delegates, and optional mandate effects;
+- builds representative central planning vectors across a broad approval/legitimacy distribution;
+- builds Core v0 planning vectors from attentive citizens, trusted microdelegation, delegates, and optional mandate effects;
 - can still run exploratory generic distributed-signal scenarios;
 - compares every vector against latent social value;
 - writes raw JSON, CSV, and Markdown summaries.
@@ -29,6 +29,21 @@ From the repository root:
 node experiments/planning-vector-construction/src/index.mjs \
   --scenario experiments/planning-vector-construction/scenarios/core-v0-planning-channels.json
 ```
+
+The primary scenario is currently `core-v0-planning-channels` v0.3.
+
+It includes central planning variants for:
+
+```text
+central_crisis_legitimacy
+central_very_low_alignment
+central_low_alignment
+central_median_global_south
+central_median_democracy
+central_high_alignment
+```
+
+and Core v0 variants centered on trusted microdelegation.
 
 Optional overrides:
 
