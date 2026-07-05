@@ -65,6 +65,7 @@ Instead of assigning these values arbitrarily, this experiment estimates plausib
 
 - [`DESIGN_BASELINE.md`](DESIGN_BASELINE.md) — research question, model overview, and experiment structure.
 - [`REPRESENTATIVE_PLANNING_MODEL.md`](REPRESENTATIVE_PLANNING_MODEL.md) — central/representative planning information-loss model.
+- [`AGENDA_COMPRESSION_MODEL.md`](AGENDA_COMPRESSION_MODEL.md) — agenda bandwidth and off-agenda responsiveness as representative information-loss mechanisms.
 - [`DISTRIBUTED_PLANNING_MODEL.md`](DISTRIBUTED_PLANNING_MODEL.md) — distributed signal aggregation and planning-vector model.
 - [`CALIBRATION_PRIORS.md`](CALIBRATION_PRIORS.md) — initial proxy parameters, real-world anchors, and sensitivity ranges.
 - [`SCENARIO_CONFIGURATION.md`](SCENARIO_CONFIGURATION.md) — scenario schema and planned scenario families.
