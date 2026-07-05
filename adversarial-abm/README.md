@@ -82,8 +82,10 @@ If the architecture wins only under friendly assumptions, the experiment should 
 Research framing:
 
 - [`DESIGN_BASELINE.md`](DESIGN_BASELINE.md) — preliminary research design and paper outline.
+- [`SCENARIO_TAXONOMY.md`](SCENARIO_TAXONOMY.md) — distinction between scenario, architecture, operating-mode approximation, and planning model.
 - [`ARCHITECTURES.md`](ARCHITECTURES.md) — institutional models to compare.
 - [`IMPLEMENTED_VARIANTS.md`](IMPLEMENTED_VARIANTS.md) — architecture variants currently implemented in the executable v0 engine.
+- [`PLANNING_INFORMATION_MODEL.md`](PLANNING_INFORMATION_MODEL.md) — central versus distributed planning signals and their relationship to latent value.
 - [`AGENTS_AND_ATTACKS.md`](AGENTS_AND_ATTACKS.md) — agents, adversarial behaviors, and attack library.
 - [`METRICS_AND_RESULTS.md`](METRICS_AND_RESULTS.md) — outcome metrics and interpretation discipline.
 - [`RESULT_INTERPRETATION_NOTES.md`](RESULT_INTERPRETATION_NOTES.md) — how to distinguish budget absorption, actual value, verified value, reported value, leakage, and visibility gaps.
