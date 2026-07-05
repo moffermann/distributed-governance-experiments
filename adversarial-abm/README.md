@@ -79,11 +79,20 @@ If the architecture wins only under friendly assumptions, the experiment should 
 
 ## Folder map
 
+Research framing:
+
 - [`DESIGN_BASELINE.md`](DESIGN_BASELINE.md) — preliminary research design and paper outline.
 - [`ARCHITECTURES.md`](ARCHITECTURES.md) — institutional models to compare.
 - [`AGENTS_AND_ATTACKS.md`](AGENTS_AND_ATTACKS.md) — agents, adversarial behaviors, and attack library.
 - [`METRICS_AND_RESULTS.md`](METRICS_AND_RESULTS.md) — outcome metrics and interpretation discipline.
 - [`ROADMAP.md`](ROADMAP.md) — staged build plan from design to replication package.
+
+Technical design:
+
+- [`TECHNICAL_ENGINE_DESIGN.md`](TECHNICAL_ENGINE_DESIGN.md) — engine architecture, determinism, scheduling, threading, AI boundary, and module layout.
+- [`AGENT_DECISION_MODEL.md`](AGENT_DECISION_MODEL.md) — how agents know, decide, and respond to incentives under each architecture.
+- [`PROBABILITY_AND_PARAMETER_MODEL.md`](PROBABILITY_AND_PARAMETER_MODEL.md) — distributions, probabilistic decisions, parameter classes, attack severities, and sensitivity sweeps.
+- [`SCENARIO_CONFIGURATION.md`](SCENARIO_CONFIGURATION.md) — scenario files, reproducibility metadata, run identity, and result headers.
 
 ## Future migration
 
