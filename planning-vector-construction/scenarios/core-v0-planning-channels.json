@@ -1,7 +1,7 @@
 {
   "scenario_id": "core-v0-planning-channels",
-  "scenario_version": "0.2",
-  "description": "Constructs Core v0 planning vectors from attentive participation, trusted microdelegation, auditable/revocable delegation, and optional authority mandate effects. Project allocation profiles and passive defaults are excluded from planning construction.",
+  "scenario_version": "0.3",
+  "description": "Constructs central representative and Core v0 planning vectors. Central planning variants are calibrated across crisis, low, global-south median, democratic median, and high-alignment approval regimes. Core v0 planning is built from attentive participation, trusted microdelegation, auditable/revocable delegation, and optional authority mandate effects. Project allocation profiles and passive defaults are excluded from planning construction.",
   "seed": 1,
   "runs": 100,
   "population": {
@@ -16,6 +16,36 @@
     "individualNoise": 0.05
   },
   "representativeVariants": {
+    "central_crisis_legitimacy": {
+      "turnoutRate": 0.45,
+      "winnerVoteShare": 0.42,
+      "approvalRate": 0.06,
+      "supporterAlignment": 0.45,
+      "nonSupporterAlignment": 0.02,
+      "programFidelity": 0.25,
+      "technocraticCapacity": 0.05,
+      "bureaucraticDistortion": 0.30,
+      "coalitionDistortion": 0.25,
+      "lobbyingDistortion": 0.22,
+      "beneficiaryDistance": 0.30,
+      "agendaBandwidth": 0.04,
+      "offAgendaResponsiveness": 0.01
+    },
+    "central_very_low_alignment": {
+      "turnoutRate": 0.50,
+      "winnerVoteShare": 0.45,
+      "approvalRate": 0.18,
+      "supporterAlignment": 0.55,
+      "nonSupporterAlignment": 0.04,
+      "programFidelity": 0.35,
+      "technocraticCapacity": 0.08,
+      "bureaucraticDistortion": 0.25,
+      "coalitionDistortion": 0.20,
+      "lobbyingDistortion": 0.18,
+      "beneficiaryDistance": 0.25,
+      "agendaBandwidth": 0.06,
+      "offAgendaResponsiveness": 0.02
+    },
     "central_low_alignment": {
       "turnoutRate": 0.555,
       "winnerVoteShare": 0.52,
@@ -31,10 +61,25 @@
       "agendaBandwidth": 0.08,
       "offAgendaResponsiveness": 0.03
     },
-    "central_median_alignment": {
+    "central_median_global_south": {
       "turnoutRate": 0.555,
       "winnerVoteShare": 0.52,
-      "approvalRate": 0.40,
+      "approvalRate": 0.38,
+      "supporterAlignment": 0.68,
+      "nonSupporterAlignment": 0.12,
+      "programFidelity": 0.55,
+      "technocraticCapacity": 0.16,
+      "bureaucraticDistortion": 0.17,
+      "coalitionDistortion": 0.13,
+      "lobbyingDistortion": 0.13,
+      "beneficiaryDistance": 0.18,
+      "agendaBandwidth": 0.10,
+      "offAgendaResponsiveness": 0.06
+    },
+    "central_median_democracy": {
+      "turnoutRate": 0.60,
+      "winnerVoteShare": 0.53,
+      "approvalRate": 0.43,
       "supporterAlignment": 0.70,
       "nonSupporterAlignment": 0.15,
       "programFidelity": 0.60,
