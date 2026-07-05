@@ -1,20 +1,17 @@
 #!/usr/bin/env node
 // Minimal adversarial ABM engine for public-resource allocation architecture stress testing.
 //
-// v0 goals:
+// v0.2 goals:
 // - dependency-free Node.js;
 // - deterministic under seed;
 // - common-world paired comparison;
-// - three initial architectures;
+// - four initial architectures, including a full-budget weak-participatory variant;
 // - two initial attack pressures: salience cascade and weak-verification diversion;
-// - first result table for delivered value, verified value, leakage, visibility gap, and concentration.
+// - first result table for actual, verified, and reported value; leakage; visibility gap;
+//   unspent budget; and concentration.
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-
-// -----------------------------------------------------------------------------
-// CLI
-// -----------------------------------------------------------------------------
+import { resolve } from "node:path";
 
 const parseArgs = () => {
   const args = process.argv.slice(2);
@@ -36,10 +33,6 @@ const scenario = JSON.parse(readFileSync(scenarioPath, "utf8"));
 if (cli.runs) scenario.runs = Number.parseInt(cli.runs, 10);
 if (cli.seed) scenario.seed = Number.parseInt(cli.seed, 10);
 
-// -----------------------------------------------------------------------------
-// Deterministic random utilities
-// -----------------------------------------------------------------------------
-
 const clamp = (x, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, x));
 const sigmoid = (x) => 1 / (1 + Math.exp(-x));
 
@@ -58,13 +51,9 @@ const normal = (rng, mu = 0, sigma = 1) => {
   return mu + sigma * Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
 };
 
-// Marsaglia-Tsang Gamma sampler; sufficient for synthetic parameter generation.
 const gamma = (rng, shape, scale = 1) => {
   if (shape <= 0) throw new Error(`Gamma shape must be positive, got ${shape}`);
-  if (shape < 1) {
-    const u = rng();
-    return gamma(rng, shape + 1, scale) * Math.pow(u, 1 / shape);
-  }
+  if (shape < 1) return gamma(rng, shape + 1, scale) * Math.pow(rng(), 1 / shape);
   const d = shape - 1 / 3;
   const c = 1 / Math.sqrt(9 * d);
   while (true) {
@@ -106,10 +95,6 @@ const weightedPick = (rng, items, weightFn) => {
   }
   return items[items.length - 1];
 };
-
-// -----------------------------------------------------------------------------
-// Stats
-// -----------------------------------------------------------------------------
 
 const mean = (xs) => xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0;
 const sd = (xs) => {
@@ -155,17 +140,12 @@ const summarize = (rows, key) => {
 const fmt = (x, digits = 3) => Number.isFinite(x) ? x.toFixed(digits) : "NaN";
 const fmtMean = (s) => `${fmt(s.mean)}±${fmt(s.sd)}`;
 
-// -----------------------------------------------------------------------------
-// Architectures
-// -----------------------------------------------------------------------------
-
 const ARCHITECTURES = {
   status_quo: {
     id: "status_quo",
     label: "Status quo / audit-after-fact",
     centralPlanner: true,
     citizenAllocation: false,
-    defaultLayer: false,
     fundingCaps: true,
     informationNoise: 0.45,
     detectionBase: 0.15,
@@ -175,14 +155,13 @@ const ARCHITECTURES = {
     reputationLoss: 0.02,
     futureSelectionLoss: 0.02,
     socialProofDamping: 1.00,
-    passiveUsesDefault: false,
+    passiveAllocationMode: "none",
   },
   participatory_weak_verification: {
     id: "participatory_weak_verification",
-    label: "Participatory / weak verification",
+    label: "Participatory / weak verification / low absorption",
     centralPlanner: false,
     citizenAllocation: true,
-    defaultLayer: false,
     fundingCaps: false,
     informationNoise: 0.35,
     detectionBase: 0.20,
@@ -192,14 +171,29 @@ const ARCHITECTURES = {
     reputationLoss: 0.03,
     futureSelectionLoss: 0.03,
     socialProofDamping: 1.00,
-    passiveUsesDefault: false,
+    passiveAllocationMode: "none",
+  },
+  participatory_weak_verification_full_budget: {
+    id: "participatory_weak_verification_full_budget",
+    label: "Participatory / weak verification / full budget via salience",
+    centralPlanner: false,
+    citizenAllocation: true,
+    fundingCaps: false,
+    informationNoise: 0.35,
+    detectionBase: 0.20,
+    reviewConfidence: 0.40,
+    retention: 0.05,
+    guarantee: 0.00,
+    reputationLoss: 0.03,
+    futureSelectionLoss: 0.03,
+    socialProofDamping: 1.00,
+    passiveAllocationMode: "salience",
   },
   core_v0_simple: {
     id: "core_v0_simple",
     label: "Core v0 simplified",
     centralPlanner: false,
     citizenAllocation: true,
-    defaultLayer: true,
     fundingCaps: true,
     informationNoise: 0.18,
     detectionBase: 0.55,
@@ -209,7 +203,7 @@ const ARCHITECTURES = {
     reputationLoss: 0.20,
     futureSelectionLoss: 0.15,
     socialProofDamping: 0.60,
-    passiveUsesDefault: true,
+    passiveAllocationMode: "planning",
   },
 };
 
@@ -219,24 +213,17 @@ const activeArchitectures = scenario.architectures.map((id) => {
   return arch;
 });
 
-// -----------------------------------------------------------------------------
-// World generation
-// -----------------------------------------------------------------------------
-
 const makeProject = (rng, id, scenario) => {
   const pCfg = scenario.projects;
   const latentValue = sampleDist(rng, pCfg.latentValue);
-  const salienceNoise = rng();
-  const planningNoise = rng();
-  const salience = clamp(pCfg.salienceCorrelation * latentValue + (1 - pCfg.salienceCorrelation) * salienceNoise, 0.01, 0.99);
-  const planningWeight = clamp(pCfg.planningWeightCorrelation * latentValue + (1 - pCfg.planningWeightCorrelation) * planningNoise, 0.01, 0.99);
+  const salience = clamp(pCfg.salienceCorrelation * latentValue + (1 - pCfg.salienceCorrelation) * rng(), 0.01, 0.99);
+  const planningWeight = clamp(pCfg.planningWeightCorrelation * latentValue + (1 - pCfg.planningWeightCorrelation) * rng(), 0.01, 0.99);
   const verificationDifficulty = sampleDist(rng, pCfg.verificationDifficulty);
   const executionDifficulty = sampleDist(rng, pCfg.executionDifficulty);
   const fraudOpportunity = sampleDist(rng, pCfg.fraudOpportunity);
   const targetBase = (pCfg.scarcity * scenario.population.citizens * scenario.cycles) / pCfg.activePool;
   const budgetTarget = (0.5 + rng()) * targetBase;
   const opportunistic = rng() < scenario.executors.opportunisticShare;
-  const ability = sampleDist(rng, scenario.executors.ability);
   return {
     id,
     latentValue,
@@ -247,7 +234,7 @@ const makeProject = (rng, id, scenario) => {
     fraudOpportunity,
     budgetTarget,
     executorType: opportunistic ? "opportunistic" : "honest",
-    executorAbility: ability,
+    executorAbility: sampleDist(rng, scenario.executors.ability),
     funded: 0,
     closed: false,
     cycleClosed: null,
@@ -267,11 +254,8 @@ const cloneWorld = (world) => ({
   projects: world.projects.map((p) => ({ ...p, funded: 0, closed: false, cycleClosed: null, execution: null })),
 });
 
-// -----------------------------------------------------------------------------
-// Allocation helpers
-// -----------------------------------------------------------------------------
-
 const openProjects = (sim) => sim.projects.filter((p) => !p.closed);
+const availableBudget = (scenario) => scenario.population.citizens * scenario.cycles;
 
 const contribute = (project, amount, arch) => {
   if (amount <= 0 || project.closed) return amount;
@@ -286,7 +270,6 @@ const contribute = (project, amount, arch) => {
 };
 
 const fundingProgress = (p) => Math.max(0, p.funded / Math.max(1, p.budgetTarget));
-
 const visibilityScore = (p, sim, arch, scenario) => {
   const attack = scenario.attacks.salienceCascade ?? {};
   const socialProof = attack.enabled ? attack.socialProofWeight : 1.0;
@@ -299,8 +282,7 @@ const allocateCentral = (sim, arch, scenario) => {
   for (const p of projects) {
     if (budget <= 0) break;
     const before = budget;
-    const remainder = contribute(p, budget, arch);
-    budget = remainder;
+    budget = contribute(p, budget, arch);
     if (before === budget) break;
   }
 };
@@ -345,7 +327,7 @@ const allocateDefault = (sim, arch, scenario, count) => {
   const projects = openProjects(sim).sort((a, b) => b.planningWeight - a.planningWeight);
   for (const p of projects) {
     if (budget <= 0) break;
-    const room = Math.max(0, p.budgetTarget - p.funded);
+    const room = arch.fundingCaps ? Math.max(0, p.budgetTarget - p.funded) : Infinity;
     const paid = Math.min(budget, room);
     p.funded += paid;
     budget -= paid;
@@ -357,15 +339,11 @@ const allocateCitizen = (rng, sim, arch, scenario) => {
   const attentive = Math.round(N * scenario.population.attentiveShare);
   const salience = Math.round(N * scenario.population.salienceShare);
   const remaining = N - attentive - salience;
-  const defaultCount = arch.passiveUsesDefault ? remaining : 0;
   allocateAttentive(rng, sim, arch, scenario, attentive);
   allocateSalience(rng, sim, arch, scenario, salience);
-  allocateDefault(sim, arch, scenario, defaultCount);
+  if (arch.passiveAllocationMode === "planning") allocateDefault(sim, arch, scenario, remaining);
+  else if (arch.passiveAllocationMode === "salience") allocateSalience(rng, sim, arch, scenario, remaining);
 };
-
-// -----------------------------------------------------------------------------
-// Execution, review, disbursement proxy
-// -----------------------------------------------------------------------------
 
 const detectionProbability = (project, arch, scenario) => {
   const weak = scenario.attacks.weakVerificationDiversion ?? {};
@@ -379,7 +357,6 @@ const executeProject = (rng, project, arch, scenario, cycle) => {
   const targetBudget = project.budgetTarget;
   const potentialValue = targetBudget * project.latentValue;
   const detection = detectionProbability(project, arch, scenario);
-
   let diverted = false;
   let diversionShare = 0;
   let executionQuality = 1;
@@ -394,8 +371,7 @@ const executeProject = (rng, project, arch, scenario, cycle) => {
       - 2.0 * arch.guarantee
       - 3.0 * arch.reputationLoss
       - 2.0 * arch.futureSelectionLoss;
-    const pDivert = sigmoid(x);
-    diverted = rng() < pDivert;
+    diverted = rng() < sigmoid(x);
     if (diverted) {
       diversionShare = clamp(0.20 + 0.60 * project.fraudOpportunity + normal(rng, 0, 0.05), 0.05, 0.95);
       executionQuality = clamp((1 - diversionShare) * (0.55 + 0.45 * project.executorAbility), 0.02, 1);
@@ -438,14 +414,8 @@ const executeProject = (rng, project, arch, scenario, cycle) => {
 };
 
 const closeAndExecuteFunded = (rng, sim, arch, scenario, cycle) => {
-  for (const p of sim.projects) {
-    if (!p.closed && p.funded >= p.budgetTarget) executeProject(rng, p, arch, scenario, cycle);
-  }
+  for (const p of sim.projects) if (!p.closed && p.funded >= p.budgetTarget) executeProject(rng, p, arch, scenario, cycle);
 };
-
-// -----------------------------------------------------------------------------
-// Simulation and metrics
-// -----------------------------------------------------------------------------
 
 const runArchitecture = (world, arch, scenario, runSeed, archIndex) => {
   const rng = mulberry32((runSeed ^ ((archIndex + 1) * 0x9e3779b9)) >>> 0);
@@ -456,8 +426,6 @@ const runArchitecture = (world, arch, scenario, runSeed, archIndex) => {
     else allocateCitizen(rng, sim, arch, scenario);
     closeAndExecuteFunded(rng, sim, arch, scenario, cycle);
   }
-
-  // Expired/unfunded projects remain unexecuted in this v0 skeleton.
   return computeMetrics(sim, arch, scenario);
 };
 
@@ -469,6 +437,7 @@ const computeMetrics = (sim, arch, scenario) => {
   const saliences = projects.map((p) => p.salience);
   const fundedAmounts = projects.map((p) => p.funded);
   const budgetSpent = fundedAmounts.reduce((a, b) => a + b, 0);
+  const totalAvailableBudget = availableBudget(scenario);
   const safeBudget = budgetSpent || 1;
   const actualValue = executed.reduce((a, p) => a + p.execution.actualValue, 0);
   const verifiedValue = executed.reduce((a, p) => a + p.execution.verifiedValue, 0);
@@ -483,7 +452,11 @@ const computeMetrics = (sim, arch, scenario) => {
   return {
     architecture: arch.id,
     architectureLabel: arch.label,
+    totalAvailableBudget,
     budgetSpent,
+    unspentBudget: Math.max(0, totalAvailableBudget - budgetSpent),
+    budgetUtilizationRate: budgetSpent / totalAvailableBudget,
+    unspentBudgetRate: Math.max(0, totalAvailableBudget - budgetSpent) / totalAvailableBudget,
     executedProjects: executed.length,
     fundedRate: executed.length / projects.length,
     actualValuePerBudget: actualValue / safeBudget,
@@ -504,23 +477,25 @@ const computeMetrics = (sim, arch, scenario) => {
 };
 
 const runScenario = (scenario) => {
-  const rows = [];
   const raw = [];
   for (let r = 0; r < scenario.runs; r++) {
     const runSeed = scenario.seed + r * 7919;
     const world = generateWorld(runSeed, scenario);
-    activeArchitectures.forEach((arch, archIndex) => {
-      const metrics = runArchitecture(world, arch, scenario, runSeed, archIndex);
-      const record = { scenario_id: scenario.scenario_id, run: r, seed: runSeed, ...metrics };
-      raw.push(record);
-    });
+    activeArchitectures.forEach((arch, archIndex) => raw.push({
+      scenario_id: scenario.scenario_id,
+      run: r,
+      seed: runSeed,
+      ...runArchitecture(world, arch, scenario, runSeed, archIndex),
+    }));
   }
-  for (const arch of activeArchitectures) {
+  const summary = activeArchitectures.map((arch) => {
     const subset = raw.filter((r) => r.architecture === arch.id);
-    rows.push({
+    return {
       architecture: arch.id,
       label: arch.label,
       budgetSpent: summarize(subset, "budgetSpent"),
+      budgetUtilizationRate: summarize(subset, "budgetUtilizationRate"),
+      unspentBudgetRate: summarize(subset, "unspentBudgetRate"),
       fundedRate: summarize(subset, "fundedRate"),
       actualValuePerBudget: summarize(subset, "actualValuePerBudget"),
       verifiedValuePerBudget: summarize(subset, "verifiedValuePerBudget"),
@@ -533,14 +508,10 @@ const runScenario = (scenario) => {
       topSalienceFundingShare: summarize(subset, "topSalienceFundingShare"),
       selectionValueCorrelation: summarize(subset, "selectionValueCorrelation"),
       qualityGap: summarize(subset, "qualityGap"),
-    });
-  }
-  return { raw, summary: rows };
+    };
+  });
+  return { raw, summary };
 };
-
-// -----------------------------------------------------------------------------
-// Output
-// -----------------------------------------------------------------------------
 
 const markdownTable = (summary) => {
   const lines = [];
@@ -548,11 +519,9 @@ const markdownTable = (summary) => {
   lines.push(`runs: ${scenario.runs}, base seed: ${scenario.seed}, cycles: ${scenario.cycles}, citizens: ${scenario.population.citizens}, projects: ${scenario.projects.activePool}`);
   lines.push(`architectures: ${scenario.architectures.join(", ")}`);
   lines.push("");
-  lines.push("| architecture | budget spent | funded rate | actual value/budget | verified value/budget | reported value/budget | visibility gap | leakage | funding Gini | sel(value) |");
-  lines.push("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|");
-  for (const r of summary) {
-    lines.push(`| ${r.architecture} | ${fmtMean(r.budgetSpent)} | ${fmtMean(r.fundedRate)} | ${fmtMean(r.actualValuePerBudget)} | ${fmtMean(r.verifiedValuePerBudget)} | ${fmtMean(r.reportedValuePerBudget)} | ${fmtMean(r.visibilityGapPerBudget)} | ${fmtMean(r.leakageRate)} | ${fmtMean(r.fundingGini)} | ${fmtMean(r.selectionValueCorrelation)} |`);
-  }
+  lines.push("| architecture | budget spent | unspent | funded rate | actual value/budget | verified value/budget | reported value/budget | visibility gap | leakage | funding Gini | sel(value) |");
+  lines.push("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|");
+  for (const r of summary) lines.push(`| ${r.architecture} | ${fmtMean(r.budgetSpent)} | ${fmtMean(r.unspentBudgetRate)} | ${fmtMean(r.fundedRate)} | ${fmtMean(r.actualValuePerBudget)} | ${fmtMean(r.verifiedValuePerBudget)} | ${fmtMean(r.reportedValuePerBudget)} | ${fmtMean(r.visibilityGapPerBudget)} | ${fmtMean(r.leakageRate)} | ${fmtMean(r.fundingGini)} | ${fmtMean(r.selectionValueCorrelation)} |`);
   return lines.join("\n");
 };
 
@@ -560,6 +529,8 @@ const csvTable = (summary) => {
   const fields = [
     "architecture",
     "budgetSpent_mean", "budgetSpent_sd",
+    "budgetUtilizationRate_mean", "budgetUtilizationRate_sd",
+    "unspentBudgetRate_mean", "unspentBudgetRate_sd",
     "fundedRate_mean", "fundedRate_sd",
     "actualValuePerBudget_mean", "actualValuePerBudget_sd",
     "verifiedValuePerBudget_mean", "verifiedValuePerBudget_sd",
@@ -570,20 +541,20 @@ const csvTable = (summary) => {
     "selectionValueCorrelation_mean", "selectionValueCorrelation_sd",
   ];
   const rows = [fields.join(",")];
-  for (const r of summary) {
-    rows.push([
-      r.architecture,
-      r.budgetSpent.mean, r.budgetSpent.sd,
-      r.fundedRate.mean, r.fundedRate.sd,
-      r.actualValuePerBudget.mean, r.actualValuePerBudget.sd,
-      r.verifiedValuePerBudget.mean, r.verifiedValuePerBudget.sd,
-      r.reportedValuePerBudget.mean, r.reportedValuePerBudget.sd,
-      r.visibilityGapPerBudget.mean, r.visibilityGapPerBudget.sd,
-      r.leakageRate.mean, r.leakageRate.sd,
-      r.fundingGini.mean, r.fundingGini.sd,
-      r.selectionValueCorrelation.mean, r.selectionValueCorrelation.sd,
-    ].map((x) => typeof x === "number" ? x.toFixed(8) : x).join(","));
-  }
+  for (const r of summary) rows.push([
+    r.architecture,
+    r.budgetSpent.mean, r.budgetSpent.sd,
+    r.budgetUtilizationRate.mean, r.budgetUtilizationRate.sd,
+    r.unspentBudgetRate.mean, r.unspentBudgetRate.sd,
+    r.fundedRate.mean, r.fundedRate.sd,
+    r.actualValuePerBudget.mean, r.actualValuePerBudget.sd,
+    r.verifiedValuePerBudget.mean, r.verifiedValuePerBudget.sd,
+    r.reportedValuePerBudget.mean, r.reportedValuePerBudget.sd,
+    r.visibilityGapPerBudget.mean, r.visibilityGapPerBudget.sd,
+    r.leakageRate.mean, r.leakageRate.sd,
+    r.fundingGini.mean, r.fundingGini.sd,
+    r.selectionValueCorrelation.mean, r.selectionValueCorrelation.sd,
+  ].map((x) => typeof x === "number" ? x.toFixed(8) : x).join(","));
   return rows.join("\n");
 };
 
@@ -602,6 +573,3 @@ const table = markdownTable(result.summary);
 console.log(table);
 const outDir = writeOutputs(result);
 console.log(`\noutputs: ${outDir}`);
-
-// Ensure parent path exists in case the script is launched from a different cwd.
-void dirname;
