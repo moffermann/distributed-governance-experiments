@@ -85,6 +85,7 @@ Research framing:
 - [`ARCHITECTURES.md`](ARCHITECTURES.md) — institutional models to compare.
 - [`AGENTS_AND_ATTACKS.md`](AGENTS_AND_ATTACKS.md) — agents, adversarial behaviors, and attack library.
 - [`METRICS_AND_RESULTS.md`](METRICS_AND_RESULTS.md) — outcome metrics and interpretation discipline.
+- [`RESULT_INTERPRETATION_NOTES.md`](RESULT_INTERPRETATION_NOTES.md) — how to distinguish budget absorption, actual value, verified value, reported value, leakage, and visibility gaps.
 - [`ROADMAP.md`](ROADMAP.md) — staged build plan from design to replication package.
 
 Technical design:
