@@ -15,13 +15,15 @@ It is a dependency-free Node.js script that:
 - reads a scenario JSON file;
 - generates a seeded common project world;
 - runs the same world through multiple institutional architectures;
+- separates central planning information from distributed planning information;
 - applies salience and weak-verification pressures;
 - simulates allocation, execution, review, leakage, visibility gaps, and budget absorption;
 - distinguishes actual delivered value, verified delivered value, and reported value;
+- reports effective correlations between latent value, central planning, distributed planning, and salience;
 - prints a Markdown summary table;
 - optionally writes raw JSON, CSV, and Markdown table outputs.
 
-## Implemented v0.2 variants
+## Implemented v0.3 variants
 
 The current scenario compares:
 
@@ -29,10 +31,37 @@ The current scenario compares:
 status_quo
 participatory_weak_verification
 participatory_weak_verification_full_budget
-core_v0_simple
+core_v0_tutored_central_planning
+core_v0_tutored_distributed_planning
 ```
 
 The full-budget participatory variant exists to separate low budget absorption from weak verification.
+
+The two Core v0 tutored variants separate:
+
+```text
+central low-information planning default
+from
+distributed higher-information parallel planning default
+```
+
+## Planning signal overrides
+
+The baseline scenario defines:
+
+```text
+centralPlanningSignalMix = 0.15
+distributedPlanningSignalMix = 0.70
+```
+
+You may override them from the CLI:
+
+```bash
+node experiments/adversarial-abm/src/index.mjs \
+  --scenario experiments/adversarial-abm/scenarios/baseline-medium.json \
+  --centralPlanningSignalMix 0.05 \
+  --distributedPlanningSignalMix 0.80
+```
 
 ## Why a single file first?
 
