@@ -83,6 +83,7 @@ Research framing:
 
 - [`DESIGN_BASELINE.md`](DESIGN_BASELINE.md) — preliminary research design and paper outline.
 - [`ARCHITECTURES.md`](ARCHITECTURES.md) — institutional models to compare.
+- [`IMPLEMENTED_VARIANTS.md`](IMPLEMENTED_VARIANTS.md) — architecture variants currently implemented in the executable v0 engine.
 - [`AGENTS_AND_ATTACKS.md`](AGENTS_AND_ATTACKS.md) — agents, adversarial behaviors, and attack library.
 - [`METRICS_AND_RESULTS.md`](METRICS_AND_RESULTS.md) — outcome metrics and interpretation discipline.
 - [`RESULT_INTERPRETATION_NOTES.md`](RESULT_INTERPRETATION_NOTES.md) — how to distinguish budget absorption, actual value, verified value, reported value, leakage, and visibility gaps.
