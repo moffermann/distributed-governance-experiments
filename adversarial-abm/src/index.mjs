@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 // Minimal adversarial ABM engine for public-resource allocation architecture stress testing.
 //
-// v0.2 goals:
+// v0.3 goals:
 // - dependency-free Node.js;
 // - deterministic under seed;
 // - common-world paired comparison;
-// - four initial architectures, including a full-budget weak-participatory variant;
-// - two initial attack pressures: salience cascade and weak-verification diversion;
-// - first result table for actual, verified, and reported value; leakage; visibility gap;
-//   unspent budget; and concentration.
+// - explicit separation between central planning information and distributed planning information;
+// - weak participatory variants plus Core v0 tutored-central and tutored-distributed variants;
+// - result table for actual, verified, and reported value; leakage; visibility gap;
+//   unspent budget; concentration; and effective planning-signal correlations.
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -32,6 +32,8 @@ const scenarioPath = resolve(cli.scenario ?? "experiments/adversarial-abm/scenar
 const scenario = JSON.parse(readFileSync(scenarioPath, "utf8"));
 if (cli.runs) scenario.runs = Number.parseInt(cli.runs, 10);
 if (cli.seed) scenario.seed = Number.parseInt(cli.seed, 10);
+if (cli.centralPlanningSignalMix) scenario.projects.centralPlanningSignalMix = Number.parseFloat(cli.centralPlanningSignalMix);
+if (cli.distributedPlanningSignalMix) scenario.projects.distributedPlanningSignalMix = Number.parseFloat(cli.distributedPlanningSignalMix);
 
 const clamp = (x, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, x));
 const sigmoid = (x) => 1 / (1 + Math.exp(-x));
@@ -140,11 +142,27 @@ const summarize = (rows, key) => {
 const fmt = (x, digits = 3) => Number.isFinite(x) ? x.toFixed(digits) : "NaN";
 const fmtMean = (s) => `${fmt(s.mean)}±${fmt(s.sd)}`;
 
+const coreBase = {
+  centralPlanner: false,
+  citizenAllocation: true,
+  fundingCaps: true,
+  informationNoise: 0.18,
+  detectionBase: 0.55,
+  reviewConfidence: 0.85,
+  retention: 0.25,
+  guarantee: 0.15,
+  reputationLoss: 0.20,
+  futureSelectionLoss: 0.15,
+  socialProofDamping: 0.60,
+  passiveAllocationMode: "planning",
+};
+
 const ARCHITECTURES = {
   status_quo: {
     id: "status_quo",
-    label: "Status quo / audit-after-fact",
+    label: "Status quo / central low-information planning / audit-after-fact",
     centralPlanner: true,
+    planningSource: "central",
     citizenAllocation: false,
     fundingCaps: true,
     informationNoise: 0.45,
@@ -161,6 +179,7 @@ const ARCHITECTURES = {
     id: "participatory_weak_verification",
     label: "Participatory / weak verification / low absorption",
     centralPlanner: false,
+    planningSource: "none",
     citizenAllocation: true,
     fundingCaps: false,
     informationNoise: 0.35,
@@ -177,6 +196,7 @@ const ARCHITECTURES = {
     id: "participatory_weak_verification_full_budget",
     label: "Participatory / weak verification / full budget via salience",
     centralPlanner: false,
+    planningSource: "none",
     citizenAllocation: true,
     fundingCaps: false,
     informationNoise: 0.35,
@@ -189,21 +209,23 @@ const ARCHITECTURES = {
     socialProofDamping: 1.00,
     passiveAllocationMode: "salience",
   },
+  core_v0_tutored_central_planning: {
+    id: "core_v0_tutored_central_planning",
+    label: "Core v0 tutored / central planning default",
+    ...coreBase,
+    planningSource: "central",
+  },
+  core_v0_tutored_distributed_planning: {
+    id: "core_v0_tutored_distributed_planning",
+    label: "Core v0 tutored / distributed parallel planning default",
+    ...coreBase,
+    planningSource: "distributed",
+  },
   core_v0_simple: {
     id: "core_v0_simple",
-    label: "Core v0 simplified",
-    centralPlanner: false,
-    citizenAllocation: true,
-    fundingCaps: true,
-    informationNoise: 0.18,
-    detectionBase: 0.55,
-    reviewConfidence: 0.85,
-    retention: 0.25,
-    guarantee: 0.15,
-    reputationLoss: 0.20,
-    futureSelectionLoss: 0.15,
-    socialProofDamping: 0.60,
-    passiveAllocationMode: "planning",
+    label: "Core v0 simplified / legacy alias for distributed planning default",
+    ...coreBase,
+    planningSource: "distributed",
   },
 };
 
@@ -217,7 +239,12 @@ const makeProject = (rng, id, scenario) => {
   const pCfg = scenario.projects;
   const latentValue = sampleDist(rng, pCfg.latentValue);
   const salience = clamp(pCfg.salienceCorrelation * latentValue + (1 - pCfg.salienceCorrelation) * rng(), 0.01, 0.99);
-  const planningWeight = clamp(pCfg.planningWeightCorrelation * latentValue + (1 - pCfg.planningWeightCorrelation) * rng(), 0.01, 0.99);
+
+  const centralMix = pCfg.centralPlanningSignalMix ?? pCfg.planningWeightCorrelation ?? 0.15;
+  const distributedMix = pCfg.distributedPlanningSignalMix ?? 0.70;
+  const centralPlanningWeight = clamp(centralMix * latentValue + (1 - centralMix) * rng(), 0.01, 0.99);
+  const distributedPlanningWeight = clamp(distributedMix * latentValue + (1 - distributedMix) * rng(), 0.01, 0.99);
+
   const verificationDifficulty = sampleDist(rng, pCfg.verificationDifficulty);
   const executionDifficulty = sampleDist(rng, pCfg.executionDifficulty);
   const fraudOpportunity = sampleDist(rng, pCfg.fraudOpportunity);
@@ -228,7 +255,8 @@ const makeProject = (rng, id, scenario) => {
     id,
     latentValue,
     salience,
-    planningWeight,
+    centralPlanningWeight,
+    distributedPlanningWeight,
     verificationDifficulty,
     executionDifficulty,
     fraudOpportunity,
@@ -256,6 +284,7 @@ const cloneWorld = (world) => ({
 
 const openProjects = (sim) => sim.projects.filter((p) => !p.closed);
 const availableBudget = (scenario) => scenario.population.citizens * scenario.cycles;
+const planningScore = (p, arch) => arch.planningSource === "distributed" ? p.distributedPlanningWeight : p.centralPlanningWeight;
 
 const contribute = (project, amount, arch) => {
   if (amount <= 0 || project.closed) return amount;
@@ -278,7 +307,7 @@ const visibilityScore = (p, sim, arch, scenario) => {
 
 const allocateCentral = (sim, arch, scenario) => {
   let budget = scenario.population.citizens;
-  const projects = openProjects(sim).sort((a, b) => b.planningWeight - a.planningWeight);
+  const projects = openProjects(sim).sort((a, b) => planningScore(b, arch) - planningScore(a, arch));
   for (const p of projects) {
     if (budget <= 0) break;
     const before = budget;
@@ -324,7 +353,7 @@ const allocateSalience = (rng, sim, arch, scenario, count) => {
 const allocateDefault = (sim, arch, scenario, count) => {
   if (count <= 0) return;
   let budget = count;
-  const projects = openProjects(sim).sort((a, b) => b.planningWeight - a.planningWeight);
+  const projects = openProjects(sim).sort((a, b) => planningScore(b, arch) - planningScore(a, arch));
   for (const p of projects) {
     if (budget <= 0) break;
     const room = arch.fundingCaps ? Math.max(0, p.budgetTarget - p.funded) : Infinity;
@@ -435,6 +464,8 @@ const computeMetrics = (sim, arch, scenario) => {
   const fundedFlag = projects.map((p) => p.execution ? 1 : 0);
   const values = projects.map((p) => p.latentValue);
   const saliences = projects.map((p) => p.salience);
+  const centralPlanningWeights = projects.map((p) => p.centralPlanningWeight);
+  const distributedPlanningWeights = projects.map((p) => p.distributedPlanningWeight);
   const fundedAmounts = projects.map((p) => p.funded);
   const budgetSpent = fundedAmounts.reduce((a, b) => a + b, 0);
   const totalAvailableBudget = availableBudget(scenario);
@@ -452,6 +483,7 @@ const computeMetrics = (sim, arch, scenario) => {
   return {
     architecture: arch.id,
     architectureLabel: arch.label,
+    planningSource: arch.planningSource,
     totalAvailableBudget,
     budgetSpent,
     unspentBudget: Math.max(0, totalAvailableBudget - budgetSpent),
@@ -470,6 +502,9 @@ const computeMetrics = (sim, arch, scenario) => {
     topSalienceFundingShare: budgetSpent ? topSalienceFunding / budgetSpent : 0,
     selectionValueCorrelation: pearson(fundedFlag, values),
     selectionSalienceCorrelation: pearson(fundedFlag, saliences),
+    salienceValueCorrelation: pearson(saliences, values),
+    centralPlanningValueCorrelation: pearson(centralPlanningWeights, values),
+    distributedPlanningValueCorrelation: pearson(distributedPlanningWeights, values),
     fundedValueMean: mean(funded.map((p) => p.latentValue)),
     unfundedValueMean: mean(unfunded.map((p) => p.latentValue)),
     qualityGap: mean(funded.map((p) => p.latentValue)) - mean(unfunded.map((p) => p.latentValue)),
@@ -508,6 +543,9 @@ const runScenario = (scenario) => {
       topSalienceFundingShare: summarize(subset, "topSalienceFundingShare"),
       selectionValueCorrelation: summarize(subset, "selectionValueCorrelation"),
       qualityGap: summarize(subset, "qualityGap"),
+      salienceValueCorrelation: summarize(subset, "salienceValueCorrelation"),
+      centralPlanningValueCorrelation: summarize(subset, "centralPlanningValueCorrelation"),
+      distributedPlanningValueCorrelation: summarize(subset, "distributedPlanningValueCorrelation"),
     };
   });
   return { raw, summary };
@@ -517,11 +555,12 @@ const markdownTable = (summary) => {
   const lines = [];
   lines.push(`scenario: ${scenario.scenario_id} v${scenario.scenario_version ?? "n/a"}`);
   lines.push(`runs: ${scenario.runs}, base seed: ${scenario.seed}, cycles: ${scenario.cycles}, citizens: ${scenario.population.citizens}, projects: ${scenario.projects.activePool}`);
+  lines.push(`centralPlanningSignalMix: ${scenario.projects.centralPlanningSignalMix ?? scenario.projects.planningWeightCorrelation ?? "n/a"}, distributedPlanningSignalMix: ${scenario.projects.distributedPlanningSignalMix ?? "n/a"}`);
   lines.push(`architectures: ${scenario.architectures.join(", ")}`);
   lines.push("");
-  lines.push("| architecture | budget spent | unspent | funded rate | actual value/budget | verified value/budget | reported value/budget | visibility gap | leakage | funding Gini | sel(value) |");
-  lines.push("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|");
-  for (const r of summary) lines.push(`| ${r.architecture} | ${fmtMean(r.budgetSpent)} | ${fmtMean(r.unspentBudgetRate)} | ${fmtMean(r.fundedRate)} | ${fmtMean(r.actualValuePerBudget)} | ${fmtMean(r.verifiedValuePerBudget)} | ${fmtMean(r.reportedValuePerBudget)} | ${fmtMean(r.visibilityGapPerBudget)} | ${fmtMean(r.leakageRate)} | ${fmtMean(r.fundingGini)} | ${fmtMean(r.selectionValueCorrelation)} |`);
+  lines.push("| architecture | budget spent | unspent | funded rate | actual value/budget | verified value/budget | reported value/budget | visibility gap | leakage | funding Gini | sel(value) | central plan corr | distributed plan corr | salience corr |");
+  lines.push("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|");
+  for (const r of summary) lines.push(`| ${r.architecture} | ${fmtMean(r.budgetSpent)} | ${fmtMean(r.unspentBudgetRate)} | ${fmtMean(r.fundedRate)} | ${fmtMean(r.actualValuePerBudget)} | ${fmtMean(r.verifiedValuePerBudget)} | ${fmtMean(r.reportedValuePerBudget)} | ${fmtMean(r.visibilityGapPerBudget)} | ${fmtMean(r.leakageRate)} | ${fmtMean(r.fundingGini)} | ${fmtMean(r.selectionValueCorrelation)} | ${fmtMean(r.centralPlanningValueCorrelation)} | ${fmtMean(r.distributedPlanningValueCorrelation)} | ${fmtMean(r.salienceValueCorrelation)} |`);
   return lines.join("\n");
 };
 
@@ -539,6 +578,9 @@ const csvTable = (summary) => {
     "leakageRate_mean", "leakageRate_sd",
     "fundingGini_mean", "fundingGini_sd",
     "selectionValueCorrelation_mean", "selectionValueCorrelation_sd",
+    "centralPlanningValueCorrelation_mean", "centralPlanningValueCorrelation_sd",
+    "distributedPlanningValueCorrelation_mean", "distributedPlanningValueCorrelation_sd",
+    "salienceValueCorrelation_mean", "salienceValueCorrelation_sd",
   ];
   const rows = [fields.join(",")];
   for (const r of summary) rows.push([
@@ -554,6 +596,9 @@ const csvTable = (summary) => {
     r.leakageRate.mean, r.leakageRate.sd,
     r.fundingGini.mean, r.fundingGini.sd,
     r.selectionValueCorrelation.mean, r.selectionValueCorrelation.sd,
+    r.centralPlanningValueCorrelation.mean, r.centralPlanningValueCorrelation.sd,
+    r.distributedPlanningValueCorrelation.mean, r.distributedPlanningValueCorrelation.sd,
+    r.salienceValueCorrelation.mean, r.salienceValueCorrelation.sd,
   ].map((x) => typeof x === "number" ? x.toFixed(8) : x).join(","));
   return rows.join("\n");
 };
