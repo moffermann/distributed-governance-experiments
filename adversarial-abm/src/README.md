@@ -16,9 +16,23 @@ It is a dependency-free Node.js script that:
 - generates a seeded common project world;
 - runs the same world through multiple institutional architectures;
 - applies salience and weak-verification pressures;
-- simulates allocation, execution, review, leakage, and visibility gaps;
+- simulates allocation, execution, review, leakage, visibility gaps, and budget absorption;
+- distinguishes actual delivered value, verified delivered value, and reported value;
 - prints a Markdown summary table;
 - optionally writes raw JSON, CSV, and Markdown table outputs.
+
+## Implemented v0.2 variants
+
+The current scenario compares:
+
+```text
+status_quo
+participatory_weak_verification
+participatory_weak_verification_full_budget
+core_v0_simple
+```
+
+The full-budget participatory variant exists to separate low budget absorption from weak verification.
 
 ## Why a single file first?
 
