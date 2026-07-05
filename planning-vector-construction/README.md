@@ -41,8 +41,9 @@ A Core v0 distributed planning vector should also not be assumed to be magically
 It should be built from Core v0 planning channels:
 
 - attentive citizen planning signals;
+- trusted microdelegation;
 - delegated planning signals;
-- delegate count and concentration;
+- delegate count and global concentration;
 - delegate auditability;
 - delegate revocability;
 - delegate scope granularity;
@@ -67,6 +68,7 @@ Instead of assigning these values arbitrarily, this experiment estimates plausib
 - [`REPRESENTATIVE_PLANNING_MODEL.md`](REPRESENTATIVE_PLANNING_MODEL.md) — central/representative planning information-loss model.
 - [`AGENDA_COMPRESSION_MODEL.md`](AGENDA_COMPRESSION_MODEL.md) — agenda bandwidth and off-agenda responsiveness as representative information-loss mechanisms.
 - [`CORE_V0_PLANNING_CHANNEL_MODEL.md`](CORE_V0_PLANNING_CHANNEL_MODEL.md) — Core v0 planning from attentive citizens, delegates, and optional authority mandate.
+- [`TRUSTED_MICRODELEGATION_MODEL.md`](TRUSTED_MICRODELEGATION_MODEL.md) — trusted person-to-person delegation as the Core v0 baseline, with broker capture as stress case.
 - [`OPEN_MODE_PLANNING_MODEL.md`](OPEN_MODE_PLANNING_MODEL.md) — open-mode planning with and without participation mandate.
 - [`DISTRIBUTED_PLANNING_MODEL.md`](DISTRIBUTED_PLANNING_MODEL.md) — exploratory generic distributed signal aggregation model, not the primary Core v0 planning proxy.
 - [`CALIBRATION_PRIORS.md`](CALIBRATION_PRIORS.md) — initial proxy parameters, real-world anchors, and sensitivity ranges.
@@ -107,4 +109,4 @@ The purpose is to produce a more disciplined proxy for planning-vector quality t
 
 And symmetrically:
 
-> Do not reward Core v0 planning by assumption; model the information that survives attentive participation, delegation, auditability, revocation, concentration, and optional mandate.
+> Do not reward Core v0 planning by assumption; model the information that survives attentive participation, trusted microdelegation, auditability, revocation, global concentration, and optional mandate.
