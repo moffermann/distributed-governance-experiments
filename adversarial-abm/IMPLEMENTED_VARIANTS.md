@@ -10,12 +10,13 @@ The broader conceptual comparison map remains in `ARCHITECTURES.md`. This file t
 
 ## 1. `status_quo`
 
-Centralized allocation with audit-after-the-fact.
+Centralized allocation with central low-information planning and audit-after-the-fact.
 
 Simplified traits:
 
 ```text
 centralPlanner = true
+planningSource = central
 citizenAllocation = false
 fundingCaps = true
 low detection
@@ -26,7 +27,9 @@ passiveAllocationMode = none
 
 Interpretation:
 
-This variant tests a competent-enough central planner with weak delivery verification and weak persistent consequences.
+This variant tests the incumbent public-allocation pattern where a central planner selects projects using a planning signal that is only weakly related to latent public value.
+
+It is not modeled as an incompetent random planner. It is modeled as an information-loss planner: the plan may be internally coherent but weakly connected to beneficiary value.
 
 ## 2. `participatory_weak_verification`
 
@@ -35,6 +38,7 @@ Participatory allocation with weak verification and low budget absorption.
 Simplified traits:
 
 ```text
+planningSource = none
 citizenAllocation = true
 fundingCaps = false
 weak detection
@@ -56,6 +60,7 @@ Participatory allocation with weak verification but full-budget absorption throu
 Simplified traits:
 
 ```text
+planningSource = none
 citizenAllocation = true
 fundingCaps = false
 weak detection
@@ -76,13 +81,14 @@ from
 failure because the budget was spent through weak rules
 ```
 
-## 4. `core_v0_simple`
+## 4. `core_v0_tutored_central_planning`
 
-Simplified Core v0 with default planning layer, funding caps, stronger detection, milestone-like delivery control, retention, guarantee, and reputation memory.
+Simplified Core v0 downstream controls with a central low-information default planning layer.
 
 Simplified traits:
 
 ```text
+planningSource = central
 citizenAllocation = true
 fundingCaps = true
 stronger detection
@@ -96,7 +102,43 @@ passiveAllocationMode = planning
 
 Interpretation:
 
-This is not full Core v0. It is a first executable approximation to test whether verification, retention, reputation, funding caps, and default routing improve delivered and verified value under medium adversarial pressure.
+This approximates a tutored Core v0 deployment where the authority still supplies the planning/default vector, but the downstream project lifecycle has stronger controls.
+
+This variant is important because it shows how much Core v0 can improve accountability even when planning remains centrally weak.
+
+## 5. `core_v0_tutored_distributed_planning`
+
+Simplified Core v0 downstream controls with a distributed parallel planning/default layer.
+
+Simplified traits:
+
+```text
+planningSource = distributed
+citizenAllocation = true
+fundingCaps = true
+stronger detection
+higher review confidence
+retention
+guarantee
+reputation memory
+future selection loss
+passiveAllocationMode = planning
+```
+
+Interpretation:
+
+This approximates a tutored or semi-open Core v0 deployment where society constructs a more informative planning/default vector in parallel to the central plan.
+
+It is not full open mode. It is a simplified proxy for distributed planning information being closer to latent public value than central planning.
+
+## Legacy alias: `core_v0_simple`
+
+`core_v0_simple` remains as a legacy alias for a distributed-planning Core v0 simplification, but the baseline scenario should now prefer the explicit names:
+
+```text
+core_v0_tutored_central_planning
+core_v0_tutored_distributed_planning
+```
 
 ## Current known simplifications
 
@@ -106,6 +148,8 @@ The v0 executable does not yet implement:
 - full milestone objects;
 - explicit evidence producer agents;
 - explicit fiscalizer assignment pools;
+- full distributed signal elicitation;
+- strategic signal manipulation;
 - fiscalizer collusion;
 - complaint paths;
 - agenda capture;
