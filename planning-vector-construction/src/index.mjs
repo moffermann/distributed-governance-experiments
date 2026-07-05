@@ -2,9 +2,9 @@
 // Planning Vector Construction Experiment
 //
 // Generates a synthetic population, latent social value over planning targets,
-// representative central planning vectors, generic distributed vectors, and
-// Core v0 planning vectors built from attentive participation, auditable
-// delegation, and optional authority mandate effects.
+// representative central planning vectors, and Core v0 planning vectors built
+// from attentive participation, trusted microdelegation, delegated pluralism,
+// and optional authority mandate effects.
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -62,7 +62,6 @@ const beta = (rng, a, b) => {
   const y = gamma(rng, b);
   return x / (x + y);
 };
-
 const mean = (xs) => xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0;
 const sd = (xs) => {
   if (xs.length < 2) return 0;
@@ -128,8 +127,12 @@ const genTargets = (rng, cfg) => {
     const territory = Math.floor(rng() * cfg.territories);
     const groupValues = [];
     const territoryValues = [];
-    for (let g = 0; g < cfg.groups; g++) groupValues.push(clamp(base + normal(rng, 0, cfg.preferencePolarization) + (g === beneficiaryGroup ? cfg.beneficiaryConcentration : 0)));
-    for (let t = 0; t < cfg.territories; t++) territoryValues.push(clamp(base + normal(rng, 0, cfg.territorialHeterogeneity) + (t === territory ? 0.12 : 0)));
+    for (let g = 0; g < cfg.groups; g++) {
+      groupValues.push(clamp(base + normal(rng, 0, cfg.preferencePolarization) + (g === beneficiaryGroup ? cfg.beneficiaryConcentration : 0)));
+    }
+    for (let t = 0; t < cfg.territories; t++) {
+      territoryValues.push(clamp(base + normal(rng, 0, cfg.territorialHeterogeneity) + (t === territory ? 0.12 : 0)));
+    }
     const salience = clamp(cfg.salienceCorrelation * base + (1 - cfg.salienceCorrelation) * rng());
     targets.push({ base, beneficiaryGroup, territory, groupValues, territoryValues, salience });
   }
@@ -155,7 +158,6 @@ const genWorld = (seed, scenario) => {
   const groupCounts = new Int32Array(cfg.groups);
   const territoryMeans = Array.from({ length: cfg.territories }, () => new Float64Array(T));
   const territoryCounts = new Int32Array(cfg.territories);
-
   for (let i = 0; i < N; i++) {
     const c = citizens[i];
     groupCounts[c.group]++;
@@ -233,33 +235,7 @@ const representativePlan = (world, rng, p, name) => {
   return { name, class: "representative", plan, distortion, electoralMandateShare: p.turnoutRate * p.winnerVoteShare };
 };
 
-const maybeSignal = (rng, trueValue, coverage, noise) => rng() < coverage ? clamp(trueValue + normal(rng, 0, noise)) : null;
-const distributedPlan = (world, rng, p, name) => {
-  const T = world.targets.length;
-  const raw = new Array(T).fill(0);
-  for (let j = 0; j < T; j++) {
-    const target = world.targets[j];
-    const vals = [], weights = [];
-    const add = (v, w) => { if (v !== null) { vals.push(v); weights.push(w); } };
-    add(maybeSignal(rng, world.latent[j], p.generalSignalCoverage, p.generalSignalNoise), p.wGeneral);
-    add(maybeSignal(rng, world.groupMeans[target.beneficiaryGroup][j], p.beneficiarySignalCoverage, p.beneficiarySignalNoise), p.wBeneficiary);
-    add(maybeSignal(rng, world.latent[j], p.affectedPartyCoverage, p.affectedPartySignalNoise), p.wAffected);
-    add(maybeSignal(rng, world.territoryMeans[target.territory][j], p.localOrgCoverage, p.localOrgSignalNoise), p.wLocal);
-    add(maybeSignal(rng, world.latent[j], p.expertSignalCoverage, p.expertSignalNoise), p.wExpert);
-    const denom = weights.reduce((a, b) => a + b, 0);
-    raw[j] = denom > 0 ? vals.reduce((a, v, k) => a + v * weights[k], 0) / denom : 0.5;
-  }
-  const biased = raw.map((x, j) => (1 - p.participationBias) * x + p.participationBias * world.salience[j]);
-  const manipulatedSet = new Set(Array.from({ length: T }, (_, j) => j).sort((a, b) => (world.salience[b] * (1 - world.latent[b])) - (world.salience[a] * (1 - world.latent[a]))).slice(0, Math.max(0, Math.round(p.strategicSignalShare * T))));
-  const plan = normalize01(biased.map((x, j) => x + p.salienceBiasStrength * (1 - p.deliberationCorrectionStrength) * world.salience[j] + (manipulatedSet.has(j) ? p.manipulationIntensity * (1 - p.antiCaptureFilterStrength) * (1 - 0.5 * p.deliberationCorrectionStrength) : 0)));
-  return { name, class: "generic_distributed", plan, strategicTargets: manipulatedSet.size };
-};
-
-const sampleIndexes = (rng, n, count) => {
-  const out = [];
-  for (let i = 0; i < count; i++) out.push(Math.floor(rng() * n));
-  return out;
-};
+const sampleIndexes = (rng, n, count) => Array.from({ length: count }, () => Math.floor(rng() * n));
 const weightedTargetPick = (rng, world, citizenIndex, salienceBias) => {
   const row = world.values[citizenIndex];
   let total = 0;
@@ -292,20 +268,30 @@ const attentiveSignal = (world, rng, p) => {
   return normalize01(sums.map((x, j) => counts[j] ? x / counts[j] : neutral[j]));
 };
 const delegateWeights = (count, concentration) => {
-  const alpha = 0.05 + 2.5 * clamp(concentration);
+  // Soft pluralism model. Even high concentration across many delegates should not
+  // be treated as a one-broker monopoly unless the scenario explicitly uses very
+  // low delegateCount and weak auditability/revocation/alignment.
+  const alpha = 0.10 + 0.85 * Math.pow(clamp(concentration), 1.2);
   const raw = Array.from({ length: count }, (_, r) => 1 / Math.pow(r + 1, alpha));
   const total = raw.reduce((a, b) => a + b, 0);
   return raw.map((x) => x / total);
 };
-const effectiveDelegateQuality = (p) => clamp(
-  (p.delegateInformationQuality ?? 0.65)
-  * (0.5 + 0.5 * (p.delegateAuditability ?? 0.75))
-  * (0.5 + 0.5 * (p.delegateRevocationResponsiveness ?? 0.70))
-  * (0.5 + 0.5 * (p.delegateScopeGranularity ?? 0.70))
-  * (1 - 0.5 * (p.delegateConcentration ?? 0.25))
-  * (p.delegateAlignment ?? 0.75)
-  * (0.5 + 0.5 * (p.delegateReportQuality ?? 0.75))
-);
+const delegateWeightStats = (count, concentration) => {
+  const w = delegateWeights(count, concentration).sort((a, b) => b - a);
+  const sumTop = (n) => w.slice(0, Math.min(n, w.length)).reduce((a, b) => a + b, 0);
+  return { top1: sumTop(1), top5: sumTop(5), top10: sumTop(10) };
+};
+const effectiveDelegateQuality = (p) => {
+  const base =
+    0.30 * (p.delegateInformationQuality ?? 0.65)
+    + 0.25 * (p.delegateAlignment ?? 0.75)
+    + 0.15 * (p.delegateAuditability ?? 0.75)
+    + 0.12 * (p.delegateRevocationResponsiveness ?? 0.70)
+    + 0.10 * (p.delegateScopeGranularity ?? 0.70)
+    + 0.08 * (p.delegateReportQuality ?? 0.75);
+  const concentrationPenalty = 1 - 0.20 * (p.delegateConcentration ?? 0.25);
+  return clamp(base * concentrationPenalty);
+};
 const delegateSignal = (world, rng, p) => {
   const T = world.targets.length;
   const D = Math.max(1, Math.round(p.delegateCount ?? 100));
@@ -333,8 +319,9 @@ const coreV0PlanningVector = (world, rng, p, name) => {
   const att = attentiveSignal(world, mulberry32(rng() * 0xffffffff >>> 0), p);
   const del = delegateSignal(world, mulberry32(rng() * 0xffffffff >>> 0), p);
   const mandate = authorityMandateSignal(world, mulberry32(rng() * 0xffffffff >>> 0), p);
+  const q = effectiveDelegateQuality(p);
   const attWeight = Math.max(0.001, (p.attentivePlanningShare ?? 0) + (p.mandatoryParticipationBoost ?? 0));
-  const delWeight = Math.max(0.001, ((p.delegatorShare ?? 0) + (p.mandatoryDelegationBoost ?? 0)) * (0.4 + 0.6 * effectiveDelegateQuality(p)));
+  const delWeight = Math.max(0.001, ((p.delegatorShare ?? 0) + (p.mandatoryDelegationBoost ?? 0)) * (0.55 + 0.45 * q));
   const mandateWeight = Math.max(0, p.mandateConstraintWeight ?? 0);
   const denom = attWeight + delWeight + mandateWeight;
   const plan = normalize01(att.map((_, j) => (attWeight * att[j] + delWeight * del[j] + mandateWeight * mandate[j]) / denom));
@@ -348,11 +335,12 @@ const coreV0PlanningVector = (world, rng, p, name) => {
     delegatorShare: p.delegatorShare ?? 0,
     delegateCount: p.delegateCount ?? null,
     delegateConcentration: p.delegateConcentration ?? null,
-    effectiveDelegateQuality: effectiveDelegateQuality(p),
+    effectiveDelegateQuality: q,
     mandateConstraintWeight: p.mandateConstraintWeight ?? 0,
+    delegateTop1Weight: delegateWeightStats(p.delegateCount ?? 100, p.delegateConcentration ?? 0.25).top1,
+    delegateTop10Weight: delegateWeightStats(p.delegateCount ?? 100, p.delegateConcentration ?? 0.25).top10,
   };
 };
-
 const measure = (world, result) => ({
   name: result.name,
   class: result.class,
@@ -371,13 +359,13 @@ const measure = (world, result) => ({
   delegateConcentration: result.delegateConcentration ?? null,
   effectiveDelegateQuality: result.effectiveDelegateQuality ?? null,
   mandateConstraintWeight: result.mandateConstraintWeight ?? null,
+  delegateTop1Weight: result.delegateTop1Weight ?? null,
+  delegateTop10Weight: result.delegateTop10Weight ?? null,
 });
-
 const runOnce = (seed, scenario) => {
   const world = genWorld(seed, scenario);
   const records = [];
   for (const [name, p] of Object.entries(scenario.representativeVariants ?? {})) records.push(measure(world, representativePlan(world, mulberry32(seed ^ hashName(name)), p, name)));
-  for (const [name, p] of Object.entries(scenario.distributedVariants ?? {})) records.push(measure(world, distributedPlan(world, mulberry32(seed ^ hashName(name)), p, name)));
   for (const [name, p] of Object.entries(scenario.coreV0PlanningVariants ?? {})) records.push(measure(world, coreV0PlanningVector(world, mulberry32(seed ^ hashName(name)), p, name)));
   records.push(measure(world, { name: "salience_vector", class: "salience", plan: normalize01(world.salience) }));
   return records;
@@ -415,6 +403,8 @@ const runScenario = (scenario) => {
       delegateConcentration: summariseNullable(rows, "delegateConcentration"),
       effectiveDelegateQuality: summariseNullable(rows, "effectiveDelegateQuality"),
       mandateConstraintWeight: summariseNullable(rows, "mandateConstraintWeight"),
+      delegateTop1Weight: summariseNullable(rows, "delegateTop1Weight"),
+      delegateTop10Weight: summariseNullable(rows, "delegateTop10Weight"),
     };
   });
   return { raw, summary };
@@ -428,13 +418,13 @@ const markdownTable = (summary) => {
   lines.push(`scenario: ${scenario.scenario_id} v${scenario.scenario_version}`);
   lines.push(`runs: ${scenario.runs}, base seed: ${scenario.seed}, citizens: ${scenario.population.citizens}, targets: ${scenario.population.targets}`);
   lines.push("");
-  lines.push("| vector | class | mode | mandate | corr(latent) | top20 latent mean | priority gap | MSE normalized | attentive | delegator | delegates | concentration | delegate quality | mandate weight |");
-  lines.push("|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|");
-  for (const r of summary) lines.push(`| ${r.name} | ${r.class} | ${r.mode} | ${r.authorityMandateMode} | ${fmtMean(r.corrWithLatent)} | ${fmtMean(r.top20LatentMean)} | ${fmtMean(r.priorityGap)} | ${fmtMean(r.mseToLatent)} | ${fmtMean(r.attentivePlanningShare)} | ${fmtMean(r.delegatorShare)} | ${fmtMean(r.delegateCount)} | ${fmtMean(r.delegateConcentration)} | ${fmtMean(r.effectiveDelegateQuality)} | ${fmtMean(r.mandateConstraintWeight)} |`);
+  lines.push("| vector | class | mode | mandate | corr(latent) | top20 latent mean | priority gap | MSE normalized | attentive | delegator | delegates | concentration | delegate quality | top1 delegate weight | top10 delegate weight |");
+  lines.push("|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|");
+  for (const r of summary) lines.push(`| ${r.name} | ${r.class} | ${r.mode} | ${r.authorityMandateMode} | ${fmtMean(r.corrWithLatent)} | ${fmtMean(r.top20LatentMean)} | ${fmtMean(r.priorityGap)} | ${fmtMean(r.mseToLatent)} | ${fmtMean(r.attentivePlanningShare)} | ${fmtMean(r.delegatorShare)} | ${fmtMean(r.delegateCount)} | ${fmtMean(r.delegateConcentration)} | ${fmtMean(r.effectiveDelegateQuality)} | ${fmtMean(r.delegateTop1Weight)} | ${fmtMean(r.delegateTop10Weight)} |`);
   return lines.join("\n");
 };
 const csvTable = (summary) => {
-  const fields = ["name","class","mode","mandate","corr_mean","corr_sd","top20_mean","top20_sd","priority_gap_mean","priority_gap_sd","mse_mean","mse_sd","attentive_mean","delegator_mean","delegate_count_mean","delegate_concentration_mean","delegate_quality_mean","mandate_weight_mean","mandate_share_mean","distortion_mean"];
+  const fields = ["name","class","mode","mandate","corr_mean","corr_sd","top20_mean","top20_sd","priority_gap_mean","priority_gap_sd","mse_mean","mse_sd","attentive_mean","delegator_mean","delegate_count_mean","delegate_concentration_mean","delegate_quality_mean","top1_delegate_weight_mean","top10_delegate_weight_mean","mandate_share_mean","distortion_mean"];
   const rows = [fields.join(",")];
   for (const r of summary) rows.push([
     r.name, r.class, r.mode, r.authorityMandateMode,
@@ -442,7 +432,7 @@ const csvTable = (summary) => {
     r.top20LatentMean.mean, r.top20LatentMean.sd,
     r.priorityGap.mean, r.priorityGap.sd,
     r.mseToLatent.mean, r.mseToLatent.sd,
-    r.attentivePlanningShare.mean ?? "", r.delegatorShare.mean ?? "", r.delegateCount.mean ?? "", r.delegateConcentration.mean ?? "", r.effectiveDelegateQuality.mean ?? "", r.mandateConstraintWeight.mean ?? "",
+    r.attentivePlanningShare.mean ?? "", r.delegatorShare.mean ?? "", r.delegateCount.mean ?? "", r.delegateConcentration.mean ?? "", r.effectiveDelegateQuality.mean ?? "", r.delegateTop1Weight.mean ?? "", r.delegateTop10Weight.mean ?? "",
     r.electoralMandateShare.mean ?? "", r.distortion.mean ?? "",
   ].map((x) => typeof x === "number" ? x.toFixed(8) : x).join(","));
   return rows.join("\n");
