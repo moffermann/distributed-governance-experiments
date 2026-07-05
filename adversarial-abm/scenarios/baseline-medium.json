@@ -1,0 +1,56 @@
+{
+  "scenario_id": "baseline-medium",
+  "scenario_version": "0.1",
+  "description": "Medium adversarial baseline for the first paired architecture comparison.",
+  "seed": 1,
+  "runs": 20,
+  "cycles": 24,
+  "population": {
+    "citizens": 10000,
+    "attentiveShare": 0.05,
+    "salienceShare": 0.25,
+    "profileShare": 0.20,
+    "passiveShare": 0.40,
+    "delegatorShare": 0.10,
+    "attentiveSampleSize": 8
+  },
+  "projects": {
+    "activePool": 40,
+    "scarcity": 3.0,
+    "latentValue": { "dist": "beta", "alpha": 2, "beta": 2 },
+    "salienceCorrelation": 0.2,
+    "planningWeightCorrelation": 0.5,
+    "verificationDifficulty": { "dist": "beta", "alpha": 2, "beta": 2 },
+    "executionDifficulty": { "dist": "beta", "alpha": 2, "beta": 3 },
+    "fraudOpportunity": { "dist": "beta", "alpha": 1.5, "beta": 3 }
+  },
+  "executors": {
+    "honestShare": 0.70,
+    "opportunisticShare": 0.30,
+    "ability": { "dist": "beta", "alpha": 3, "beta": 2 }
+  },
+  "fiscalizers": {
+    "competentHonestShare": 0.60,
+    "weakHonestShare": 0.25,
+    "capturableShare": 0.15,
+    "competence": { "dist": "beta", "alpha": 4, "beta": 2 }
+  },
+  "attacks": {
+    "salienceCascade": { "enabled": true, "severity": "medium", "socialProofWeight": 3.0, "visibleSlots": 6 },
+    "weakVerificationDiversion": { "enabled": true, "severity": "medium", "detectionShock": 1.0 },
+    "agendaCapture": { "enabled": false },
+    "fiscalizerCollusion": { "enabled": false },
+    "coordinatedSignalBias": { "enabled": false }
+  },
+  "architectures": [
+    "status_quo",
+    "participatory_weak_verification",
+    "core_v0_simple"
+  ],
+  "outputs": {
+    "rawJson": true,
+    "markdownTable": true,
+    "csv": true,
+    "sampleDecisionTrace": false
+  }
+}
