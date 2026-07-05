@@ -6,7 +6,7 @@
 
 ## Status
 
-Preliminary design baseline.
+Preliminary executable baseline.
 
 This experiment is separate from `experiments/adversarial-abm/`.
 
@@ -29,6 +29,8 @@ Its correlation with latent public value should be derived from mechanisms such 
 - approval;
 - supporter versus non-supporter alignment;
 - program-to-plan fidelity;
+- agenda bandwidth;
+- off-agenda responsiveness;
 - bureaucratic and coalition distortion;
 - lobbying or organized-interest distortion;
 - distance from beneficiaries;
@@ -57,7 +59,7 @@ centralPlanningSignalMix
 distributedPlanningSignalMix
 ```
 
-Instead of assigning these values arbitrarily, this experiment will estimate plausible ranges for them under different representative and distributed-planning scenarios.
+Instead of assigning these values arbitrarily, this experiment estimates plausible ranges for them under different representative and distributed-planning scenarios.
 
 ## Current design documents
 
@@ -68,9 +70,22 @@ Instead of assigning these values arbitrarily, this experiment will estimate pla
 - [`SCENARIO_CONFIGURATION.md`](SCENARIO_CONFIGURATION.md) — scenario schema and planned scenario families.
 - [`OUTPUT_TO_ABM.md`](OUTPUT_TO_ABM.md) — how this experiment feeds the adversarial ABM.
 
+## Executable baseline
+
+- [`scenarios/baseline-comparison.json`](scenarios/baseline-comparison.json) — first representative versus distributed comparison scenario.
+- [`src/index.mjs`](src/index.mjs) — dependency-free Node.js simulator.
+- [`src/README.md`](src/README.md) — run instructions and evidence-status note.
+
+Run from the repository root:
+
+```bash
+node experiments/planning-vector-construction/src/index.mjs \
+  --scenario experiments/planning-vector-construction/scenarios/baseline-comparison.json
+```
+
 ## Evidence status
 
-This experiment will initially produce simulation evidence and calibrated proxy ranges, not empirical proof.
+This experiment produces simulation evidence and calibrated proxy ranges, not empirical proof.
 
 The purpose is to produce a more disciplined proxy for planning-vector quality than a single arbitrary correlation value.
 
