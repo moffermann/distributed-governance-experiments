@@ -1,7 +1,7 @@
 {
   "scenario_id": "baseline-medium",
-  "scenario_version": "0.1",
-  "description": "Medium adversarial baseline for the first paired architecture comparison.",
+  "scenario_version": "0.2",
+  "description": "Medium adversarial baseline for the first paired architecture comparison, including a full-budget participatory variant and unspent-budget accounting.",
   "seed": 1,
   "runs": 20,
   "cycles": 24,
@@ -45,6 +45,7 @@
   "architectures": [
     "status_quo",
     "participatory_weak_verification",
+    "participatory_weak_verification_full_budget",
     "core_v0_simple"
   ],
   "outputs": {
