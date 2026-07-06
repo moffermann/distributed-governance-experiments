@@ -1,5 +1,7 @@
 # Mesa Run Results — 2026-07-06
 
+> Follow-up: the recommended changes below were implemented the same day as part of a Core v0 conformance audit; see [`CORE_V0_CONFORMANCE_AUDIT.md`](CORE_V0_CONFORMANCE_AUDIT.md) and the re-run in [`RUN_2026_07_06_POST_AUDIT_RESULTS.md`](RUN_2026_07_06_POST_AUDIT_RESULTS.md). The numbers in this document were produced by the pre-audit engine and are kept as a dated record.
+
 ## Execution
 
 The behavioral adoption ABM was executed locally with Mesa 3.5.1.

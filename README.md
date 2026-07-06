@@ -19,6 +19,9 @@ Use this workspace for:
 ## Current experiments
 
 - [`adversarial-abm/`](adversarial-abm/) — adversarial agent-based modeling framework for stress-testing public-resource allocation architectures.
+- [`planning-vector-construction/`](planning-vector-construction/) — upstream planning-vector construction models: representative, distributed, Core v0 channels, and trusted microdelegation.
+- [`planning-behavior-calibration/`](planning-behavior-calibration/) — behavioral calibration protocol (questionnaire, survey instrument, LLM prompt protocol) feeding the planning-vector models.
+- [`behavioral-adoption-abm/`](behavioral-adoption-abm/) — behavioral adoption, use, delegation, and role-formation ABM; generates the participation parameters the other experiments impose.
 
 ## Repository boundary
 

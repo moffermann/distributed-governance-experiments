@@ -348,27 +348,43 @@ active_user_share
 registered_user_share
 registered_inactive_share
 aware_non_user_share
+permanent_rejection_share
+default_rule_share
 passive_delegated_share
 profile_driven_share
 direct_participation_share
 full_delegation_share
 partial_delegation_share
+delegator_share
+active_delegate_count
 delegation_concentration_hhi
 top_delegate_share
+micro_delegation_weight_share
+institutional_delegation_weight_share
+delegate_platform_use_rate
+delegate_switching_rate
+delegation_revocation_rate
 abandonment_share
 reactivation_rate
 mean_platform_trust
+mean_trust_registered
 trust_distribution
 executor_participation_rate
 honest_executor_share
 opportunistic_executor_share
 fiscalizer_supply_per_project
 evidence_supply_per_project
+verification_coverage_rate
+evidence_coverage_rate
 verification_market_depth
 thin_market_failure_rate
 negative_word_of_mouth_rate
 recommendation_rate
 ```
+
+Denominator note: `*_share` metrics over participation modes and abandonment use registered citizens as the base; `active_user_share`, `default_rule_share`, `delegator_share`, `aware_non_user_share`, and `permanent_rejection_share` use the total population. `default_rule_share` exists because in Core v0 a citizen who does nothing is not lost signal — their allocation follows the public default rule (docs/101).
+
+The delegation outputs map onto the planning-vector experiment's parameters: `delegator_share` → `delegatorShare`, `active_delegate_count` → `delegateCount`, `delegation_concentration_hhi` → `delegateConcentration`, `delegate_platform_use_rate` → `delegatePlatformUseRate`. `delegatePlanningCoverage` is not produced here; use the documented priors.
 
 ## Interpretation discipline
 

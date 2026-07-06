@@ -1,9 +1,26 @@
 """Core v0 behavioral adoption agent-based model.
 
-This first executable version is intentionally dependency-light. If Mesa is
-installed, agents and the model inherit from Mesa's Agent/Model classes. If Mesa
-is not installed, a tiny fallback shim keeps the experiment runnable with only
-Python's standard library.
+This executable version is intentionally dependency-light. If Mesa is
+installed, agents and the model inherit from Mesa's Agent/Model classes. If
+Mesa is not installed, a tiny fallback shim keeps the experiment runnable with
+only Python's standard library. Either way the model draws every random number
+from one `random.Random(seed)` stream, so results are byte-identical with and
+without Mesa.
+
+Core v0 conformance notes (see CORE_V0_CONFORMANCE_AUDIT.md):
+
+- Delegation is modeled first as trusted microdelegation (citizen -> willing
+  person in their own social circle), with a small institutional delegate pool
+  as the stress channel, following the planning-vector experiment's
+  TRUSTED_MICRODELEGATION_MODEL.md.
+- Citizens who do nothing are not lost allocation signal: their share follows
+  the public default rule (docs/101, "What you, a citizen, actually do"), so
+  project funding always receives the default-routed remainder.
+- Reputation informs delegate choice; nothing in the model excludes any actor
+  from being chosen (docs/107).
+- Social signals expose only what neighbors voluntarily self-disclose
+  (registered / active / abandoned / recommending). Allocation targets are
+  never observable by other agents (docs/108).
 """
 
 from __future__ import annotations
@@ -14,7 +31,7 @@ import math
 import random
 from collections import Counter
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Mapping, Optional
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
 
 try:  # Optional dependency for native Mesa execution.
     import mesa  # type: ignore
@@ -29,8 +46,9 @@ except Exception:  # pragma: no cover - used only when Mesa is absent.
             _FallbackAgent._next_id += 1
 
     class _FallbackModel:
-        def __init__(self, rng=None):
-            self.random = rng if isinstance(rng, random.Random) else random.Random(rng)
+        def __init__(self, seed=None, rng=None):
+            source = seed if seed is not None else rng
+            self.random = source if isinstance(source, random.Random) else random.Random(source)
 
     class _MesaFallback:
         Agent = _FallbackAgent
@@ -49,6 +67,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "initial_trust_mean": 0.48,
     "initial_trust_spread": 0.18,
     "campaign_intensity": 0.025,
+    "awareness_ceiling": 0.90,
     "social_influence_strength": 0.060,
     "negative_word_of_mouth_strength": 0.080,
     "recommendation_strength": 0.070,
@@ -59,12 +78,20 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "public_legitimacy": 0.45,
     "perceived_benefit": 0.50,
     "decision_clarity": 0.46,
+    "registration_reconsideration_rate": 0.030,
+    "permanent_rejection_rate": 0.35,
+    "activation_consideration_rate": 0.25,
+    "mode_reconsideration_rate": 0.12,
+    "shock_reconsideration_boost": 0.30,
     "visible_success_rate": 0.030,
     "bad_outcome_rate": 0.018,
     "platform_outage_rate": 0.005,
     "public_controversy_rate": 0.007,
+    "trust_recovery_event_rate": 0.020,
     "trust_recovery_strength": 0.020,
-    "delegate_count": 24,
+    "micro_delegate_willingness": 0.25,
+    "institutional_delegate_count": 24,
+    "institutional_delegation_propensity": 0.25,
     "project_count": 80,
     "executor_count": 60,
     "fiscalizer_count": 35,
@@ -74,13 +101,18 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "evidence_compensation": 0.42,
     "review_cost": 0.35,
     "evidence_cost": 0.35,
+    "fiscalizer_capacity": 2.0,
+    "evidence_producer_capacity": 1.5,
     "verification_requirement_per_project": 0.60,
     "evidence_requirement_per_project": 0.70,
+    "role_entry_rate": 0.15,
+    "role_exit_rate": 0.15,
+    "funding_rate": 0.02,
+    "default_routing_efficiency": 0.70,
     "social_graph_degree": 8,
     "random_social_tie_probability": 0.015,
     "participation_temperature": 0.75,
     "delegate_temperature": 0.50,
-    "abandonment_threshold": 0.30,
     "reactivation_campaign_strength": 0.015,
 }
 
@@ -89,25 +121,49 @@ INTEGRATION_KEYS = [
     "registered_user_share",
     "registered_inactive_share",
     "aware_non_user_share",
+    "permanent_rejection_share",
+    "default_rule_share",
     "passive_delegated_share",
     "profile_driven_share",
     "direct_participation_share",
     "full_delegation_share",
     "partial_delegation_share",
+    "delegator_share",
+    "active_delegate_count",
     "delegation_concentration_hhi",
     "top_delegate_share",
+    "micro_delegation_weight_share",
+    "institutional_delegation_weight_share",
+    "delegate_platform_use_rate",
+    "delegate_switching_rate",
+    "delegation_revocation_rate",
     "abandonment_share",
+    "reactivation_rate",
     "mean_platform_trust",
+    "mean_trust_registered",
     "executor_participation_rate",
     "honest_executor_share",
     "opportunistic_executor_share",
     "fiscalizer_supply_per_project",
     "evidence_supply_per_project",
+    "verification_coverage_rate",
+    "evidence_coverage_rate",
     "verification_market_depth",
     "thin_market_failure_rate",
     "negative_word_of_mouth_rate",
     "recommendation_rate",
 ]
+
+# Minimum-viability thresholds (METRICS.md, "Minimum viability thresholds").
+VIABILITY_THRESHOLDS = {
+    "min_active_user_share": 0.10,
+    "max_delegation_hhi": 0.15,
+    "max_top_delegate_share": 0.20,
+    "min_verification_coverage": 0.80,
+    "min_evidence_coverage": 0.80,
+    "min_executor_participation": 0.25,
+    "max_abandonment_share": 0.25,
+}
 
 
 def clamp(value: float, lower: float = 0.0, upper: float = 1.0) -> float:
@@ -154,18 +210,27 @@ def _deep_update(base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, An
     return result
 
 
+def normalize_config(config: Dict[str, Any]) -> Dict[str, Any]:
+    """Accept legacy keys from earlier scenario files."""
+    config = dict(config)
+    if "delegate_count" in config:
+        config.setdefault("institutional_delegate_count", config["delegate_count"])
+        del config["delegate_count"]
+    return config
+
+
 def load_config(path: str | Path | None = None, overrides: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     config = dict(DEFAULT_CONFIG)
     if path:
         with Path(path).open("r", encoding="utf-8") as fh:
-            config = _deep_update(config, json.load(fh))
+            config = _deep_update(config, normalize_config(json.load(fh)))
     if overrides:
-        config = _deep_update(config, overrides)
+        config = _deep_update(config, normalize_config(overrides))
     return config
 
 
 class CitizenAgent(mesa.Agent):  # type: ignore[misc]
-    """Potential or actual Core user."""
+    """Potential or actual Core user. Can also act as a trusted micro-delegate."""
 
     def __init__(self, model: "BehavioralAdoptionModel", citizen_id: int):
         super().__init__(model)
@@ -175,11 +240,13 @@ class CitizenAgent(mesa.Agent):  # type: ignore[misc]
         self.aware = bernoulli(rng, cfg["initial_awareness"])
         self.registered = False
         self.use_state = "aware_non_user" if self.aware else "unaware"
-        self.delegate_id: Optional[int] = None
+        self.delegate_ref: Optional[Tuple[str, int]] = None  # ("c", citizen_id) | ("i", delegate_id)
         self.first_awareness_tick: Optional[int] = 0 if self.aware else None
         self.first_registration_tick: Optional[int] = None
         self.last_activation_tick: Optional[int] = None
         self.last_abandonment_tick: Optional[int] = None
+        self.considered_registration = False
+        self.permanently_rejected = False
 
         self.trust_core = clamp(rng.gauss(cfg["initial_trust_mean"], cfg["initial_trust_spread"]))
         self.trust_evidence = clamp(rng.gauss(0.48, 0.18))
@@ -194,6 +261,14 @@ class CitizenAgent(mesa.Agent):  # type: ignore[misc]
         self.ideological_openness = clamp(rng.betavariate(2.0, 1.8))
         self.control_preference = clamp(rng.betavariate(2.0, 2.0))
         self.automation_trust = clamp(rng.betavariate(1.8, 2.2))
+        self.values_position = rng.random()
+        # Media reach limit for campaign-driven awareness (launch-stage ceiling).
+        self.media_reachable = bernoulli(rng, cfg["awareness_ceiling"])
+        # Latent willingness to act as a trusted micro-delegate for one's circle.
+        self.micro_delegate_willing = bernoulli(
+            rng, cfg["micro_delegate_willingness"] * (0.5 + self.civic_interest)
+        )
+        self.delegated_weight = 0.0  # weight received from other citizens
 
     @property
     def is_active(self) -> bool:
@@ -201,17 +276,22 @@ class CitizenAgent(mesa.Agent):  # type: ignore[misc]
 
     @property
     def is_delegating(self) -> bool:
-        return self.use_state in {"delegated", "hybrid"} and self.delegate_id is not None
+        return self.use_state in {"delegated", "hybrid"} and self.delegate_ref is not None
+
+    def can_receive_delegation(self) -> bool:
+        return self.micro_delegate_willing and self.registered and self.use_state != "abandoned"
 
     def social_signal(self) -> Dict[str, float]:
         neighbors = self.model.social_graph.get(self.citizen_id, [])
         if not neighbors:
-            return {"active": 0.0, "registered": 0.0, "abandoned": 0.0}
+            return {"active": 0.0, "registered": 0.0, "abandoned": 0.0, "recommending": 0.0}
         agents = [self.model.citizens[n] for n in neighbors]
+        n = len(agents)
         return {
-            "active": sum(a.is_active for a in agents) / len(agents),
-            "registered": sum(a.registered for a in agents) / len(agents),
-            "abandoned": sum(a.use_state == "abandoned" for a in agents) / len(agents),
+            "active": sum(a.is_active for a in agents) / n,
+            "registered": sum(a.registered for a in agents) / n,
+            "abandoned": sum(a.use_state == "abandoned" for a in agents) / n,
+            "recommending": sum(a.is_active and a.trust_core >= 0.62 for a in agents) / n,
         }
 
     def awareness_step(self) -> None:
@@ -220,7 +300,7 @@ class CitizenAgent(mesa.Agent):  # type: ignore[misc]
         cfg = self.model.config
         s = self.social_signal()
         p = (
-            cfg["campaign_intensity"]
+            (cfg["campaign_intensity"] if self.media_reachable else 0.0)
             + cfg["social_influence_strength"] * self.social_influence_weight * s["registered"]
             + 0.01 * self.civic_interest
             + 0.01 * self.need_relevance
@@ -231,33 +311,50 @@ class CitizenAgent(mesa.Agent):  # type: ignore[misc]
             self.first_awareness_tick = self.model.tick
 
     def registration_step(self) -> None:
-        if not self.aware or self.registered or self.use_state == "abandoned":
+        if not self.aware or self.registered or self.permanently_rejected or self.use_state == "abandoned":
             return
         cfg = self.model.config
         s = self.social_signal()
+        # Registration is considered seriously once, on first exposure; afterwards
+        # only occasionally, mostly re-triggered by social proof. This prevents a
+        # constant weekly hazard from saturating registration over long horizons.
+        if self.considered_registration:
+            p_consider = cfg["registration_reconsideration_rate"] + 0.25 * s["recommending"]
+            if not bernoulli(self.random, p_consider):
+                return
+        self.considered_registration = True
         x = (
-            -1.55
+            -2.40
             + 1.35 * cfg["perceived_benefit"]
-            + 1.10 * s["active"] * self.social_influence_weight
+            + 12.0 * cfg["recommendation_strength"] * s["recommending"] * self.social_influence_weight
             + 1.25 * self.trust_core
             + 0.85 * self.need_relevance
             + 0.55 * cfg["ai_tutor_quality"]
             + 0.45 * cfg["public_legitimacy"]
-            - 1.10 * cfg["onboarding_friction"] * (1.0 - self.friction_tolerance)
-            - 0.90 * self.privacy_concern * (1.0 - cfg["privacy_guarantee_strength"])
-            - 0.75 * (1.0 - self.ideological_openness)
-            - cfg["negative_word_of_mouth_strength"] * s["abandoned"]
+            - 1.60 * cfg["onboarding_friction"] * (1.0 - self.friction_tolerance)
+            - 1.25 * self.privacy_concern * (1.0 - cfg["privacy_guarantee_strength"])
+            - 0.85 * (1.0 - self.ideological_openness)
+            - 10.0 * cfg["negative_word_of_mouth_strength"] * s["abandoned"] * self.social_influence_weight
         )
         if bernoulli(self.random, sigmoid(x)):
             self.registered = True
             self.use_state = "registered_inactive"
             self.first_registration_tick = self.model.tick
+        elif bernoulli(
+            self.random,
+            cfg["permanent_rejection_rate"] * clamp(0.6 * (1.0 - self.ideological_openness) + 0.4 * self.privacy_concern),
+        ):
+            # ROLE_ONTOLOGY.md, aware non-user: "reject permanently".
+            self.permanently_rejected = True
+            self.use_state = "rejected"
 
     def activation_step(self) -> None:
         if not self.registered or self.use_state == "abandoned":
             return
         cfg = self.model.config
         if self.use_state == "registered_inactive":
+            if not bernoulli(self.random, cfg["activation_consideration_rate"]):
+                return
             s = self.social_signal()
             x = (
                 -1.25
@@ -275,12 +372,28 @@ class CitizenAgent(mesa.Agent):  # type: ignore[misc]
             if not bernoulli(self.random, sigmoid(x)):
                 return
             self.last_activation_tick = self.model.tick
-        self.set_participation_mode()
+            self.set_participation_mode()
+            return
+        # Active users keep their mode unless they reconsider it; shocks raise
+        # the reconsideration probability (revocation elasticity, METRICS.md).
+        shock = max(
+            self.model.current_outage,
+            self.model.current_controversy,
+            1.0 if self.model.visible_failure_stock > 0.30 else 0.0,
+        )
+        p_reconsider = cfg["mode_reconsideration_rate"] + cfg["shock_reconsideration_boost"] * shock
+        if bernoulli(self.random, p_reconsider):
+            self.set_participation_mode()
 
     def set_participation_mode(self) -> None:
         cfg = self.model.config
         s = self.social_signal()
-        delegate_quality = self.model.average_delegate_reputation()
+        micro_available = any(
+            self.model.citizens[n].can_receive_delegation()
+            for n in self.model.social_graph.get(self.citizen_id, [])
+        )
+        institutional_quality = self.model.average_delegate_reputation()
+        delegate_quality = max(institutional_quality, 0.80 if micro_available else 0.0)
         concentration = self.model.delegation_concentration_hhi()
         complexity_cost = cfg["interface_complexity"] * (1.0 - self.digital_confidence)
         scores = {
@@ -291,32 +404,81 @@ class CitizenAgent(mesa.Agent):  # type: ignore[misc]
             "registered_inactive": 0.80 * (1.0 - self.trust_core) + 0.55 * complexity_cost + 0.35 * (1.0 - self.need_relevance),
         }
         new_state = softmax_choice(self.random, scores, cfg["participation_temperature"])
-        if self.delegate_id is not None and new_state not in {"delegated", "hybrid"}:
-            self.model.delegates[self.delegate_id].delegated_weight = max(0.0, self.model.delegates[self.delegate_id].delegated_weight - 1.0)
-            self.delegate_id = None
+        if self.delegate_ref is not None and new_state not in {"delegated", "hybrid"}:
+            self.model.release_delegation(self, revocation=True)
         self.use_state = new_state
         if self.use_state in {"delegated", "hybrid"}:
             self.choose_delegate()
 
     def choose_delegate(self) -> None:
-        if not self.model.delegates:
+        cfg = self.model.config
+        total_weight = self.model.total_delegated_weight()
+        # Trusted microdelegation channel: willing, registered, non-abandoned
+        # people in the citizen's own social circle (TRUSTED_MICRODELEGATION_MODEL.md).
+        micro_scores: Dict[str, float] = {}
+        for n in self.model.social_graph.get(self.citizen_id, []):
+            cand = self.model.citizens[n]
+            if not cand.can_receive_delegation():
+                continue
+            if cand.delegate_ref == ("c", self.citizen_id):
+                continue  # avoid trivial two-cycles
+            alignment = 1.0 - abs(self.values_position - cand.values_position)
+            weight_share = (cand.delegated_weight / total_weight) if total_weight else 0.0
+            micro_scores[f"c{cand.citizen_id}"] = (
+                1.05 * alignment
+                + 0.45 * cand.civic_interest
+                + 0.45  # proximity-trust premium: known person, visible acts, one-click revocation
+                - 0.60 * weight_share
+            )
+        # Institutional channel: remains available but carries a propensity
+        # penalty — the corpus treats broker/institutional delegation as the
+        # stress channel, not the baseline.
+        inst_scores: Dict[str, float] = {}
+        for d in self.model.delegates:
+            alignment = 1.0 - abs(self.values_position - d.alignment_vector)
+            weight_share = (d.delegated_weight / total_weight) if total_weight else 0.0
+            inst_scores[f"i{d.delegate_id}"] = (
+                0.95 * alignment
+                + 1.15 * d.reputation
+                + 0.50 * d.visibility
+                - 0.70 * d.conflict_risk
+                - 0.60 * weight_share
+                - (1.0 - cfg["institutional_delegation_propensity"])
+            )
+        # Two-stage choice: pick the channel by comparing the best option in
+        # each, then pick the delegate inside the chosen channel. A single
+        # softmax over both pools would let the institutional channel win by
+        # sheer candidate count, inverting the corpus's microdelegation baseline.
+        if micro_scores and inst_scores:
+            channel = softmax_choice(
+                self.random,
+                {"micro": max(micro_scores.values()), "inst": max(inst_scores.values())},
+                cfg["delegate_temperature"],
+            )
+            scores = micro_scores if channel == "micro" else inst_scores
+        elif micro_scores:
+            scores = micro_scores
+        elif inst_scores and bernoulli(self.random, cfg["institutional_delegation_propensity"]):
+            # No trusted person available: only propensity-many citizens hand
+            # weight to an impersonal delegate; the rest fall back to the
+            # public default rule (docs/101).
+            scores = inst_scores
+        else:
             self.use_state = "registered_inactive"
             return
-        cfg = self.model.config
-        concentration = self.model.delegation_concentration_hhi()
-        scores: Dict[str, float] = {}
-        for d in self.model.delegates:
-            alignment = 1.0 - abs(self.civic_interest - d.alignment_vector)
-            scores[str(d.delegate_id)] = 0.95 * alignment + 1.15 * d.reputation + 0.50 * d.visibility - 0.70 * d.conflict_risk - 0.45 * concentration
-        chosen_id = int(softmax_choice(self.random, scores, cfg["delegate_temperature"]))
-        if self.delegate_id == chosen_id:
+        chosen_key = softmax_choice(self.random, scores, cfg["delegate_temperature"])
+        chosen_ref = (chosen_key[0], int(chosen_key[1:]))
+        if self.delegate_ref == chosen_ref:
             return
-        if self.delegate_id is not None:
-            self.model.delegates[self.delegate_id].delegated_weight = max(0.0, self.model.delegates[self.delegate_id].delegated_weight - 1.0)
-        self.delegate_id = chosen_id
-        self.model.delegates[chosen_id].delegated_weight += 1.0
+        if self.delegate_ref is not None:
+            self.model.release_delegation(self, revocation=False)
+            self.model.switches_cum += 1
+        self.delegate_ref = chosen_ref
+        self.model.delegation_target(chosen_ref).delegated_weight += 1.0
 
     def trust_step(self) -> None:
+        if not self.aware:
+            return  # unaware citizens hold their prior; they have nothing to update on
         cfg = self.model.config
         s = self.social_signal()
         delta = 0.020 * self.model.visible_success_stock
@@ -327,7 +489,7 @@ class CitizenAgent(mesa.Agent):  # type: ignore[misc]
         delta -= 0.018 * s["abandoned"] * self.social_influence_weight
         delta += cfg["trust_recovery_strength"] * self.model.current_recovery_event
         if self.is_active:
-            delta += self.random.gauss(0.003, 0.010)
+            delta += self.random.gauss(0.0015, 0.008)
         self.trust_core = clamp(self.trust_core + delta)
 
     def churn_step(self) -> None:
@@ -335,31 +497,33 @@ class CitizenAgent(mesa.Agent):  # type: ignore[misc]
         if self.registered and self.use_state != "abandoned":
             s = self.social_signal()
             x = (
-                -2.10
-                + 1.20 * self.model.visible_failure_stock
+                -5.20
+                + 1.25 * self.model.visible_failure_stock
                 + 1.00 * self.model.current_controversy
                 + 0.85 * self.model.current_outage
-                + 0.75 * cfg["interface_complexity"]
-                + 0.55 * (1.0 - self.trust_core)
-                + 0.40 * s["abandoned"]
-                - 0.90 * self.trust_core
-                - 0.45 * self.model.visible_success_stock
+                + 0.70 * cfg["interface_complexity"] * (1.0 - self.friction_tolerance)
+                + 1.90 * (1.0 - self.trust_core)
+                + 0.45 * s["abandoned"]
+                - 0.55 * self.model.visible_success_stock
             )
-            if self.trust_core < cfg["abandonment_threshold"] and bernoulli(self.random, sigmoid(x)):
-                if self.delegate_id is not None:
-                    self.model.delegates[self.delegate_id].delegated_weight = max(0.0, self.model.delegates[self.delegate_id].delegated_weight - 1.0)
-                    self.delegate_id = None
+            if bernoulli(self.random, sigmoid(x)):
+                if self.delegate_ref is not None:
+                    self.model.release_delegation(self, revocation=True)
                 self.use_state = "abandoned"
                 self.last_abandonment_tick = self.model.tick
+                self.model.abandonments_cum += 1
             return
         if self.use_state == "abandoned":
             x = -3.00 + 1.20 * self.model.visible_success_stock + 0.80 * cfg["reactivation_campaign_strength"] + 0.65 * self.trust_core - 0.85 * self.model.visible_failure_stock
             if bernoulli(self.random, sigmoid(x)):
                 self.use_state = "registered_inactive"
                 self.trust_core = clamp(self.trust_core + 0.08)
+                self.model.reactivations_cum += 1
 
 
 class DelegateAgent(mesa.Agent):  # type: ignore[misc]
+    """Institutional / high-visibility delegate (the stress channel, not the baseline)."""
+
     def __init__(self, model: "BehavioralAdoptionModel", delegate_id: int):
         super().__init__(model)
         rng = self.random
@@ -390,7 +554,13 @@ class ProjectAgent(mesa.Agent):  # type: ignore[misc]
         self.outcome_state = "pending"
 
     def step(self) -> None:
-        self.funding_progress = clamp(self.funding_progress + 0.02 * self.model.active_user_share() * self.salience)
+        cfg = self.model.config
+        active = self.model.active_user_share()
+        # docs/101: "or do nothing — your allocation follows the public default
+        # rule". The non-active remainder still allocates through the default
+        # layer, at reduced routing efficiency.
+        allocated = active + (1.0 - active) * cfg["default_routing_efficiency"]
+        self.funding_progress = clamp(self.funding_progress + cfg["funding_rate"] * allocated * self.salience)
 
 
 class ExecutorAgent(mesa.Agent):  # type: ignore[misc]
@@ -405,10 +575,13 @@ class ExecutorAgent(mesa.Agent):  # type: ignore[misc]
         self.reputation_stake = clamp(rng.betavariate(2.0, 2.0))
         self.participating = False
 
-    def step(self) -> None:
+    def propensity(self) -> float:
         cfg = self.model.config
         x = -0.60 + 1.15 * cfg["executor_incentive_strength"] + 0.65 * self.reputation_stake + 0.40 * self.ability - 0.75 * self.cost_structure - 0.35 * self.liquidity_constraint
-        self.participating = bernoulli(self.random, sigmoid(x))
+        return sigmoid(x)
+
+    def step(self) -> None:
+        self.participating = self.model.role_market_step(self.participating, self.propensity(), self.random)
 
 
 class FiscalizerAgent(mesa.Agent):  # type: ignore[misc]
@@ -422,10 +595,13 @@ class FiscalizerAgent(mesa.Agent):  # type: ignore[misc]
         self.reputation_stake = clamp(rng.betavariate(2.0, 2.0))
         self.participating = False
 
-    def step(self) -> None:
+    def propensity(self) -> float:
         cfg = self.model.config
         x = -0.85 + 1.05 * cfg["fiscalizer_compensation"] + 0.70 * self.reputation_stake + 0.55 * self.competence + 0.45 * self.independence - 0.85 * cfg["review_cost"] - 0.40 * self.capture_risk
-        self.participating = bernoulli(self.random, sigmoid(x))
+        return sigmoid(x)
+
+    def step(self) -> None:
+        self.participating = self.model.role_market_step(self.participating, self.propensity(), self.random)
 
 
 class EvidenceProducerAgent(mesa.Agent):  # type: ignore[misc]
@@ -439,42 +615,55 @@ class EvidenceProducerAgent(mesa.Agent):  # type: ignore[misc]
         self.capture_risk = clamp(rng.betavariate(1.3, 4.5))
         self.participating = False
 
-    def step(self) -> None:
+    def propensity(self) -> float:
         cfg = self.model.config
         x = -0.80 + 1.05 * cfg["evidence_compensation"] + 0.55 * self.method_quality + 0.45 * self.independence + 0.35 * self.coverage - 0.85 * cfg["evidence_cost"] - 0.45 * self.capture_risk
-        self.participating = bernoulli(self.random, sigmoid(x))
+        return sigmoid(x)
+
+    def step(self) -> None:
+        self.participating = self.model.role_market_step(self.participating, self.propensity(), self.random)
 
 
 class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
     """Simulates adoption, delegation, trust, abandonment, and role-market supply."""
 
     def __init__(self, config: Dict[str, Any]):
-        self.config = config
-        self.seed = int(config.get("seed", 42))
-        rng = random.Random(self.seed)
+        self.config = _deep_update(DEFAULT_CONFIG, normalize_config(config))
+        self.seed = int(self.config.get("seed", 42))
         try:
-            super().__init__(rng=rng)
-        except TypeError:
-            super().__init__()
-            self.random = rng
-        else:
-            self.random = getattr(self, "random", rng)
+            super().__init__(rng=self.seed)  # Mesa 3.x: integer seed, not a Random object
+        except TypeError:  # pragma: no cover - older base-class signatures
+            try:
+                super().__init__(seed=self.seed)
+            except TypeError:
+                super().__init__()
+        # One seeded stream for everything, regardless of Mesa presence/version,
+        # so runs are byte-identical across environments.
+        self.random = random.Random(self.seed)
         self.tick = 0
         self.current_outage = 0.0
         self.current_controversy = 0.0
         self.current_recovery_event = 0.0
         self.visible_success_stock = 0.0
         self.visible_failure_stock = 0.0
+        self.revocations_cum = 0
+        self.switches_cum = 0
+        self.abandonments_cum = 0
+        self.reactivations_cum = 0
+        self.delegator_ticks_cum = 0
         self.history: List[Dict[str, float]] = []
 
-        self.citizens = [CitizenAgent(self, i) for i in range(int(config["population_size"]))]
-        self.delegates = [DelegateAgent(self, i) for i in range(int(config["delegate_count"]))]
-        self.projects = [ProjectAgent(self, i) for i in range(int(config["project_count"]))]
-        self.executors = [ExecutorAgent(self, i) for i in range(int(config["executor_count"]))]
-        self.fiscalizers = [FiscalizerAgent(self, i) for i in range(int(config["fiscalizer_count"]))]
-        self.evidence_producers = [EvidenceProducerAgent(self, i) for i in range(int(config["evidence_producer_count"]))]
+        cfg = self.config
+        self.citizens = [CitizenAgent(self, i) for i in range(int(cfg["population_size"]))]
+        self.delegates = [DelegateAgent(self, i) for i in range(int(cfg["institutional_delegate_count"]))]
+        self.projects = [ProjectAgent(self, i) for i in range(int(cfg["project_count"]))]
+        self.executors = [ExecutorAgent(self, i) for i in range(int(cfg["executor_count"]))]
+        self.fiscalizers = [FiscalizerAgent(self, i) for i in range(int(cfg["fiscalizer_count"]))]
+        self.evidence_producers = [EvidenceProducerAgent(self, i) for i in range(int(cfg["evidence_producer_count"]))]
         self.social_graph = self._build_social_graph()
         self.collect_metrics()
+
+    # ------------------------------------------------------------------ setup
 
     def _build_social_graph(self) -> Dict[int, List[int]]:
         n = len(self.citizens)
@@ -495,6 +684,50 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
                         graph[j].add(i)
         return {i: sorted(v) for i, v in graph.items()}
 
+    # ------------------------------------------------------------ delegation
+
+    def delegation_target(self, ref: Tuple[str, int]):
+        kind, idx = ref
+        return self.citizens[idx] if kind == "c" else self.delegates[idx]
+
+    def release_delegation(self, citizen: CitizenAgent, revocation: bool) -> None:
+        if citizen.delegate_ref is None:
+            return
+        target = self.delegation_target(citizen.delegate_ref)
+        target.delegated_weight = max(0.0, target.delegated_weight - 1.0)
+        citizen.delegate_ref = None
+        if revocation:
+            self.revocations_cum += 1
+
+    def _validate_delegations(self) -> None:
+        """Revoke delegations whose micro-delegate is no longer a valid target."""
+        for c in self.citizens:
+            if c.delegate_ref is None or c.delegate_ref[0] != "c":
+                continue
+            target = self.citizens[c.delegate_ref[1]]
+            if not target.can_receive_delegation():
+                self.release_delegation(c, revocation=True)
+                if c.use_state in {"delegated", "hybrid"}:
+                    c.choose_delegate()
+
+    def total_delegated_weight(self) -> float:
+        return sum(c.delegated_weight for c in self.citizens) + sum(d.delegated_weight for d in self.delegates)
+
+    # ------------------------------------------------------------ role market
+
+    def role_market_step(self, participating: bool, propensity: float, rng: random.Random) -> bool:
+        """Sticky recruitment/dropout instead of an i.i.d. weekly redraw."""
+        cfg = self.config
+        if participating:
+            if bernoulli(rng, cfg["role_exit_rate"]) and not bernoulli(rng, propensity):
+                return False
+            return True
+        if bernoulli(rng, cfg["role_entry_rate"]) and bernoulli(rng, propensity):
+            return True
+        return False
+
+    # ------------------------------------------------------------------- step
+
     def step(self) -> None:
         self.tick += 1
         self._platform_events()
@@ -504,6 +737,7 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
             c.registration_step()
         for c in self.citizens:
             c.activation_step()
+        self._validate_delegations()
         for d in self.delegates:
             d.step()
         for p in self.projects:
@@ -519,6 +753,7 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
             c.trust_step()
         for c in self.citizens:
             c.churn_step()
+        self.delegator_ticks_cum += sum(c.is_delegating for c in self.citizens)
         self.collect_metrics()
 
     def run(self, ticks: Optional[int] = None) -> None:
@@ -529,28 +764,39 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
         cfg = self.config
         self.current_outage = 1.0 if bernoulli(self.random, cfg["platform_outage_rate"]) else 0.0
         self.current_controversy = 1.0 if bernoulli(self.random, cfg["public_controversy_rate"]) else 0.0
-        self.current_recovery_event = 1.0 if bernoulli(self.random, cfg["trust_recovery_strength"]) else 0.0
+        self.current_recovery_event = 1.0 if bernoulli(self.random, cfg["trust_recovery_event_rate"]) else 0.0
         if bernoulli(self.random, cfg["visible_success_rate"]):
-            self.visible_success_stock = clamp(self.visible_success_stock + 0.10)
+            self.visible_success_stock = clamp(self.visible_success_stock + 0.08)
         if bernoulli(self.random, cfg["bad_outcome_rate"]):
-            self.visible_failure_stock = clamp(self.visible_failure_stock + 0.12)
-        self.visible_success_stock = clamp(self.visible_success_stock * 0.985)
-        self.visible_failure_stock = clamp(self.visible_failure_stock * 0.975)
+            self.visible_failure_stock = clamp(self.visible_failure_stock + 0.10)
+        self.visible_success_stock = clamp(self.visible_success_stock * 0.975)
+        self.visible_failure_stock = clamp(self.visible_failure_stock * 0.970)
 
     def _project_outcomes(self) -> None:
-        fiscalizer_depth = self.fiscalizer_supply_per_project()
-        evidence_depth = self.evidence_supply_per_project()
+        n_projects = max(1, len(self.projects))
+        verification_coverage = self.verification_coverage_rate()
+        evidence_coverage = self.evidence_coverage_rate()
         executor_rate = self.executor_participation_rate()
+        honest_share = self.honest_executor_share()
         for project in self.projects:
             if project.funding_progress < 0.75 or project.outcome_state != "pending":
                 continue
-            p_success = clamp(0.25 + 0.35 * project.latent_value + 0.20 * executor_rate + 0.15 * min(fiscalizer_depth, 1.0) + 0.15 * min(evidence_depth, 1.0))
+            p_success = clamp(
+                0.15
+                + 0.35 * project.latent_value
+                + 0.15 * executor_rate
+                + 0.10 * honest_share
+                + 0.125 * verification_coverage
+                + 0.125 * evidence_coverage
+            )
             if bernoulli(self.random, p_success):
                 project.outcome_state = "successful"
-                self.visible_success_stock = clamp(self.visible_success_stock + 0.05)
+                self.visible_success_stock = clamp(self.visible_success_stock + 2.4 / n_projects)
             else:
                 project.outcome_state = "failed"
-                self.visible_failure_stock = clamp(self.visible_failure_stock + 0.07)
+                self.visible_failure_stock = clamp(self.visible_failure_stock + 3.2 / n_projects)
+
+    # ---------------------------------------------------------------- metrics
 
     def collect_metrics(self) -> Dict[str, float]:
         metrics = self.metrics()
@@ -560,9 +806,35 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
     def final_metrics(self) -> Dict[str, float]:
         return self.history[-1]
 
-    def integration_outputs(self) -> Dict[str, float | str]:
+    def viability_flags(self) -> Dict[str, bool]:
         m = self.final_metrics()
-        return {"scenario_id": self.config["scenario_id"], **{k: m.get(k, 0.0) for k in INTEGRATION_KEYS}}
+        t = VIABILITY_THRESHOLDS
+        third = max(1, len(self.history) // 3)
+        trust_series = [h["mean_platform_trust"] for h in self.history]
+        trust_declining = (
+            len(trust_series) >= 3
+            and trust_series[-1] < trust_series[-third] < trust_series[-2 * third]
+        )
+        return {
+            "active_signal_low": m["active_user_share"] < t["min_active_user_share"],
+            "delegation_overconcentrated": (
+                m["delegation_concentration_hhi"] > t["max_delegation_hhi"]
+                or m["top_delegate_share"] > t["max_top_delegate_share"]
+            ),
+            "verification_undersupplied": m["verification_coverage_rate"] < t["min_verification_coverage"],
+            "evidence_undersupplied": m["evidence_coverage_rate"] < t["min_evidence_coverage"],
+            "executor_supply_low": m["executor_participation_rate"] < t["min_executor_participation"],
+            "abandonment_high": m["abandonment_share"] > t["max_abandonment_share"],
+            "trust_declining": trust_declining,
+        }
+
+    def integration_outputs(self) -> Dict[str, Any]:
+        m = self.final_metrics()
+        return {
+            "scenario_id": self.config["scenario_id"],
+            **{k: m.get(k, 0.0) for k in INTEGRATION_KEYS},
+            "viability": self.viability_flags(),
+        }
 
     def metrics(self) -> Dict[str, float]:
         total = len(self.citizens)
@@ -571,15 +843,22 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
         counts = Counter(c.use_state for c in self.citizens)
         reg_n = len(registered)
         aware_n = sum(c.aware for c in self.citizens)
+        delegators = sum(c.is_delegating for c in self.citizens)
         fs = self.fiscalizer_supply_per_project()
         es = self.evidence_supply_per_project()
+        vc = self.verification_coverage_rate()
+        ec = self.evidence_coverage_rate()
+        active_share = len(active) / total if total else 0.0
         return {
             "tick": float(self.tick),
             "awareness_rate": aware_n / total if total else 0.0,
             "registered_user_share": reg_n / total if total else 0.0,
             "registration_rate_among_aware": reg_n / aware_n if aware_n else 0.0,
+            "permanent_rejection_share": counts["rejected"] / total if total else 0.0,
             "activation_rate_registered": len(active) / reg_n if reg_n else 0.0,
-            "active_user_share": len(active) / total if total else 0.0,
+            "active_user_share": active_share,
+            # docs/101: the non-active remainder allocates via the public default rule.
+            "default_rule_share": 1.0 - active_share,
             "registered_inactive_share": counts["registered_inactive"] / reg_n if reg_n else 0.0,
             "aware_non_user_share": counts["aware_non_user"] / total if total else 0.0,
             "direct_participation_share": counts["direct_active"] / reg_n if reg_n else 0.0,
@@ -588,18 +867,29 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
             "hybrid_participation_share": counts["hybrid"] / reg_n if reg_n else 0.0,
             "full_delegation_share": counts["delegated"] / reg_n if reg_n else 0.0,
             "partial_delegation_share": counts["hybrid"] / reg_n if reg_n else 0.0,
-            "delegation_rate": sum(c.is_delegating for c in registered) / reg_n if reg_n else 0.0,
+            "delegation_rate": delegators / reg_n if reg_n else 0.0,
+            "delegator_share": delegators / total if total else 0.0,
+            "active_delegate_count": float(self.active_delegate_count()),
             "delegation_concentration_hhi": self.delegation_concentration_hhi(),
             "top_delegate_share": self.top_delegate_share(),
+            "micro_delegation_weight_share": self.micro_delegation_weight_share(),
+            "institutional_delegation_weight_share": 1.0 - self.micro_delegation_weight_share() if self.total_delegated_weight() else 0.0,
+            "delegate_platform_use_rate": self.delegate_platform_use_rate(),
+            "delegate_switching_rate": self.switches_cum / self.delegator_ticks_cum if self.delegator_ticks_cum else 0.0,
+            "delegation_revocation_rate": self.revocations_cum / self.delegator_ticks_cum if self.delegator_ticks_cum else 0.0,
             "abandonment_share": counts["abandoned"] / reg_n if reg_n else 0.0,
+            "reactivation_rate": self.reactivations_cum / self.abandonments_cum if self.abandonments_cum else 0.0,
             "mean_platform_trust": sum(c.trust_core for c in self.citizens) / total if total else 0.0,
+            "mean_trust_registered": sum(c.trust_core for c in registered) / reg_n if reg_n else 0.0,
             "executor_participation_rate": self.executor_participation_rate(),
             "honest_executor_share": self.honest_executor_share(),
             "opportunistic_executor_share": self.opportunistic_executor_share(),
             "fiscalizer_supply_per_project": fs,
             "evidence_supply_per_project": es,
-            "verification_market_depth": min(fs, es),
-            "thin_market_failure_rate": self.thin_market_failure_rate(),
+            "verification_coverage_rate": vc,
+            "evidence_coverage_rate": ec,
+            "verification_market_depth": min(vc, ec),
+            "thin_market_failure_rate": clamp(1.0 - min(vc, ec)),
             "negative_word_of_mouth_rate": self.negative_word_of_mouth_rate(),
             "recommendation_rate": self.recommendation_rate(),
             "visible_success_stock": self.visible_success_stock,
@@ -612,13 +902,36 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
     def average_delegate_reputation(self) -> float:
         return sum(d.reputation for d in self.delegates) / len(self.delegates) if self.delegates else 0.0
 
+    def _delegate_weights(self) -> List[float]:
+        weights = [c.delegated_weight for c in self.citizens if c.delegated_weight > 0]
+        weights.extend(d.delegated_weight for d in self.delegates if d.delegated_weight > 0)
+        return weights
+
+    def active_delegate_count(self) -> int:
+        return len(self._delegate_weights())
+
     def delegation_concentration_hhi(self) -> float:
-        total = sum(d.delegated_weight for d in self.delegates)
-        return sum((d.delegated_weight / total) ** 2 for d in self.delegates) if total else 0.0
+        weights = self._delegate_weights()
+        total = sum(weights)
+        return sum((w / total) ** 2 for w in weights) if total else 0.0
 
     def top_delegate_share(self) -> float:
-        total = sum(d.delegated_weight for d in self.delegates)
-        return max((d.delegated_weight for d in self.delegates), default=0.0) / total if total else 0.0
+        weights = self._delegate_weights()
+        total = sum(weights)
+        return max(weights) / total if total else 0.0
+
+    def micro_delegation_weight_share(self) -> float:
+        micro = sum(c.delegated_weight for c in self.citizens)
+        total = self.total_delegated_weight()
+        return micro / total if total else 0.0
+
+    def delegate_platform_use_rate(self) -> float:
+        """Weight-weighted share of delegated weight held by an actively-using
+        delegate. Institutional delegates are treated as active professionals."""
+        micro_active = sum(c.delegated_weight for c in self.citizens if c.delegated_weight > 0 and c.is_active)
+        institutional = sum(d.delegated_weight for d in self.delegates)
+        total = self.total_delegated_weight()
+        return (micro_active + institutional) / total if total else 0.0
 
     def executor_participation_rate(self) -> float:
         return sum(e.participating for e in self.executors) / len(self.executors) if self.executors else 0.0
@@ -637,8 +950,21 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
     def evidence_supply_per_project(self) -> float:
         return sum(e.participating for e in self.evidence_producers) / len(self.projects) if self.projects else 0.0
 
-    def thin_market_failure_rate(self) -> float:
-        return clamp((max(0.0, 1.0 - self.fiscalizer_supply_per_project()) + max(0.0, 1.0 - self.evidence_supply_per_project())) / 2.0)
+    def verification_coverage_rate(self) -> float:
+        cfg = self.config
+        required = len(self.projects) * cfg["verification_requirement_per_project"]
+        if required <= 0:
+            return 1.0
+        capacity = sum(f.participating for f in self.fiscalizers) * cfg["fiscalizer_capacity"]
+        return clamp(capacity / required)
+
+    def evidence_coverage_rate(self) -> float:
+        cfg = self.config
+        required = len(self.projects) * cfg["evidence_requirement_per_project"]
+        if required <= 0:
+            return 1.0
+        capacity = sum(e.participating for e in self.evidence_producers) * cfg["evidence_producer_capacity"]
+        return clamp(capacity / required)
 
     def negative_word_of_mouth_rate(self) -> float:
         registered = [c for c in self.citizens if c.registered]
@@ -669,9 +995,9 @@ def write_json(path: Path, payload: Dict[str, Any]) -> None:
 
 def run_scenario(config: Dict[str, Any], output_dir: str | Path) -> BehavioralAdoptionModel:
     model = BehavioralAdoptionModel(config)
-    model.run(int(config["ticks"]))
+    model.run(int(model.config["ticks"]))
     out = Path(output_dir)
     write_csv(out / "timeseries.csv", model.history)
-    write_json(out / "final_metrics.json", model.final_metrics())
+    write_json(out / "final_metrics.json", {**model.final_metrics(), "viability": model.viability_flags()})
     write_json(out / "integration_outputs.json", model.integration_outputs())
     return model

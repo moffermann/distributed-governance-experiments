@@ -6,7 +6,7 @@
 
 ## Status
 
-Executable MVP added.
+Executable MVP added, then audited and corrected against Core v0; see [`CORE_V0_CONFORMANCE_AUDIT.md`](CORE_V0_CONFORMANCE_AUDIT.md) for the certification and [`RUN_2026_07_06_POST_AUDIT_RESULTS.md`](RUN_2026_07_06_POST_AUDIT_RESULTS.md) for current results.
 
 This folder defines a new satellite experiment focused on the behavioral unknowns that were previously imposed as parameters in the Core v0 architecture experiments.
 
@@ -138,10 +138,14 @@ Research design:
 - [`MODEL_DESIGN.md`](MODEL_DESIGN.md) — proposed ABM structure, state variables, scheduling logic, and connection points to the architecture experiment.
 - [`ROADMAP.md`](ROADMAP.md) — staged plan from documentation to executable Mesa/Python simulation and later calibration.
 - [`IMPLEMENTATION_NOTES.md`](IMPLEMENTATION_NOTES.md) — current implementation boundary, run instructions, and next technical steps.
+- [`CORE_V0_CONFORMANCE_AUDIT.md`](CORE_V0_CONFORMANCE_AUDIT.md) — audit of the implementation against the Core v0 corpus: findings, corrections, certification, and declared gaps.
+- [`RUN_2026_07_06_MESA_RESULTS.md`](RUN_2026_07_06_MESA_RESULTS.md) — first (pre-audit) Mesa run, kept as a dated record.
+- [`RUN_2026_07_06_POST_AUDIT_RESULTS.md`](RUN_2026_07_06_POST_AUDIT_RESULTS.md) — post-audit 10-seed sweep results and interpretation.
 
 Executable prototype:
 
 - [`run_experiment.py`](run_experiment.py) — convenience command-line runner.
+- [`run_sweep.py`](run_sweep.py) — multi-seed sweep across all scenarios with mean/min/max summaries and viability-flag frequencies.
 - [`src/behavioral_adoption_abm/core.py`](src/behavioral_adoption_abm/core.py) — MVP model, agents, metrics, scenario loading, and result writers.
 - [`src/behavioral_adoption_abm/run.py`](src/behavioral_adoption_abm/run.py) — package CLI entry point.
 - [`scenarios/`](scenarios/) — baseline and stress scenarios.
