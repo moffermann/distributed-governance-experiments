@@ -140,6 +140,10 @@ core_v0_tutored_central_planning
 core_v0_tutored_distributed_planning
 ```
 
+## Population channels (engine v0.4)
+
+Since the 2026-07-06 engine audit ([`ENGINE_AUDIT_2026_07_06.md`](ENGINE_AUDIT_2026_07_06.md)), the population block's five-way split is fully implemented for architectures with a default layer: attentive citizens (informed sampled choice), salience followers (visibility-weighted choice), profile-driven citizens (noisier value proxy with near-completion preference), delegating citizens (represented weight allocated in small informed blocks — the trusted-microdelegation proxy, `population.delegationBlockSize`, default 3), and passive citizens (default rule over the planning vector). Architectures without a default layer fold profile and delegator shares into the passive block, per `AGENT_DECISION_MODEL.md`.
+
 ## Current known simplifications
 
 The v0 executable does not yet implement:

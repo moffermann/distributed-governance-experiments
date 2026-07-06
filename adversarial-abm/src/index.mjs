@@ -9,6 +9,17 @@
 // - weak participatory variants plus Core v0 tutored-central and tutored-distributed variants;
 // - result table for actual, verified, and reported value; leakage; visibility gap;
 //   unspent budget; concentration; and effective planning-signal correlations.
+//
+// v0.4 (2026-07-06 engine audit — see ENGINE_AUDIT_2026_07_06.md):
+// - attentive perception is computed once per sampled project, then ranked
+//   (the previous comparator drew fresh noise on every comparison — a
+//   non-transitive sort that distorted informationNoise semantics);
+// - profileShare and delegatorShare are implemented as the distinct channels
+//   AGENT_DECISION_MODEL.md specifies, active where the architecture provides
+//   a default layer; previously both were silently folded into the passive block;
+// - attentive samples are drawn without replacement;
+// - unabsorbed active-citizen allocation follows the public default rule under
+//   passiveAllocationMode "planning" (docs/101), instead of evaporating.
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -299,10 +310,23 @@ const contribute = (project, amount, arch) => {
 };
 
 const fundingProgress = (p) => Math.max(0, p.funded / Math.max(1, p.budgetTarget));
-const visibilityScore = (p, sim, arch, scenario) => {
+const visibilityScore = (p, arch, scenario) => {
   const attack = scenario.attacks.salienceCascade ?? {};
   const socialProof = attack.enabled ? attack.socialProofWeight : 1.0;
   return p.salience * (1 + socialProof * arch.socialProofDamping * fundingProgress(p));
+};
+
+// Sample without replacement (partial Fisher-Yates over an index array).
+const drawSample = (rng, projects, k) => {
+  const idx = projects.map((_, i) => i);
+  const n = Math.min(k, idx.length);
+  for (let i = 0; i < n; i++) {
+    const j = i + Math.floor(rng() * (idx.length - i));
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  const out = [];
+  for (let i = 0; i < n; i++) out.push(projects[idx[i]]);
+  return out;
 };
 
 const allocateCentral = (sim, arch, scenario) => {
@@ -316,38 +340,68 @@ const allocateCentral = (sim, arch, scenario) => {
   }
 };
 
-const allocateAttentive = (rng, sim, arch, scenario, count) => {
+// Informed choice shared by attentive citizens and delegates: perceive each
+// sampled project ONCE with noise, rank, then contribute down the ranking.
+const allocateInformed = (rng, sim, arch, scenario, count, { noiseScale = 1.0, nearCompletionBonus = 0.0, unitsPerActor = 1 } = {}) => {
   const sampleSize = scenario.population.attentiveSampleSize ?? 8;
+  let leftover = 0;
   for (let i = 0; i < count; i++) {
     const projects = openProjects(sim);
-    if (!projects.length) return;
-    const sample = [];
-    for (let k = 0; k < Math.min(sampleSize, projects.length); k++) sample.push(projects[Math.floor(rng() * projects.length)]);
-    sample.sort((a, b) => {
-      const ua = a.latentValue + normal(rng, 0, arch.informationNoise) - 0.15 * a.verificationDifficulty;
-      const ub = b.latentValue + normal(rng, 0, arch.informationNoise) - 0.15 * b.verificationDifficulty;
-      return ub - ua;
-    });
-    let amount = 1;
-    for (const p of sample) {
+    if (!projects.length) return leftover + (count - i) * unitsPerActor;
+    const sample = drawSample(rng, projects, sampleSize);
+    const scored = sample.map((p) => ({
+      p,
+      utility: p.latentValue
+        + normal(rng, 0, arch.informationNoise * noiseScale)
+        + nearCompletionBonus * fundingProgress(p)
+        - 0.15 * p.verificationDifficulty,
+    })).sort((a, b) => b.utility - a.utility);
+    let amount = unitsPerActor;
+    for (const { p } of scored) {
       amount = contribute(p, amount, arch);
       if (amount <= 0) break;
     }
+    leftover += amount;
   }
+  return leftover;
+};
+
+const allocateAttentive = (rng, sim, arch, scenario, count) =>
+  allocateInformed(rng, sim, arch, scenario, count);
+
+// Profile-driven citizens (AGENT_DECISION_MODEL, "Profile-driven citizen"):
+// configured preferences act as a noisier value proxy with a near-completion
+// preference; no personal inspection.
+const allocateProfile = (rng, sim, arch, scenario, count) =>
+  allocateInformed(rng, sim, arch, scenario, count, { noiseScale: 1.5, nearCompletionBonus: 0.20 });
+
+// Delegating citizens (AGENT_DECISION_MODEL, "Delegating citizen"): delegates
+// allocate represented weight in blocks with attentive-grade information — the
+// trusted-microdelegation proxy (many small delegates, informed review).
+const allocateDelegated = (rng, sim, arch, scenario, count) => {
+  const blockSize = Math.max(1, Math.round(scenario.population.delegationBlockSize ?? 3));
+  const blocks = Math.floor(count / blockSize);
+  const remainder = count - blocks * blockSize;
+  let leftover = allocateInformed(rng, sim, arch, scenario, blocks, { unitsPerActor: blockSize });
+  if (remainder > 0) leftover += allocateInformed(rng, sim, arch, scenario, 1, { unitsPerActor: remainder });
+  return leftover;
 };
 
 const allocateSalience = (rng, sim, arch, scenario, count) => {
   const slots = scenario.attacks.salienceCascade?.visibleSlots ?? 6;
+  let leftover = 0;
   for (let i = 0; i < count; i++) {
     let amount = 1;
     const projects = openProjects(sim);
-    if (!projects.length) return;
-    const top = [...projects].sort((a, b) => visibilityScore(b, sim, arch, scenario) - visibilityScore(a, sim, arch, scenario)).slice(0, slots);
+    if (!projects.length) return leftover + (count - i);
+    const top = [...projects].sort((a, b) => visibilityScore(b, arch, scenario) - visibilityScore(a, arch, scenario)).slice(0, slots);
     for (let attempts = 0; attempts < Math.min(4, top.length) && amount > 0; attempts++) {
-      const picked = weightedPick(rng, top, (p) => visibilityScore(p, sim, arch, scenario));
+      const picked = weightedPick(rng, top, (p) => visibilityScore(p, arch, scenario));
       amount = contribute(picked, amount, arch);
     }
+    leftover += amount;
   }
+  return leftover;
 };
 
 const allocateDefault = (sim, arch, scenario, count) => {
@@ -364,14 +418,30 @@ const allocateDefault = (sim, arch, scenario, count) => {
 };
 
 const allocateCitizen = (rng, sim, arch, scenario) => {
-  const N = scenario.population.citizens;
-  const attentive = Math.round(N * scenario.population.attentiveShare);
-  const salience = Math.round(N * scenario.population.salienceShare);
-  const remaining = N - attentive - salience;
-  allocateAttentive(rng, sim, arch, scenario, attentive);
-  allocateSalience(rng, sim, arch, scenario, salience);
-  if (arch.passiveAllocationMode === "planning") allocateDefault(sim, arch, scenario, remaining);
-  else if (arch.passiveAllocationMode === "salience") allocateSalience(rng, sim, arch, scenario, remaining);
+  const pop = scenario.population;
+  const N = pop.citizens;
+  const attentive = Math.round(N * pop.attentiveShare);
+  const salience = Math.round(N * pop.salienceShare);
+  // Profile and delegated channels exist only where the platform provides a
+  // default layer (AGENT_DECISION_MODEL, passive citizen: "if
+  // architecture.hasDefaultLayer"); elsewhere those shares stay in the passive block.
+  const hasDefaultLayer = arch.passiveAllocationMode === "planning";
+  const profile = hasDefaultLayer ? Math.round(N * (pop.profileShare ?? 0)) : 0;
+  const delegated = hasDefaultLayer ? Math.round(N * (pop.delegatorShare ?? 0)) : 0;
+  const remaining = N - attentive - salience - profile - delegated;
+  let leftover = 0;
+  leftover += allocateAttentive(rng, sim, arch, scenario, attentive);
+  leftover += allocateSalience(rng, sim, arch, scenario, salience);
+  if (profile > 0) leftover += allocateProfile(rng, sim, arch, scenario, profile);
+  if (delegated > 0) leftover += allocateDelegated(rng, sim, arch, scenario, delegated);
+  if (arch.passiveAllocationMode === "planning") {
+    // docs/101: unexercised allocation follows the public default rule.
+    allocateDefault(sim, arch, scenario, remaining + leftover);
+  } else if (arch.passiveAllocationMode === "salience") {
+    allocateSalience(rng, sim, arch, scenario, remaining);
+  }
+  // passiveAllocationMode "none": remaining and leftover stay unallocated — the
+  // low-absorption failure the weak participatory variant exists to show.
 };
 
 const detectionProbability = (project, arch, scenario) => {

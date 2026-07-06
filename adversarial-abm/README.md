@@ -91,6 +91,7 @@ Research framing:
 - [`METRICS_AND_RESULTS.md`](METRICS_AND_RESULTS.md) — outcome metrics and interpretation discipline.
 - [`RESULT_INTERPRETATION_NOTES.md`](RESULT_INTERPRETATION_NOTES.md) — how to distinguish budget absorption, actual value, verified value, reported value, leakage, and visibility gaps.
 - [`ROADMAP.md`](ROADMAP.md) — staged build plan from design to replication package.
+- [`ENGINE_AUDIT_2026_07_06.md`](ENGINE_AUDIT_2026_07_06.md) — engine v0.4 audit: comparator-noise bug, dead population channels implemented, Core v0 conformance checklist, pre/post baseline.
 
 Technical design:
 
