@@ -14,6 +14,7 @@ respondent_source
 model_or_sample_info
 archetype_id
 context_understanding
+platform_behavior
 citizen_behavior
 delegate_behavior
 friction
@@ -47,6 +48,26 @@ Responses with failed context checks should be flagged.
 
 They should not always be discarded, because misunderstanding is itself useful for human usability analysis.
 
+## `platform_behavior`
+
+All probability fields use `[0, 1]`.
+
+Required fields:
+
+```text
+platform_trial_probability
+monthly_platform_use_probability
+notification_driven_use_probability
+```
+
+Interpretation:
+
+- `platform_trial_probability` estimates whether the person would open or try the app at least once.
+- `monthly_platform_use_probability` estimates basic active use, even if the person does not directly participate.
+- `notification_driven_use_probability` estimates whether reminders can increase active use.
+
+These are upstream of direct participation and delegation.
+
 ## `citizen_behavior`
 
 All probability fields use `[0, 1]`.
@@ -54,7 +75,8 @@ All probability fields use `[0, 1]`.
 Required fields:
 
 ```text
-direct_participation_probability
+direct_review_probability
+direct_planning_participation_probability
 delegation_probability
 preferred_delegate_type_distribution
 revocation_ease_effect
@@ -136,6 +158,7 @@ notes: string
 3. Responses must pass the context checks or be flagged.
 4. Free-text explanations must be preserved for qualitative analysis.
 5. LLM raw responses must be stored before normalization.
+6. Platform-use fields must be preserved separately from direct participation fields.
 
 ## Design rule
 
