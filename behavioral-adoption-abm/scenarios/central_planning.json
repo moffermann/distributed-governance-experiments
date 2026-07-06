@@ -1,0 +1,18 @@
+{
+  "scenario_id": "central_planning",
+  "description": "End-to-end comparator: identical behavioral population to baseline, but the default layer follows a bandwidth-limited, salience-guided central planning vector instead of the distributed one.",
+  "seed": 42,
+  "ticks": 104,
+  "population_size": 1000,
+  "initial_awareness": 0.08,
+  "campaign_intensity": 0.025,
+  "onboarding_friction": 0.38,
+  "interface_complexity": 0.35,
+  "ai_tutor_quality": 0.45,
+  "public_legitimacy": 0.45,
+  "planning_mode": "central",
+  "project_count": 80,
+  "executor_count": 60,
+  "fiscalizer_count": 35,
+  "evidence_producer_count": 45
+}

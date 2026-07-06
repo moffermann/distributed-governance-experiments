@@ -109,6 +109,19 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "role_exit_rate": 0.15,
     "funding_rate": 0.02,
     "default_routing_efficiency": 0.70,
+    "planning_mode": "distributed",
+    "planning_target_count": 16,
+    "planning_round_interval": 4,
+    "planning_attendance_scale": 1.0,
+    "attentive_noise_base": 0.35,
+    "attentive_salience_bias": 0.35,
+    "micro_delegate_noise": 0.30,
+    "micro_delegate_salience_bias": 0.20,
+    "institutional_delegate_noise": 0.25,
+    "salience_truth_mix": 0.25,
+    "stale_signal_retention": 0.50,
+    "central_planner_bandwidth_fraction": 0.30,
+    "central_planner_noise": 0.25,
     "social_graph_degree": 8,
     "random_social_tie_probability": 0.015,
     "participation_temperature": 0.75,
@@ -152,6 +165,21 @@ INTEGRATION_KEYS = [
     "thin_market_failure_rate",
     "negative_word_of_mouth_rate",
     "recommendation_rate",
+    "attentive_share",
+    "attentive_share_mean",
+    "planning_representation_share",
+    "planning_signal_coverage",
+    "delegate_planning_coverage",
+    "distributed_planning_correlation",
+    "central_planning_correlation",
+    "followed_planning_correlation",
+    "value_delivered_share",
+    "top_10_delegate_share",
+    "sustained_active_user_share",
+    "mean_awareness_to_registration_delay_ticks",
+    "trust_p10",
+    "trust_p50",
+    "trust_p90",
 ]
 
 # Minimum-viability thresholds (METRICS.md, "Minimum viability thresholds").
@@ -180,6 +208,30 @@ def sigmoid(x: float) -> float:
 
 def bernoulli(rng: random.Random, p: float) -> bool:
     return rng.random() < clamp(p)
+
+
+def pearson(xs: List[float], ys: List[float]) -> float:
+    n = len(xs)
+    if n < 2 or n != len(ys):
+        return 0.0
+    mx = sum(xs) / n
+    my = sum(ys) / n
+    cov = sum((x - mx) * (y - my) for x, y in zip(xs, ys))
+    vx = sum((x - mx) ** 2 for x in xs)
+    vy = sum((y - my) ** 2 for y in ys)
+    if vx <= 0 or vy <= 0:
+        return 0.0
+    return cov / math.sqrt(vx * vy)
+
+
+def quantile(sorted_values: List[float], q: float) -> float:
+    if not sorted_values:
+        return 0.0
+    idx = q * (len(sorted_values) - 1)
+    lo = int(math.floor(idx))
+    hi = min(lo + 1, len(sorted_values) - 1)
+    frac = idx - lo
+    return sorted_values[lo] * (1 - frac) + sorted_values[hi] * frac
 
 
 def softmax_choice(rng: random.Random, scores: Mapping[str, float], temperature: float) -> str:
@@ -269,6 +321,7 @@ class CitizenAgent(mesa.Agent):  # type: ignore[misc]
             rng, cfg["micro_delegate_willingness"] * (0.5 + self.civic_interest)
         )
         self.delegated_weight = 0.0  # weight received from other citizens
+        self.consecutive_active_ticks = 0
 
     @property
     def is_active(self) -> bool:
@@ -512,6 +565,15 @@ class CitizenAgent(mesa.Agent):  # type: ignore[misc]
                 self.use_state = "abandoned"
                 self.last_abandonment_tick = self.model.tick
                 self.model.abandonments_cum += 1
+                contributors = {
+                    "failure_exposure": 1.25 * self.model.visible_failure_stock,
+                    "controversy_or_outage": 1.00 * self.model.current_controversy + 0.85 * self.model.current_outage,
+                    "friction": 0.70 * cfg["interface_complexity"] * (1.0 - self.friction_tolerance),
+                    "low_trust": 1.90 * (1.0 - self.trust_core),
+                    "negative_social_signal": 0.45 * s["abandoned"],
+                }
+                reason = max(contributors, key=lambda k: contributors[k])
+                self.model.abandonment_reasons[reason] = self.model.abandonment_reasons.get(reason, 0) + 1
             return
         if self.use_state == "abandoned":
             x = -3.00 + 1.20 * self.model.visible_success_stock + 0.80 * cfg["reactivation_campaign_strength"] + 0.65 * self.trust_core - 0.85 * self.model.visible_failure_stock
@@ -550,17 +612,11 @@ class ProjectAgent(mesa.Agent):  # type: ignore[misc]
         self.project_id = project_id
         self.latent_value = clamp(rng.betavariate(2.0, 2.0))
         self.salience = clamp(rng.betavariate(1.5, 2.5))
+        self.category = rng.randrange(int(model.config["planning_target_count"]))
+        # Shared public perception of quality: what active citizens route on.
+        self.perceived_quality = clamp(self.latent_value + rng.gauss(0.0, 0.20))
         self.funding_progress = 0.0
         self.outcome_state = "pending"
-
-    def step(self) -> None:
-        cfg = self.model.config
-        active = self.model.active_user_share()
-        # docs/101: "or do nothing — your allocation follows the public default
-        # rule". The non-active remainder still allocates through the default
-        # layer, at reduced routing efficiency.
-        allocated = active + (1.0 - active) * cfg["default_routing_efficiency"]
-        self.funding_progress = clamp(self.funding_progress + cfg["funding_rate"] * allocated * self.salience)
 
 
 class ExecutorAgent(mesa.Agent):  # type: ignore[misc]
@@ -651,17 +707,45 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
         self.abandonments_cum = 0
         self.reactivations_cum = 0
         self.delegator_ticks_cum = 0
+        self.abandonment_reasons: Dict[str, int] = {}
         self.history: List[Dict[str, float]] = []
 
         cfg = self.config
+        # Planning world: latent public needs and their (only partially truthful)
+        # visibility. Salience is what herding and planner attention see.
+        j_count = int(cfg["planning_target_count"])
+        raw_need = [self.random.gammavariate(2.0, 1.0) for _ in range(j_count)]
+        need_total = sum(raw_need)
+        self.true_need = [v / need_total for v in raw_need]
+        raw_vis = [self.random.gammavariate(2.0, 1.0) for _ in range(j_count)]
+        vis_total = sum(raw_vis)
+        truth_mix = cfg["salience_truth_mix"]  # visibility is mostly not need
+        mixed = [truth_mix * self.true_need[j] + (1.0 - truth_mix) * raw_vis[j] / vis_total for j in range(j_count)]
+        mix_total = sum(mixed)
+        self.target_salience = [v / mix_total for v in mixed]
+        uniform = 1.0 / j_count
+        self.distributed_vector = [uniform] * j_count
+        self.central_vector = [uniform] * j_count
+        self.attentive_share_last = 0.0
+        self.attentive_shares: List[float] = []
+        self.planning_representation_last = 0.0
+        self.planning_coverage_last = 0.0
+        self.delegate_coverage_last = 0.0
+        self.delivered_value_cum = 0.0
+
         self.citizens = [CitizenAgent(self, i) for i in range(int(cfg["population_size"]))]
         self.delegates = [DelegateAgent(self, i) for i in range(int(cfg["institutional_delegate_count"]))]
         self.projects = [ProjectAgent(self, i) for i in range(int(cfg["project_count"]))]
         self.executors = [ExecutorAgent(self, i) for i in range(int(cfg["executor_count"]))]
         self.fiscalizers = [FiscalizerAgent(self, i) for i in range(int(cfg["fiscalizer_count"]))]
         self.evidence_producers = [EvidenceProducerAgent(self, i) for i in range(int(cfg["evidence_producer_count"]))]
+        # need_weight scales value so the portfolio-average category is worth 1.
+        self.total_potential_value = sum(p.latent_value * self.need_weight(p.category) for p in self.projects)
         self.social_graph = self._build_social_graph()
         self.collect_metrics()
+
+    def need_weight(self, category: int) -> float:
+        return self.true_need[category] * len(self.true_need)
 
     # ------------------------------------------------------------------ setup
 
@@ -740,8 +824,9 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
         self._validate_delegations()
         for d in self.delegates:
             d.step()
-        for p in self.projects:
-            p.step()
+        if self.tick % int(self.config["planning_round_interval"]) == 0:
+            self._planning_round()
+        self._fund_projects()
         for e in self.executors:
             e.step()
         for f in self.fiscalizers:
@@ -753,12 +838,134 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
             c.trust_step()
         for c in self.citizens:
             c.churn_step()
+        for c in self.citizens:
+            c.consecutive_active_ticks = c.consecutive_active_ticks + 1 if c.is_active else 0
         self.delegator_ticks_cum += sum(c.is_delegating for c in self.citizens)
         self.collect_metrics()
 
     def run(self, ticks: Optional[int] = None) -> None:
         for _ in range(int(ticks if ticks is not None else self.config["ticks"])):
             self.step()
+
+    # ------------------------------------------------------------- planning
+
+    def _planning_round(self) -> None:
+        """Construct the distributed and central planning vectors for this cycle.
+
+        Attentive citizens and active delegates contribute noisy, partial-coverage
+        signals about latent public needs (CORE_V0_PLANNING_CHANNEL_MODEL.md);
+        allocation profiles and passive default routing contribute nothing.
+        The central comparator is a bandwidth-limited, salience-guided planner.
+        """
+        cfg = self.config
+        j_count = len(self.true_need)
+        sums = [0.0] * j_count
+        weights = [0.0] * j_count
+        attentive = 0
+        represented_weight = 0.0
+        attendance = {"direct_active": 0.55, "hybrid": 0.40, "profile_driven": 0.15}
+        for c in self.citizens:
+            base = attendance.get(c.use_state)
+            if base is None:
+                continue
+            p_attend = base * (0.5 + 0.5 * c.civic_interest) * cfg["planning_attendance_scale"]
+            if not bernoulli(self.random, p_attend):
+                continue
+            attentive += 1
+            represented_weight += 1.0
+            k = max(1, round(0.5 * c.attention_budget * j_count))
+            noise_sd = cfg["attentive_noise_base"] * (1.0 - 0.4 * c.civic_interest)
+            bias = cfg["attentive_salience_bias"]
+            # Coverage bias: attention clusters on visible needs, so invisible
+            # ones can stay unreviewed (the sibling experiment's
+            # attentiveCoverageBias / attentiveSalienceBias distortion family).
+            sample_weights = [0.4 + 0.6 * s * j_count for s in self.target_salience]
+            for j in set(self.random.choices(range(j_count), weights=sample_weights, k=k)):
+                perceived = (1.0 - bias) * self.true_need[j] + bias * self.target_salience[j]
+                sums[j] += max(0.0, perceived * (1.0 + self.random.gauss(0.0, noise_sd)))
+                weights[j] += 1.0
+        # Delegated planning signals: delegates carry their delegators' weight,
+        # gated by their own platform activity and partial planning coverage.
+        coverage_num = 0.0
+        coverage_den = 0.0
+        for c in self.citizens:
+            if c.delegated_weight <= 0 or not c.is_active:
+                continue
+            frac = 0.30 + 0.45 * c.attention_budget
+            coverage_num += frac * c.delegated_weight
+            coverage_den += c.delegated_weight
+            represented_weight += c.delegated_weight
+            k = max(1, round(frac * j_count))
+            noise_sd = cfg["micro_delegate_noise"] * (1.0 - 0.3 * c.civic_interest)
+            bias = cfg["micro_delegate_salience_bias"]  # they know their circle's real needs better
+            for j in self.random.sample(range(j_count), k):
+                perceived = (1.0 - bias) * self.true_need[j] + bias * self.target_salience[j]
+                sums[j] += c.delegated_weight * max(0.0, perceived * (1.0 + self.random.gauss(0.0, noise_sd)))
+                weights[j] += c.delegated_weight
+        for d in self.delegates:
+            if d.delegated_weight <= 0:
+                continue
+            frac = 0.70  # active professionals, broad but politically packaged review
+            coverage_num += frac * d.delegated_weight
+            coverage_den += d.delegated_weight
+            represented_weight += d.delegated_weight
+            k = max(1, round(frac * j_count))
+            for j in self.random.sample(range(j_count), k):
+                packaged = 0.8 * self.true_need[j] + 0.2 * self.target_salience[j]
+                sums[j] += d.delegated_weight * max(0.0, packaged * (1.0 + self.random.gauss(0.0, cfg["institutional_delegate_noise"])))
+                weights[j] += d.delegated_weight
+        uniform = 1.0 / j_count
+        retention = cfg["stale_signal_retention"]
+        new_vector = [
+            sums[j] / weights[j] if weights[j] > 0
+            else retention * self.distributed_vector[j] + (1.0 - retention) * uniform
+            for j in range(j_count)
+        ]
+        total = sum(new_vector)
+        self.distributed_vector = [v / total for v in new_vector] if total > 0 else [uniform] * j_count
+        # Central comparator: reviews the most salient targets with bounded
+        # bandwidth; unreviewed targets default to visibility itself.
+        k_central = max(1, round(cfg["central_planner_bandwidth_fraction"] * j_count))
+        by_salience = sorted(range(j_count), key=lambda j: self.target_salience[j], reverse=True)
+        reviewed = set(by_salience[:k_central])
+        central = [
+            max(0.0, self.true_need[j] * (1.0 + self.random.gauss(0.0, cfg["central_planner_noise"])))
+            if j in reviewed else self.target_salience[j]
+            for j in range(j_count)
+        ]
+        total_c = sum(central)
+        self.central_vector = [v / total_c for v in central] if total_c > 0 else [uniform] * j_count
+
+        population = len(self.citizens)
+        self.attentive_share_last = attentive / population if population else 0.0
+        self.attentive_shares.append(self.attentive_share_last)
+        self.planning_representation_last = represented_weight / population if population else 0.0
+        self.planning_coverage_last = sum(1 for w in weights if w > 0) / j_count
+        self.delegate_coverage_last = coverage_num / coverage_den if coverage_den else 0.0
+
+    def followed_vector(self) -> List[float]:
+        return self.central_vector if self.config["planning_mode"] == "central" else self.distributed_vector
+
+    def _fund_projects(self) -> None:
+        cfg = self.config
+        pending = [p for p in self.projects if p.outcome_state == "pending"]
+        if not pending:
+            return
+        vector = self.followed_vector()
+        category_counts = Counter(p.category for p in pending)
+        # Active citizens route on visibility and perceived quality; the
+        # non-active remainder allocates through the public default rule,
+        # which tracks the published planning priorities (docs/101).
+        active = self.active_user_share()
+        active_raw = [0.5 * p.salience + 0.5 * p.perceived_quality for p in pending]
+        default_raw = [vector[p.category] / category_counts[p.category] for p in pending]
+        mean_a = sum(active_raw) / len(active_raw)
+        mean_d = sum(default_raw) / len(default_raw)
+        for p, a_raw, d_raw in zip(pending, active_raw, default_raw):
+            a_hat = a_raw / mean_a if mean_a > 0 else 1.0
+            d_hat = d_raw / mean_d if mean_d > 0 else 1.0
+            flow = active * a_hat + (1.0 - active) * cfg["default_routing_efficiency"] * d_hat
+            p.funding_progress = clamp(p.funding_progress + cfg["funding_rate"] * 0.4 * flow)
 
     def _platform_events(self) -> None:
         cfg = self.config
@@ -791,6 +998,7 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
             )
             if bernoulli(self.random, p_success):
                 project.outcome_state = "successful"
+                self.delivered_value_cum += project.latent_value * self.need_weight(project.category)
                 self.visible_success_stock = clamp(self.visible_success_stock + 2.4 / n_projects)
             else:
                 project.outcome_state = "failed"
@@ -826,6 +1034,8 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
             "executor_supply_low": m["executor_participation_rate"] < t["min_executor_participation"],
             "abandonment_high": m["abandonment_share"] > t["max_abandonment_share"],
             "trust_declining": trust_declining,
+            # The behavioral population failed to out-inform the bandwidth-limited planner.
+            "distributed_planning_weak": m["distributed_planning_correlation"] < m["central_planning_correlation"],
         }
 
     def integration_outputs(self) -> Dict[str, Any]:
@@ -894,6 +1104,21 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
             "recommendation_rate": self.recommendation_rate(),
             "visible_success_stock": self.visible_success_stock,
             "visible_failure_stock": self.visible_failure_stock,
+            "attentive_share": self.attentive_share_last,
+            "attentive_share_mean": sum(self.attentive_shares) / len(self.attentive_shares) if self.attentive_shares else 0.0,
+            "planning_representation_share": self.planning_representation_last,
+            "planning_signal_coverage": self.planning_coverage_last,
+            "delegate_planning_coverage": self.delegate_coverage_last,
+            "distributed_planning_correlation": pearson(self.distributed_vector, self.true_need),
+            "central_planning_correlation": pearson(self.central_vector, self.true_need),
+            "followed_planning_correlation": pearson(self.followed_vector(), self.true_need),
+            "value_delivered_share": self.delivered_value_cum / self.total_potential_value if self.total_potential_value else 0.0,
+            "top_10_delegate_share": self.top_10_delegate_share(),
+            "sustained_active_user_share": sum(c.consecutive_active_ticks >= 12 for c in self.citizens) / total if total else 0.0,
+            "mean_awareness_to_registration_delay_ticks": self.mean_awareness_to_registration_delay(),
+            "trust_p10": quantile(sorted(c.trust_core for c in self.citizens), 0.10),
+            "trust_p50": quantile(sorted(c.trust_core for c in self.citizens), 0.50),
+            "trust_p90": quantile(sorted(c.trust_core for c in self.citizens), 0.90),
         }
 
     def active_user_share(self) -> float:
@@ -919,6 +1144,25 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
         weights = self._delegate_weights()
         total = sum(weights)
         return max(weights) / total if total else 0.0
+
+    def top_10_delegate_share(self) -> float:
+        weights = sorted(self._delegate_weights(), reverse=True)
+        total = sum(weights)
+        return sum(weights[:10]) / total if total else 0.0
+
+    def mean_awareness_to_registration_delay(self) -> float:
+        delays = [
+            c.first_registration_tick - c.first_awareness_tick
+            for c in self.citizens
+            if c.first_registration_tick is not None and c.first_awareness_tick is not None
+        ]
+        return sum(delays) / len(delays) if delays else 0.0
+
+    def trust_by_state(self) -> Dict[str, float]:
+        groups: Dict[str, List[float]] = {}
+        for c in self.citizens:
+            groups.setdefault(c.use_state, []).append(c.trust_core)
+        return {state: sum(vals) / len(vals) for state, vals in sorted(groups.items())}
 
     def micro_delegation_weight_share(self) -> float:
         micro = sum(c.delegated_weight for c in self.citizens)
@@ -998,6 +1242,18 @@ def run_scenario(config: Dict[str, Any], output_dir: str | Path) -> BehavioralAd
     model.run(int(model.config["ticks"]))
     out = Path(output_dir)
     write_csv(out / "timeseries.csv", model.history)
-    write_json(out / "final_metrics.json", {**model.final_metrics(), "viability": model.viability_flags()})
+    total_abandonments = sum(model.abandonment_reasons.values())
+    write_json(
+        out / "final_metrics.json",
+        {
+            **model.final_metrics(),
+            "viability": model.viability_flags(),
+            "trust_by_state": model.trust_by_state(),
+            "abandonment_reason_distribution": {
+                reason: count / total_abandonments for reason, count in sorted(model.abandonment_reasons.items())
+            } if total_abandonments else {},
+            "planning_mode": model.config["planning_mode"],
+        },
+    )
     write_json(out / "integration_outputs.json", model.integration_outputs())
     return model

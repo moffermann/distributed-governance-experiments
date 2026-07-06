@@ -380,11 +380,28 @@ verification_market_depth
 thin_market_failure_rate
 negative_word_of_mouth_rate
 recommendation_rate
+attentive_share
+attentive_share_mean
+planning_representation_share
+planning_signal_coverage
+delegate_planning_coverage
+distributed_planning_correlation
+central_planning_correlation
+followed_planning_correlation
+value_delivered_share
+top_10_delegate_share
+sustained_active_user_share
+mean_awareness_to_registration_delay_ticks
+trust_p10
+trust_p50
+trust_p90
 ```
+
+Planning-layer note: `attentive_share` is the share of citizens contributing an explicit planning signal in a round (the planning-vector experiment's `attentivePlanningShare`, here emergent); `planning_representation_share` adds the delegated weight carried by contributing delegates; the two `*_planning_correlation` metrics are Pearson correlations between each constructed vector and latent need, computed in every run regardless of `planning_mode`; `value_delivered_share` is need-weighted delivered value over the portfolio's fixed potential. `final_metrics.json` additionally carries `trust_by_state` and `abandonment_reason_distribution`. See [`PLANNING_LAYER_DESIGN.md`](PLANNING_LAYER_DESIGN.md).
 
 Denominator note: `*_share` metrics over participation modes and abandonment use registered citizens as the base; `active_user_share`, `default_rule_share`, `delegator_share`, `aware_non_user_share`, and `permanent_rejection_share` use the total population. `default_rule_share` exists because in Core v0 a citizen who does nothing is not lost signal — their allocation follows the public default rule (docs/101).
 
-The delegation outputs map onto the planning-vector experiment's parameters: `delegator_share` → `delegatorShare`, `active_delegate_count` → `delegateCount`, `delegation_concentration_hhi` → `delegateConcentration`, `delegate_platform_use_rate` → `delegatePlatformUseRate`. `delegatePlanningCoverage` is not produced here; use the documented priors.
+The delegation outputs map onto the planning-vector experiment's parameters: `delegator_share` → `delegatorShare`, `active_delegate_count` → `delegateCount`, `delegation_concentration_hhi` → `delegateConcentration`, `delegate_platform_use_rate` → `delegatePlatformUseRate`, and — since the planning layer — `delegate_planning_coverage` → `delegatePlanningCoverage` (now emergent).
 
 ## Interpretation discipline
 

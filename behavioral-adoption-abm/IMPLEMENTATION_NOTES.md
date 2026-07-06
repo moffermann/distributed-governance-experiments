@@ -46,7 +46,8 @@ outputs/<run>/integration_outputs.json
 - abandonment and reactivation; trust updates from public successes, failures, outages, controversy, recovery events, and social influence (gated to aware citizens);
 - sticky role markets for executors, fiscalizers, and evidence producers (recruitment/dropout hazards with compensation elasticity);
 - verification and evidence coverage against per-project requirements and per-actor capacity, and the resulting thin-market failure rate;
-- integration outputs for the institutional architecture and planning-vector experiments, including the `delegatorShare` / `delegateCount` / `delegateConcentration` / `delegatePlatformUseRate` mapping.
+- the end-to-end planning layer ([`PLANNING_LAYER_DESIGN.md`](PLANNING_LAYER_DESIGN.md)): latent needs vs salience, emergent attentive citizens, delegated planning signals with emergent coverage, distributed and central vector construction every round, default-rule routing that follows the operating mode's published vector (docs/101), and need-weighted delivered value;
+- integration outputs for the institutional architecture and planning-vector experiments, including the `delegatorShare` / `delegateCount` / `delegateConcentration` / `delegatePlatformUseRate` / `delegatePlanningCoverage` mapping.
 
 ## What it does not model yet
 

@@ -44,7 +44,7 @@ The planning-vector experiment consumes `delegatorShare`, `delegateCount`, `dele
 | `delegateCount` | `active_delegate_count` |
 | `delegateConcentration` | `delegation_concentration_hhi` (plus `top_delegate_share`) |
 | `delegatePlatformUseRate` | `delegate_platform_use_rate` (weight-weighted; emergent for micro-delegates, institutional delegates treated as active professionals) |
-| `delegatePlanningCoverage` | **not produced** — this model has no planning vector; keep the documented priors |
+| `delegatePlanningCoverage` | **not produced** at audit time — superseded the same day by the planning layer ([`PLANNING_LAYER_DESIGN.md`](PLANNING_LAYER_DESIGN.md)): `delegate_planning_coverage` is now emergent |
 
 `micro_delegation_weight_share` / `institutional_delegation_weight_share` additionally let the consumer distinguish the trusted-microdelegation regime from the institutional stress regime.
 

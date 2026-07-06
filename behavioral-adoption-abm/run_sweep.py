@@ -94,6 +94,12 @@ def main() -> None:
         "evidence_coverage_rate",
         "thin_market_failure_rate",
         "recommendation_rate",
+        "attentive_share_mean",
+        "planning_representation_share",
+        "delegate_planning_coverage",
+        "distributed_planning_correlation",
+        "central_planning_correlation",
+        "value_delivered_share",
     ]
     for result in results:
         print(f"\n== {result['scenario_id']} (n={result['seeds']}) ==")
