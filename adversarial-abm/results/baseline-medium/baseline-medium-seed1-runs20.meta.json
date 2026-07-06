@@ -1,0 +1,14 @@
+{
+  "engine_version": "0.4.1",
+  "scenario_id": "baseline-medium",
+  "scenario_version": "0.4",
+  "seed": 1,
+  "runs": 20,
+  "architectures": [
+    "status_quo",
+    "participatory_weak_verification",
+    "participatory_weak_verification_full_budget",
+    "core_v0_tutored_central_planning",
+    "core_v0_tutored_distributed_planning"
+  ]
+}

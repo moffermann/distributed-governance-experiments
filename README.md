@@ -45,7 +45,7 @@ planning-behavior-calibration  — behavioral elicitation instrument (LLM panels
 
 ## Reading order
 
-1. This README, then [`TRACEABILITY_MATRIX.md`](TRACEABILITY_MATRIX.md) — every load-bearing concept mapped to its Core v0 anchor in the master corpus, plus the declared gaps.
+1. This README, then [`RESULTS.md`](RESULTS.md) (consolidated numbers with provenance and the run index) and [`TRACEABILITY_MATRIX.md`](TRACEABILITY_MATRIX.md) — every load-bearing concept mapped to its Core v0 anchor in the master corpus, plus the declared gaps. Figures with accessible textual descriptions: [`figures/FIGURES.md`](figures/FIGURES.md) (regenerate via `python tools/make_figures.py`).
 2. Each experiment's own `README.md`.
 3. Audits before results: `behavioral-adoption-abm/CORE_V0_CONFORMANCE_AUDIT.md`, `adversarial-abm/ENGINE_AUDIT_2026_07_06.md`, and `planning-vector-construction/ENGINE_AUDIT_2026_07_06.md` record what was corrected and certified in each engine.
 4. `RUN_*.md` documents are dated records, newest supersedes; superseded ones carry forward pointers.

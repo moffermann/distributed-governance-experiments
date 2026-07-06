@@ -1,0 +1,7 @@
+{
+  "engine_version": "0.5.1",
+  "scenario_id": "core-v0-planning-channels",
+  "scenario_version": "0.5",
+  "seed": 42,
+  "runs": 200
+}

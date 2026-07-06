@@ -57,6 +57,8 @@ except Exception:  # pragma: no cover - used only when Mesa is absent.
     mesa = _MesaFallback()  # type: ignore
 
 
+ENGINE_VERSION = "1.1.0"  # bump on any behavior-affecting engine change
+
 DEFAULT_CONFIG: Dict[str, Any] = {
     "scenario_id": "baseline",
     "description": "Synthetic baseline for Core v0 behavioral adoption.",
@@ -1079,6 +1081,7 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
         m = self.final_metrics()
         return {
             "scenario_id": self.config["scenario_id"],
+            "engine_version": ENGINE_VERSION,
             **{k: m.get(k, 0.0) for k in INTEGRATION_KEYS},
             "viability": self.viability_flags(),
         }
@@ -1284,6 +1287,7 @@ def run_scenario(config: Dict[str, Any], output_dir: str | Path) -> BehavioralAd
         out / "final_metrics.json",
         {
             **model.final_metrics(),
+            "engine_version": ENGINE_VERSION,
             "viability": model.viability_flags(),
             "trust_by_state": model.trust_by_state(),
             "abandonment_reason_distribution": {

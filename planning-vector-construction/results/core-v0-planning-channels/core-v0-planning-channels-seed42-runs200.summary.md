@@ -1,6 +1,6 @@
 # Planning Vector Construction Results
 
-scenario: core-v0-planning-channels v0.5
+scenario: core-v0-planning-channels v0.5 | engine: v0.5.1
 runs: 200, base seed: 42, citizens: 10000, targets: 80
 
 | vector | class | mode | mandate | corr(latent) | top20 latent mean | priority gap | MSE | attentive | delegator | delegates | concentration | delegate quality | platform use | planning coverage | top1 delegate | top10 delegates |

@@ -38,6 +38,8 @@ const parseArgs = () => {
   return out;
 };
 
+const ENGINE_VERSION = "0.4.1"; // bump on any behavior-affecting engine change
+
 const cli = parseArgs();
 const HERE = decodeURIComponent(new URL(".", import.meta.url).pathname).replace(/^\/([A-Za-z]:)/, "$1");
 const scenarioPath = resolve(cli.scenario ?? resolve(HERE, "../scenarios/baseline-medium.json"));
@@ -624,7 +626,7 @@ const runScenario = (scenario) => {
 
 const markdownTable = (summary) => {
   const lines = [];
-  lines.push(`scenario: ${scenario.scenario_id} v${scenario.scenario_version ?? "n/a"}`);
+  lines.push(`scenario: ${scenario.scenario_id} v${scenario.scenario_version ?? "n/a"} | engine: v${ENGINE_VERSION}`);
   lines.push(`runs: ${scenario.runs}, base seed: ${scenario.seed}, cycles: ${scenario.cycles}, citizens: ${scenario.population.citizens}, projects: ${scenario.projects.activePool}`);
   lines.push(`centralPlanningSignalMix: ${scenario.projects.centralPlanningSignalMix ?? scenario.projects.planningWeightCorrelation ?? "n/a"}, distributedPlanningSignalMix: ${scenario.projects.distributedPlanningSignalMix ?? "n/a"}`);
   lines.push(`architectures: ${scenario.architectures.join(", ")}`);
@@ -681,6 +683,14 @@ const writeOutputs = ({ raw, summary }) => {
   if (scenario.outputs?.rawJson) writeFileSync(resolve(outDir, `${base}.raw.json`), JSON.stringify(raw, null, 2));
   if (scenario.outputs?.markdownTable) writeFileSync(resolve(outDir, `${base}.summary.md`), markdownTable(summary) + "\n");
   if (scenario.outputs?.csv) writeFileSync(resolve(outDir, `${base}.summary.csv`), csvTable(summary) + "\n");
+  writeFileSync(resolve(outDir, `${base}.meta.json`), JSON.stringify({
+    engine_version: ENGINE_VERSION,
+    scenario_id: scenario.scenario_id,
+    scenario_version: scenario.scenario_version ?? null,
+    seed: scenario.seed,
+    runs: scenario.runs,
+    architectures: scenario.architectures,
+  }, null, 2) + "\n");
   return outDir;
 };
 

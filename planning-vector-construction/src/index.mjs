@@ -18,6 +18,8 @@ for (let i = 0; i < args.length; i++) {
   else { cli[key] = next; i++; }
 }
 
+const ENGINE_VERSION = "0.5.1"; // bump on any behavior-affecting engine change
+
 const HERE = decodeURIComponent(new URL(".", import.meta.url).pathname).replace(/^\/([A-Za-z]:)/, "$1");
 const scenarioPath = resolve(cli.scenario ?? resolve(HERE, "../scenarios/core-v0-planning-channels.json"));
 const scenario = JSON.parse(readFileSync(scenarioPath, "utf8"));
@@ -421,7 +423,7 @@ const markdownTable = (summary) => {
   const lines = [];
   lines.push("# Planning Vector Construction Results");
   lines.push("");
-  lines.push(`scenario: ${scenario.scenario_id} v${scenario.scenario_version}`);
+  lines.push(`scenario: ${scenario.scenario_id} v${scenario.scenario_version} | engine: v${ENGINE_VERSION}`);
   lines.push(`runs: ${scenario.runs}, base seed: ${scenario.seed}, citizens: ${scenario.population.citizens}, targets: ${scenario.population.targets}`);
   lines.push("");
   lines.push("| vector | class | mode | mandate | corr(latent) | top20 latent mean | priority gap | MSE | attentive | delegator | delegates | concentration | delegate quality | platform use | planning coverage | top1 delegate | top10 delegates |");
@@ -446,6 +448,13 @@ const writeOutputs = ({ raw, summary }) => {
   if (scenario.outputs?.rawJson) writeFileSync(resolve(outDir, `${base}.raw.json`), JSON.stringify(raw, null, 2));
   if (scenario.outputs?.markdownTable) writeFileSync(resolve(outDir, `${base}.summary.md`), markdownTable(summary) + "\n");
   if (scenario.outputs?.csv) writeFileSync(resolve(outDir, `${base}.summary.csv`), csvTable(summary) + "\n");
+  writeFileSync(resolve(outDir, `${base}.meta.json`), JSON.stringify({
+    engine_version: ENGINE_VERSION,
+    scenario_id: scenario.scenario_id,
+    scenario_version: scenario.scenario_version ?? null,
+    seed: scenario.seed,
+    runs: scenario.runs,
+  }, null, 2) + "\n");
   return outDir;
 };
 
