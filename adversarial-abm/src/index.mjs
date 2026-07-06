@@ -38,16 +38,15 @@ const parseArgs = () => {
   return out;
 };
 
-const ENGINE_VERSION = "0.4.1"; // bump on any behavior-affecting engine change
+const ENGINE_VERSION = "0.5.0"; // bump on any behavior-affecting engine change
+// v0.5 (ablation program): parameterized module (import { runScenario } from
+// "./index.mjs" — CLI behavior unchanged when run directly), per-architecture
+// scenario overrides (scenario.architectureOverrides), and the three attack
+// blocks that were placeholders: fiscalizerCollusion, agendaCapture, and
+// coordinatedSignalBias. Disabled attacks consume zero RNG draws, so all
+// committed baselines remain byte-identical.
 
-const cli = parseArgs();
 const HERE = decodeURIComponent(new URL(".", import.meta.url).pathname).replace(/^\/([A-Za-z]:)/, "$1");
-const scenarioPath = resolve(cli.scenario ?? resolve(HERE, "../scenarios/baseline-medium.json"));
-const scenario = JSON.parse(readFileSync(scenarioPath, "utf8"));
-if (cli.runs) scenario.runs = Number.parseInt(cli.runs, 10);
-if (cli.seed) scenario.seed = Number.parseInt(cli.seed, 10);
-if (cli.centralPlanningSignalMix) scenario.projects.centralPlanningSignalMix = Number.parseFloat(cli.centralPlanningSignalMix);
-if (cli.distributedPlanningSignalMix) scenario.projects.distributedPlanningSignalMix = Number.parseFloat(cli.distributedPlanningSignalMix);
 
 const clamp = (x, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, x));
 const sigmoid = (x) => 1 / (1 + Math.exp(-x));
@@ -243,10 +242,13 @@ const ARCHITECTURES = {
   },
 };
 
-const activeArchitectures = scenario.architectures.map((id) => {
+// Per-architecture field overrides (scenario.architectureOverrides[archId])
+// support the ablation program's mechanism knock-outs without new variants.
+const resolveArchitectures = (scenario) => scenario.architectures.map((id) => {
   const arch = ARCHITECTURES[id];
   if (!arch) throw new Error(`Unknown architecture in scenario: ${id}`);
-  return arch;
+  const override = scenario.architectureOverrides?.[id];
+  return override ? { ...arch, ...override } : arch;
 });
 
 const makeProject = (rng, id, scenario) => {
@@ -288,17 +290,56 @@ const generateWorld = (seed, scenario) => {
   const rng = mulberry32(seed);
   const projects = [];
   for (let i = 0; i < scenario.projects.activePool; i++) projects.push(makeProject(rng, `P-${String(i + 1).padStart(3, "0")}`, scenario));
-  return { seed, projects };
+  // Attack favored sets are drawn from dedicated streams ONLY when the attack
+  // is enabled, so disabled runs consume no extra draws.
+  let capturedSet = null;
+  const capture = scenario.attacks?.agendaCapture;
+  if (capture?.enabled) {
+    const rngC = mulberry32((seed ^ 0xa6e) >>> 0);
+    capturedSet = pickFavored(rngC, projects.length, capture.favoredShare ?? 0.10);
+  }
+  let biasSet = null;
+  const bias = scenario.attacks?.coordinatedSignalBias;
+  if (bias?.enabled) {
+    const rngB = mulberry32((seed ^ 0xb1a5) >>> 0);
+    biasSet = pickFavored(rngB, projects.length, bias.favoredShare ?? 0.10);
+  }
+  return { seed, projects, capturedSet, biasSet };
+};
+
+const pickFavored = (rng, n, share) => {
+  const count = Math.max(1, Math.round(share * n));
+  const chosen = new Set();
+  let guard = 0;
+  while (chosen.size < count && guard < count * 200) {
+    chosen.add(Math.floor(rng() * n));
+    guard++;
+  }
+  return chosen;
 };
 
 const cloneWorld = (world) => ({
   seed: world.seed,
   projects: world.projects.map((p) => ({ ...p, funded: 0, closed: false, cycleClosed: null, execution: null })),
+  capturedSet: world.capturedSet,
+  biasSet: world.biasSet,
 });
 
 const openProjects = (sim) => sim.projects.filter((p) => !p.closed);
 const availableBudget = (scenario) => scenario.population.citizens * scenario.cycles;
-const planningScore = (p, arch) => arch.planningSource === "distributed" ? p.distributedPlanningWeight : p.centralPlanningWeight;
+// agendaCapture (docs/87's threat, in-engine): a captured share of the
+// DISTRIBUTED default vector is redirected toward the favored set. Central
+// planning is not the attack's target here.
+const planningScore = (p, arch, sim, scenario) => {
+  const base = arch.planningSource === "distributed" ? p.distributedPlanningWeight : p.centralPlanningWeight;
+  const capture = scenario.attacks?.agendaCapture;
+  if (capture?.enabled && arch.planningSource === "distributed" && sim?.capturedSet) {
+    const severity = capture.severity ?? 0.3;
+    return (1 - severity) * base + severity * (sim.capturedSet.has(projectIndex(p)) ? 1 : 0);
+  }
+  return base;
+};
+const projectIndex = (p) => Number.parseInt(p.id.slice(2), 10) - 1;
 
 const contribute = (project, amount, arch) => {
   if (amount <= 0 || project.closed) return amount;
@@ -334,7 +375,7 @@ const drawSample = (rng, projects, k) => {
 
 const allocateCentral = (sim, arch, scenario) => {
   let budget = scenario.population.citizens;
-  const projects = openProjects(sim).sort((a, b) => planningScore(b, arch) - planningScore(a, arch));
+  const projects = openProjects(sim).sort((a, b) => planningScore(b, arch, sim, scenario) - planningScore(a, arch, sim, scenario));
   for (const p of projects) {
     if (budget <= 0) break;
     const before = budget;
@@ -410,7 +451,7 @@ const allocateSalience = (rng, sim, arch, scenario, count) => {
 const allocateDefault = (sim, arch, scenario, count) => {
   if (count <= 0) return;
   let budget = count;
-  const projects = openProjects(sim).sort((a, b) => planningScore(b, arch) - planningScore(a, arch));
+  const projects = openProjects(sim).sort((a, b) => planningScore(b, arch, sim, scenario) - planningScore(a, arch, sim, scenario));
   for (const p of projects) {
     if (budget <= 0) break;
     const room = arch.fundingCaps ? Math.max(0, p.budgetTarget - p.funded) : Infinity;
@@ -433,7 +474,21 @@ const allocateCitizen = (rng, sim, arch, scenario) => {
   const delegated = hasDefaultLayer ? Math.round(N * (pop.delegatorShare ?? 0)) : 0;
   const remaining = N - attentive - salience - profile - delegated;
   let leftover = 0;
-  leftover += allocateAttentive(rng, sim, arch, scenario, attentive);
+  // coordinatedSignalBias: a share of attentive citizens abandons its own
+  // information and funds the favored set (E7b's geometry in this engine).
+  const bias = scenario.attacks?.coordinatedSignalBias;
+  let attentiveHonest = attentive;
+  if (bias?.enabled && sim.biasSet) {
+    const coordinated = Math.round(attentive * (bias.share ?? 0));
+    attentiveHonest = attentive - coordinated;
+    for (let i = 0; i < coordinated; i++) {
+      const favoredOpen = openProjects(sim).filter((p) => sim.biasSet.has(projectIndex(p)));
+      if (!favoredOpen.length) { leftover += coordinated - i; break; }
+      const picked = favoredOpen[Math.floor(rng() * favoredOpen.length)];
+      leftover += contribute(picked, 1, arch);
+    }
+  }
+  leftover += allocateAttentive(rng, sim, arch, scenario, attentiveHonest);
   leftover += allocateSalience(rng, sim, arch, scenario, salience);
   if (profile > 0) leftover += allocateProfile(rng, sim, arch, scenario, profile);
   if (delegated > 0) leftover += allocateDelegated(rng, sim, arch, scenario, delegated);
@@ -463,12 +518,20 @@ const executeProject = (rng, project, arch, scenario, cycle) => {
   let diversionShare = 0;
   let executionQuality = 1;
 
+  // fiscalizerCollusion (attacks Proposition 4's collusion-proofness): with
+  // probability collusionRate a diverting opportunist's approval is bought,
+  // and sophisticated opportunists anticipate the lower effective detection
+  // inside the deterrence inequality. Zero RNG cost when disabled.
+  const collusion = scenario.attacks?.fiscalizerCollusion;
+  const collusionRate = collusion?.enabled ? (collusion.collusionRate ?? 0.3) : 0;
+  const effDetection = detection * (1 - collusionRate);
+
   if (project.executorType === "opportunistic") {
     const fraudGain = project.fraudOpportunity * (1 - arch.retention);
     const x = -1.0
       + 4.0 * fraudGain
       + 2.0 * project.verificationDifficulty
-      - 5.0 * detection
+      - 5.0 * effDetection
       - 3.0 * arch.retention
       - 2.0 * arch.guarantee
       - 3.0 * arch.reputationLoss
@@ -488,7 +551,8 @@ const executeProject = (rng, project, arch, scenario, cycle) => {
       : clamp(0.35 + 0.35 * project.executorAbility - 0.20 * project.executionDifficulty, 0.05, 0.85);
   }
 
-  const detected = diverted ? rng() < detection : false;
+  const colluded = diverted && collusionRate > 0 && rng() < collusionRate;
+  const detected = diverted ? (colluded ? false : rng() < detection) : false;
   const reportedCompletion = diverted && !detected ? 1 : executionQuality;
   const reviewConfidence = detected ? 1 : clamp(arch.reviewConfidence * (1 - 0.35 * project.verificationDifficulty), 0.05, 1);
   const actualValue = potentialValue * executionQuality;
@@ -585,6 +649,7 @@ const computeMetrics = (sim, arch, scenario) => {
 };
 
 const runScenario = (scenario) => {
+  const activeArchitectures = resolveArchitectures(scenario);
   const raw = [];
   for (let r = 0; r < scenario.runs; r++) {
     const runSeed = scenario.seed + r * 7919;
@@ -624,7 +689,7 @@ const runScenario = (scenario) => {
   return { raw, summary };
 };
 
-const markdownTable = (summary) => {
+const markdownTable = (summary, scenario) => {
   const lines = [];
   lines.push(`scenario: ${scenario.scenario_id} v${scenario.scenario_version ?? "n/a"} | engine: v${ENGINE_VERSION}`);
   lines.push(`runs: ${scenario.runs}, base seed: ${scenario.seed}, cycles: ${scenario.cycles}, citizens: ${scenario.population.citizens}, projects: ${scenario.projects.activePool}`);
@@ -676,12 +741,12 @@ const csvTable = (summary) => {
   return rows.join("\n");
 };
 
-const writeOutputs = ({ raw, summary }) => {
+const writeOutputs = ({ raw, summary }, scenario) => {
   const outDir = resolve(HERE, "../results", scenario.scenario_id);
   mkdirSync(outDir, { recursive: true });
   const base = `${scenario.scenario_id}-seed${scenario.seed}-runs${scenario.runs}`;
   if (scenario.outputs?.rawJson) writeFileSync(resolve(outDir, `${base}.raw.json`), JSON.stringify(raw, null, 2));
-  if (scenario.outputs?.markdownTable) writeFileSync(resolve(outDir, `${base}.summary.md`), markdownTable(summary) + "\n");
+  if (scenario.outputs?.markdownTable) writeFileSync(resolve(outDir, `${base}.summary.md`), markdownTable(summary, scenario) + "\n");
   if (scenario.outputs?.csv) writeFileSync(resolve(outDir, `${base}.summary.csv`), csvTable(summary) + "\n");
   writeFileSync(resolve(outDir, `${base}.meta.json`), JSON.stringify({
     engine_version: ENGINE_VERSION,
@@ -694,8 +759,20 @@ const writeOutputs = ({ raw, summary }) => {
   return outDir;
 };
 
-const result = runScenario(scenario);
-const table = markdownTable(result.summary);
-console.log(table);
-const outDir = writeOutputs(result);
-console.log(`\noutputs: ${outDir}`);
+export { ENGINE_VERSION, ARCHITECTURES, resolveArchitectures, runScenario, markdownTable, csvTable, writeOutputs };
+
+// CLI entry point: unchanged behavior when the engine is run directly.
+const isMain = process.argv[1] && resolve(process.argv[1]) === resolve(HERE, "index.mjs");
+if (isMain) {
+  const cli = parseArgs();
+  const scenarioPath = resolve(cli.scenario ?? resolve(HERE, "../scenarios/baseline-medium.json"));
+  const scenario = JSON.parse(readFileSync(scenarioPath, "utf8"));
+  if (cli.runs) scenario.runs = Number.parseInt(cli.runs, 10);
+  if (cli.seed) scenario.seed = Number.parseInt(cli.seed, 10);
+  if (cli.centralPlanningSignalMix) scenario.projects.centralPlanningSignalMix = Number.parseFloat(cli.centralPlanningSignalMix);
+  if (cli.distributedPlanningSignalMix) scenario.projects.distributedPlanningSignalMix = Number.parseFloat(cli.distributedPlanningSignalMix);
+  const result = runScenario(scenario);
+  console.log(markdownTable(result.summary, scenario));
+  const outDir = writeOutputs(result, scenario);
+  console.log(`\noutputs: ${outDir}`);
+}

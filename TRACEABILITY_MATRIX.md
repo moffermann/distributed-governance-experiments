@@ -52,4 +52,4 @@ Conventions: `docs/NN` are accepted resolutions in the master corpus; `H0NN`/`C0
 | Profile pause/override state split | docs/28 §10 | Open in behavioral ABM (declared in its conformance audit) |
 | Comment/reputational signal layer | docs/79, docs/107, docs/108, docs/98 | Design direction recorded; insertion points defined |
 | Privacy-attitude elicitation | docs/108 (privacy concern is a behavioral trait) | Missing from the calibration instrument; flagged for v0.4 |
-| `agendaCapture`, `fiscalizerCollusion`, `coordinatedSignalBias` attacks | docs/87; formal note Prop 4; E7b | Scenario keys exist, engine does not read them yet — implemented in the Phase 3 ablation program |
+| ~~`agendaCapture`, `fiscalizerCollusion`, `coordinatedSignalBias` attacks~~ | docs/87; formal note Prop 4; E7b | **Closed 2026-07-06**: implemented in engine v0.5; results in `adversarial-abm/RUN_2026_07_06_ABLATION_RESULTS.md` |

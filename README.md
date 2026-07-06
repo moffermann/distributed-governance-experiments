@@ -29,7 +29,7 @@ planning-behavior-calibration  — behavioral elicitation instrument (LLM panels
 
 | Experiment | Status | Key results |
 |---|---|---|
-| `adversarial-abm/` (A) | engine v0.4, audited 2026-07-06 | `ENGINE_AUDIT_2026_07_06.md`, `RUN_2026_07_06_BEHAVIORAL_INTEGRATION_RESULTS.md` |
+| `adversarial-abm/` (A) | engine v0.5, audited; five attacks implemented; ablation program complete | `ENGINE_AUDIT_2026_07_06.md`, `RUN_2026_07_06_BEHAVIORAL_INTEGRATION_RESULTS.md`, `RUN_2026_07_06_ABLATION_RESULTS.md` |
 | `behavioral-adoption-abm/` (B) | audited + Core v0 certified, end-to-end planning layer, LLM-calibrated | `CORE_V0_CONFORMANCE_AUDIT.md`, `RUN_2026_07_06_PLANNING_LAYER_RESULTS.md`, `RUN_2026_07_06_LLM_CALIBRATED_RESULTS.md` |
 | Experiment C (A × B) | complete | mapping `behavioral-adoption-abm/OUTPUT_TO_ADVERSARIAL_ABM.md`; results in `adversarial-abm/RUN_2026_07_06_BEHAVIORAL_INTEGRATION_RESULTS.md` |
 | `planning-vector-construction/` | executable, audited 2026-07-06, v0.5 results regenerated | `ENGINE_AUDIT_2026_07_06.md`, `results/core-v0-planning-channels/` |
@@ -42,6 +42,7 @@ planning-behavior-calibration  — behavioral elicitation instrument (LLM panels
 2. **Participation without a default layer is not a weaker architecture — it is a non-functioning one**: every realistic population drives the no-default participatory variant's verified delivery to zero.
 3. **The attentive share is structural**: ~2.5–5% of citizens contribute explicit planning signals, regardless of prior source (synthetic, LLM n=90, LLM N=1000 weighted) — and it lands inside the range the planning-vector experiment had assumed.
 4. **The master paper's participation assumptions were behaviorally realizable**: the imposed informed share (0.30) emerges at 0.309 from the LLM-calibrated population; the master's E8 (in the master repository) shows its headline surviving these populations at 2.26 [2.23, 2.30].
+5. **The deterrence stack is individually redundant and jointly indispensable** (ablation program): removing any single term costs ≤ 0.003 in verified value; removing the whole stack collapses the architecture below the status quo (0.87×). The only attack that bites is agenda capture, and no single-parameter sweep pushes the advantage below 1.63×.
 
 ## Reading order
 

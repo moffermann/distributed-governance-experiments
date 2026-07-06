@@ -52,6 +52,22 @@ Structural findings (stable across all prior sources): the attentive share sits 
 
 Sources: `planning-behavior-calibration/RUN_2026_07_06_*.md`, `results/`.
 
+## Ablation and sensitivity (vulnerability program)
+
+Engine v0.5, `behavioral-llm-calibrated` population, intact reference V = 0.277 (2.19×):
+
+| Finding | Number |
+|---|---|
+| Any single deterrence term removed | ΔV ≤ 0.003 (redundant) |
+| **Whole deterrence stack removed (K10)** | **V 0.110, ratio 0.87× — below the status quo** |
+| Planning vector → central (K6) | ΔV −0.062 (largest single knock-out) |
+| Default layer → salience (K5) | selection 0.616 → 0.174; delivery floor holds (ΔV −0.042) |
+| Only effective attack: `agendaCapture` | ΔV −0.035 at severity 0.5; collusion and signal bias neutralized |
+| Sweep minimum across all single parameters | 1.63× (signal mix 0.2) — no cliffs |
+| Advantage at 70% opportunist executors | **2.39×** (grows with pool dirtiness) |
+
+Sources: `adversarial-abm/RUN_2026_07_06_ABLATION_RESULTS.md`, `adversarial-abm/results/ablation/`.
+
 ## Bridge to the master paper (E8, lives in the master repository)
 
 The behavioral trajectories replaced the paper engine's imposed participation: headline V(A2)/V(S′) = 2.26 [2.23, 2.30] at scale (vs 2.22 imposed), 2.15–2.9× across populations and scales, launch dynamics cost 1.7%. Recorded in the master repository's `research/simulation-results.md` §E8.
