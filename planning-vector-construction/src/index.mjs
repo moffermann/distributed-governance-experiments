@@ -226,12 +226,25 @@ const representativePlan = (world, rng, p, name) => {
   return { name, class: "representative", plan, distortion, electoralMandateShare: p.turnoutRate * p.winnerVoteShare };
 };
 
-const sampleIndexes = (rng, n, count) => Array.from({ length: count }, () => Math.floor(rng() * n));
+// Participants drawn without replacement (partial Fisher-Yates), and each
+// participant reviews `sampleSize` DISTINCT targets (guarded retry) — the
+// previous with-replacement draws double-counted repeat participants and
+// silently shrank the per-citizen review set on weighted-draw collisions
+// (2026-07-06 engine audit).
+const sampleIndexesDistinct = (rng, n, count) => {
+  const idx = Array.from({ length: n }, (_, i) => i);
+  const k = Math.min(count, n);
+  for (let i = 0; i < k; i++) {
+    const j = i + Math.floor(rng() * (n - i));
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  return idx.slice(0, k);
+};
 const attentiveSignal = (world, rng, p) => {
   const N = world.citizens.length;
   const T = world.targets.length;
   const share = clamp((p.attentivePlanningShare ?? 0) + (p.mandatoryParticipationBoost ?? 0));
-  const participants = sampleIndexes(rng, N, Math.round(share * N));
+  const participants = sampleIndexesDistinct(rng, N, Math.round(share * N));
   const sums = new Array(T).fill(0);
   const counts = new Array(T).fill(0);
   const sampleSize = p.attentiveSampleSize ?? 8;
@@ -240,7 +253,10 @@ const attentiveSignal = (world, rng, p) => {
     const weights = Array.from({ length: T }, (_, j) => Math.max(0.001, (1 - salienceBias) * world.values[i][j] + salienceBias * world.salience[j]));
     const total = weights.reduce((a, b) => a + b, 0);
     const seen = new Set();
-    for (let k = 0; k < sampleSize; k++) {
+    const kTargets = Math.min(sampleSize, T);
+    let guard = 0;
+    while (seen.size < kTargets && guard < kTargets * 50) {
+      guard++;
       let roll = rng() * total;
       let j = T - 1;
       for (let x = 0; x < T; x++) { roll -= weights[x]; if (roll <= 0) { j = x; break; } }

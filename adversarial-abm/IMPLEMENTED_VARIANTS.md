@@ -144,6 +144,10 @@ core_v0_tutored_distributed_planning
 
 Since the 2026-07-06 engine audit ([`ENGINE_AUDIT_2026_07_06.md`](ENGINE_AUDIT_2026_07_06.md)), the population block's five-way split is fully implemented for architectures with a default layer: attentive citizens (informed sampled choice), salience followers (visibility-weighted choice), profile-driven citizens (noisier value proxy with near-completion preference), delegating citizens (represented weight allocated in small informed blocks — the trusted-microdelegation proxy, `population.delegationBlockSize`, default 3), and passive citizens (default rule over the planning vector). Architectures without a default layer fold profile and delegator shares into the passive block, per `AGENT_DECISION_MODEL.md`.
 
+## Attack keys: implemented vs placeholder (2026-07-06 closing audit)
+
+The engine reads two attack blocks: `salienceCascade` (visibility herding) and `weakVerificationDiversion` (detection shock). The scenario keys `agendaCapture`, `fiscalizerCollusion`, and `coordinatedSignalBias` are **design placeholders the engine does not read yet** — declared here so a scenario author cannot believe they are active; they are implemented by the Phase 3 ablation-and-attacks program.
+
 ## Current known simplifications
 
 The v0 executable does not yet implement:

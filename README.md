@@ -32,7 +32,7 @@ planning-behavior-calibration  — behavioral elicitation instrument (LLM panels
 | `adversarial-abm/` (A) | engine v0.4, audited 2026-07-06 | `ENGINE_AUDIT_2026_07_06.md`, `RUN_2026_07_06_BEHAVIORAL_INTEGRATION_RESULTS.md` |
 | `behavioral-adoption-abm/` (B) | audited + Core v0 certified, end-to-end planning layer, LLM-calibrated | `CORE_V0_CONFORMANCE_AUDIT.md`, `RUN_2026_07_06_PLANNING_LAYER_RESULTS.md`, `RUN_2026_07_06_LLM_CALIBRATED_RESULTS.md` |
 | Experiment C (A × B) | complete | mapping `behavioral-adoption-abm/OUTPUT_TO_ADVERSARIAL_ABM.md`; results in `adversarial-abm/RUN_2026_07_06_BEHAVIORAL_INTEGRATION_RESULTS.md` |
-| `planning-vector-construction/` | executable, v0.5 results committed | `results/core-v0-planning-channels/` |
+| `planning-vector-construction/` | executable, audited 2026-07-06, v0.5 results regenerated | `ENGINE_AUDIT_2026_07_06.md`, `results/core-v0-planning-channels/` |
 | `planning-behavior-calibration/` | executable panel, 3 LLM runs (n=90 ×2 models, N=1000 weighted) | `RUN_2026_07_06_N1000_PANEL_RESULTS.md` |
 | Experiment D | pending | human study protocol ready (`planning-behavior-calibration/HUMAN_STUDY_PROTOCOL.md`) |
 
@@ -45,9 +45,10 @@ planning-behavior-calibration  — behavioral elicitation instrument (LLM panels
 
 ## Reading order
 
-1. This README, then each experiment's own `README.md`.
-2. Audits before results: `behavioral-adoption-abm/CORE_V0_CONFORMANCE_AUDIT.md` and `adversarial-abm/ENGINE_AUDIT_2026_07_06.md` record what was corrected and certified.
-3. `RUN_*.md` documents are dated records, newest supersedes; superseded ones carry forward pointers.
+1. This README, then [`TRACEABILITY_MATRIX.md`](TRACEABILITY_MATRIX.md) — every load-bearing concept mapped to its Core v0 anchor in the master corpus, plus the declared gaps.
+2. Each experiment's own `README.md`.
+3. Audits before results: `behavioral-adoption-abm/CORE_V0_CONFORMANCE_AUDIT.md`, `adversarial-abm/ENGINE_AUDIT_2026_07_06.md`, and `planning-vector-construction/ENGINE_AUDIT_2026_07_06.md` record what was corrected and certified in each engine.
+4. `RUN_*.md` documents are dated records, newest supersedes; superseded ones carry forward pointers.
 
 ## Relationship to the master repository
 

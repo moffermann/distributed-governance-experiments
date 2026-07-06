@@ -157,7 +157,7 @@ Executable prototype:
 - [`build_e8_inputs.py`](build_e8_inputs.py) — E8 bridge: per-seed participation trajectories for the paper engine (design `research/e8-behavioral-participation-design.md`, results in `research/simulation-results.md` §E8).
 - [`src/behavioral_adoption_abm/core.py`](src/behavioral_adoption_abm/core.py) — MVP model, agents, metrics, scenario loading, and result writers.
 - [`src/behavioral_adoption_abm/run.py`](src/behavioral_adoption_abm/run.py) — package CLI entry point.
-- [`scenarios/`](scenarios/) — baseline and stress scenarios.
+- [`scenarios/`](scenarios/) — baseline and stress scenarios. First-class: `baseline`, `high_friction_launch`, `ai_assisted_onboarding`, `delegation_first` (institutional stress), `central_planning` (end-to-end comparator), `llm_calibrated` (panel priors). `llm_calibrated_dist` is an **analysis variant** kept for the mean-sufficiency check, not part of standard sweeps.
 - [`outputs/`](outputs/) — ignored/generated run outputs.
 
 ## Implementation direction

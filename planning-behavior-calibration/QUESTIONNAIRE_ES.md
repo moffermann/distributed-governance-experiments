@@ -158,6 +158,12 @@ would_not_delegate
 
 Answer this section as if you accepted responsibility to represent one or more people in the app.
 
+17b. If a family member or neighbor asked you to be THEIR delegate, how likely would you be to accept? *(added in instrument v0.3; maps to `delegate_behavior.would_accept_delegation`)*
+
+```text
+0-100
+```
+
 18. If other people delegated to you, how often would you use the platform during a planning cycle?
 
 ```text

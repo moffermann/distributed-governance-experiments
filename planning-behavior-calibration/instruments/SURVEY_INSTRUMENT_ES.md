@@ -93,6 +93,8 @@ Usa una escala de 0 a 100.
 
 Imagina que una o más personas confían en ti y te delegan su participación.
 
+13b. Si un familiar o vecino te pidiera ser SU delegado, ¿qué tan probable es que aceptes? *(agregada en la versión v0.3 del instrumento)*
+
 14. ¿Qué tan seguido usarías la plataforma durante un ciclo de planificación?
 
 15. ¿Qué porcentaje de las prioridades de planificación revisarías realmente antes de actuar?
