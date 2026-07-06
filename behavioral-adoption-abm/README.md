@@ -6,7 +6,7 @@
 
 ## Status
 
-Initial research-design baseline.
+Executable MVP added.
 
 This folder defines a new satellite experiment focused on the behavioral unknowns that were previously imposed as parameters in the Core v0 architecture experiments.
 
@@ -40,6 +40,32 @@ Examples:
 - organizations willing to participate;
 - users who abandon after friction or bad outcomes;
 - users who recommend Core after successful outcomes.
+
+## Quick start
+
+The first executable prototype can run with Python's standard library only. Mesa is optional: if installed, the model uses Mesa's `Agent` and `Model` base classes; if not, a small fallback shim keeps the run reproducible.
+
+From this folder:
+
+```bash
+python run_experiment.py --scenario scenarios/baseline.json --ticks 104 --seed 42 --output-dir outputs/baseline
+```
+
+Or as a module:
+
+```bash
+PYTHONPATH=src python -m behavioral_adoption_abm.run --scenario scenarios/ai_assisted_onboarding.json --output-dir outputs/ai_assisted
+```
+
+Each run writes:
+
+```text
+outputs/<run>/timeseries.csv
+outputs/<run>/final_metrics.json
+outputs/<run>/integration_outputs.json
+```
+
+The `integration_outputs.json` file is the bridge to the existing institutional architecture experiment.
 
 ## Relationship to existing experiments
 
@@ -105,13 +131,24 @@ If Core only works when every citizen behaves like an attentive civic optimizer,
 
 ## Folder map
 
+Research design:
+
 - [`ROLE_ONTOLOGY.md`](ROLE_ONTOLOGY.md) — first operational map of behavioral roles, motivations, actions, incentives, risks, and observable metrics.
 - [`METRICS.md`](METRICS.md) — adoption, activity, delegation, trust, fiscalization, evidence, executor, and retention metrics.
 - [`MODEL_DESIGN.md`](MODEL_DESIGN.md) — proposed ABM structure, state variables, scheduling logic, and connection points to the architecture experiment.
 - [`ROADMAP.md`](ROADMAP.md) — staged plan from documentation to executable Mesa/Python simulation and later calibration.
+- [`IMPLEMENTATION_NOTES.md`](IMPLEMENTATION_NOTES.md) — current implementation boundary, run instructions, and next technical steps.
+
+Executable prototype:
+
+- [`run_experiment.py`](run_experiment.py) — convenience command-line runner.
+- [`src/behavioral_adoption_abm/core.py`](src/behavioral_adoption_abm/core.py) — MVP model, agents, metrics, scenario loading, and result writers.
+- [`src/behavioral_adoption_abm/run.py`](src/behavioral_adoption_abm/run.py) — package CLI entry point.
+- [`scenarios/`](scenarios/) — baseline and stress scenarios.
+- [`outputs/`](outputs/) — ignored/generated run outputs.
 
 ## Implementation direction
 
-The first implementation should probably use Python with an inspectable ABM structure. Mesa is a strong candidate because the experiment needs explicit agents, reproducible scheduling, data collection, and scenario sweeps.
+The first implementation uses Python with an inspectable ABM structure. Mesa remains the intended native ABM base when installed, but the MVP can run without mandatory external dependencies so early review is not blocked by environment setup.
 
 The model should initially remain simple and deterministic enough to inspect. LLM-based agents may be added later only for bounded qualitative sub-simulations, not as the first source of numerical results.
