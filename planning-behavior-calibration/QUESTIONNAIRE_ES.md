@@ -53,21 +53,49 @@ D. Not sure
 
 Responses failing this section should be flagged, not automatically discarded.
 
-## Section 2 — Citizen participation and delegation
+## Section 2 — Basic platform use
 
-4. If this application existed, how likely would you be to directly review public project priorities or projects at least occasionally?
+These questions estimate the total active-user funnel before direct participation or delegation.
 
-```text
-0-100
-```
-
-5. If you had little time, low interest, or low comfort using the app, how likely would you be to delegate your participation to someone else?
+4. If this application existed and you received a clear invitation to use it, how likely would you be to open or try the application at least once?
 
 ```text
 0-100
 ```
 
-6. If you delegated, whom would you most likely choose?
+5. How likely would you be to use the application at least once per month to look at notifications, public projects, priorities, or delegate activity?
+
+```text
+0-100
+```
+
+6. How likely would you be to use the application at least once per planning cycle if the app sent simple reminders or notifications?
+
+```text
+0-100
+```
+
+## Section 3 — Citizen participation and delegation
+
+7. If this application existed, how likely would you be to directly review public project priorities or projects at least occasionally?
+
+```text
+0-100
+```
+
+8. If this application existed, how likely would you be to directly participate in planning or project prioritization instead of only reading or delegating?
+
+```text
+0-100
+```
+
+9. If you had little time, low interest, or low comfort using the app, how likely would you be to delegate your participation to someone else?
+
+```text
+0-100
+```
+
+10. If you delegated, whom would you most likely choose?
 
 Allocate 100 points across options:
 
@@ -84,97 +112,97 @@ public_influencer
 would_not_delegate
 ```
 
-7. How much would the fact that delegation can be revoked with one click increase your willingness to delegate?
+11. How much would the fact that delegation can be revoked with one click increase your willingness to delegate?
 
 ```text
 0-100
 ```
 
-8. How much would visible reports of delegate actions increase your willingness to delegate?
+12. How much would visible reports of delegate actions increase your willingness to delegate?
 
 ```text
 0-100
 ```
 
-9. If your delegate supported priorities clearly different from what you expected, how likely would you be to review what happened?
+13. If your delegate supported priorities clearly different from what you expected, how likely would you be to review what happened?
 
 ```text
 0-100
 ```
 
-10. If your delegate repeatedly acted against your expectations, how likely would you be to revoke or change the delegate?
+14. If your delegate repeatedly acted against your expectations, how likely would you be to revoke or change the delegate?
 
 ```text
 0-100
 ```
 
-11. If your delegate did not use the platform for a long time, how likely would you be to revoke or change the delegate?
+15. If your delegate did not use the platform for a long time, how likely would you be to revoke or change the delegate?
 
 ```text
 0-100
 ```
 
-12. How likely would you be to read short notifications about what your delegate did?
+16. How likely would you be to read short notifications about what your delegate did?
 
 ```text
 0-100
 ```
 
-13. How likely would you be to read detailed reports about what your delegate did?
+17. How likely would you be to read detailed reports about what your delegate did?
 
 ```text
 0-100
 ```
 
-## Section 3 — If acting as a delegate
+## Section 4 — If acting as a delegate
 
 Answer this section as if you accepted responsibility to represent one or more people in the app.
 
-14. If other people delegated to you, how often would you use the platform during a planning cycle?
+18. If other people delegated to you, how often would you use the platform during a planning cycle?
 
 ```text
 0-100
 ```
 
-15. If you were a delegate, what share of the planning priorities would you realistically review before acting?
+19. If you were a delegate, what share of the planning priorities would you realistically review before acting?
 
 ```text
 0-100
 ```
 
-16. How much would knowing that your actions are visible to delegators affect your effort to act responsibly?
+20. How much would knowing that your actions are visible to delegators affect your effort to act responsibly?
 
 ```text
 0-100
 ```
 
-17. How much would knowing that delegators can revoke with one click affect your effort to act consistently with their preferences?
+21. How much would knowing that delegators can revoke with one click affect your effort to act consistently with their preferences?
 
 ```text
 0-100
 ```
 
-18. How aligned do you think your decisions would be with the preferences of someone close to you who delegated to you?
+22. How aligned do you think your decisions would be with the preferences of someone close to you who delegated to you?
 
 ```text
 0-100
 ```
 
-19. How aligned do you think your decisions would be with a large number of people who delegated to you but do not know you personally?
+23. How aligned do you think your decisions would be with a large number of people who delegated to you but do not know you personally?
 
 ```text
 0-100
 ```
 
-20. How likely would you be to write or provide a short explanation of your decisions if the app made it easy?
+24. How likely would you be to write or provide a short explanation of your decisions if the app made it easy?
 
 ```text
 0-100
 ```
 
-## Section 4 — Friction and comprehension
+## Section 5 — Friction and comprehension
 
-21. How easy would this app feel compared with doing an in-person municipal paperwork process?
+25. How easy would this app feel compared with doing an in-person municipal paperwork process?
 
 ```text
 0 = much harder than paperwork
@@ -182,39 +210,43 @@ Answer this section as if you accepted responsibility to represent one or more p
 100 = much easier than paperwork
 ```
 
-22. How confident would you be that you understand what delegation means in this app?
+26. How confident would you be that you understand what delegation means in this app?
 
 ```text
 0-100
 ```
 
-23. How confident would you be that you know how to revoke delegation in this app?
+27. How confident would you be that you know how to revoke delegation in this app?
 
 ```text
 0-100
 ```
 
-24. How much assistance would you need from another person to use the app?
+28. How much assistance would you need from another person to use the app?
 
 ```text
 0 = no assistance
 100 = constant assistance
 ```
 
-## Section 5 — Open explanation
+## Section 6 — Open explanation
 
-25. Briefly explain why you would participate directly, delegate, or avoid using the app.
+29. Briefly explain why you would use, not use, participate directly, delegate, or avoid using the app.
 
-26. Briefly explain what would make you trust or distrust a delegate.
+30. Briefly explain what would make you trust or distrust a delegate.
 
-27. Briefly explain what would make you revoke a delegate.
+31. Briefly explain what would make you revoke a delegate.
 
 ## Variables derived from this questionnaire
 
 The responses can be mapped to:
 
 ```text
-directParticipationProbability
+platformTrialProbability
+monthlyPlatformUseProbability
+notificationDrivenUseProbability
+directReviewProbability
+directPlanningParticipationProbability
 delegationProbability
 preferredDelegateTypeDistribution
 revocationEaseEffect
