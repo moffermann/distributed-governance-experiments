@@ -34,6 +34,8 @@ Sweeps on the intact architecture, reporting the Core-distributed ÷ status-quo 
 
 - **`fiscalizerCollusion`** (attacks Proposition 4's collusion-proofness): with probability `collusionRate`, a diverting opportunist's detection is bought off — and sophisticated opportunists anticipate it, so effective detection also falls inside the deterrence inequality. Sweep `collusionRate` ∈ {0.15, 0.30, 0.50}.
 - **`agendaCapture`** (attacks docs/87's open problem): a captured share of the distributed default vector is redirected to a favored project set — `score′ = (1−severity)·w + severity·1[favored]`. Sweep `severity` ∈ {0.15, 0.30, 0.50}.
+
+  *Post-run author clarification (2026-07-06, results untouched):* as implemented, this attack rewrites a published vector, which presupposes a publishing choke point — a property of the tutored-with-mandated-agenda regime only. It therefore measures the price of keeping that choke point; the distributed construction's analog attack is `coordinatedSignalBias`, run in the same program.
 - **`coordinatedSignalBias`** (E7b's geometry in this engine): a share of attentive citizens allocates to a favored set instead of their own information. Sweep `share` ∈ {0.10, 0.30, 0.50}.
 
 Attack implementations must consume zero RNG draws when disabled, so all committed baselines stay byte-identical.

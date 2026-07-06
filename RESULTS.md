@@ -62,7 +62,7 @@ Engine v0.5, `behavioral-llm-calibrated` population, intact reference V = 0.277 
 | **Whole deterrence stack removed (K10)** | **V 0.110, ratio 0.87× — below the status quo** |
 | Planning vector → central (K6) | ΔV −0.062 (largest single knock-out) |
 | Default layer → salience (K5) | selection 0.616 → 0.174; delivery floor holds (ΔV −0.042) |
-| Only effective attack: `agendaCapture` | ΔV −0.035 at severity 0.5; collusion and signal bias neutralized |
+| Only effective attack: `agendaCapture` (tutored choke point — prices keeping a mandated agenda, not the architecture's distributed spirit) | ΔV −0.035 at severity 0.5; collusion and signal bias neutralized |
 | Sweep minimum across all single parameters | 1.63× (signal mix 0.2) — no cliffs |
 | Advantage at 70% opportunist executors | **2.39×** (grows with pool dirtiness) |
 

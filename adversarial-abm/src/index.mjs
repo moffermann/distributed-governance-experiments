@@ -224,7 +224,10 @@ const ARCHITECTURES = {
   },
   core_v0_tutored_central_planning: {
     id: "core_v0_tutored_central_planning",
-    label: "Core v0 tutored / central planning default",
+    // Author clarification (2026-07-06): central planning is NOT part of Core
+    // v0's architecture proposal; this variant is the TRANSITION SCAFFOLD — a
+    // tutored deployment inheriting the incumbent authority's default vector.
+    label: "Core v0 controls / transition scaffold: incumbent central default (not the architecture's proposal)",
     ...coreBase,
     planningSource: "central",
   },
@@ -327,9 +330,11 @@ const cloneWorld = (world) => ({
 
 const openProjects = (sim) => sim.projects.filter((p) => !p.closed);
 const availableBudget = (scenario) => scenario.population.citizens * scenario.cycles;
-// agendaCapture (docs/87's threat, in-engine): a captured share of the
-// DISTRIBUTED default vector is redirected toward the favored set. Central
-// planning is not the attack's target here.
+// agendaCapture — author clarification (2026-07-06): this attack presupposes a
+// PUBLISHING CHOKE POINT (someone who can rewrite the published vector), which
+// exists only in the tutored-with-mandated-agenda regime. It therefore measures
+// the price of keeping that choke point, NOT a vulnerability of distributed
+// construction — whose analog attack is coordinatedSignalBias (measured, robust).
 const planningScore = (p, arch, sim, scenario) => {
   const base = arch.planningSource === "distributed" ? p.distributedPlanningWeight : p.centralPlanningWeight;
   const capture = scenario.attacks?.agendaCapture;

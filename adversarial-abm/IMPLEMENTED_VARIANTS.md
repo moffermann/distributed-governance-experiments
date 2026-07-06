@@ -83,6 +83,8 @@ failure because the budget was spent through weak rules
 
 ## 4. `core_v0_tutored_central_planning`
 
+**Framing (author clarification, 2026-07-06): this variant is a transition scaffold, not the architecture.** Centralized planning is not part of Core v0's formal proposal; it appears here because a tutored deployment may inherit the incumbent authority's default vector while the downstream controls are already Core v0's. The architecture's spirit in semi-open and open regimes is a fully distributed agenda; tutored-with-distributed-planning is the not-yet-formalized combination (the master corpus's parallel-agenda design direction is its candidate).
+
 Simplified Core v0 downstream controls with a central low-information default planning layer.
 
 Simplified traits:
