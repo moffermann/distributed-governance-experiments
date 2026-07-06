@@ -1,0 +1,15 @@
+{
+  "scenario_id": "ai_assisted_onboarding",
+  "description": "Strong tutor layer reduces onboarding friction and increases decision clarity.",
+  "seed": 42,
+  "ticks": 104,
+  "population_size": 1000,
+  "initial_awareness": 0.08,
+  "campaign_intensity": 0.025,
+  "onboarding_friction": 0.24,
+  "interface_complexity": 0.30,
+  "ai_tutor_quality": 0.82,
+  "decision_clarity": 0.76,
+  "public_legitimacy": 0.50,
+  "privacy_guarantee_strength": 0.62
+}
