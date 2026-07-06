@@ -70,16 +70,20 @@ Responde internamente las preguntas del cuestionario:
 1. ¿Entiendes que no estás donando dinero propio?
 2. ¿Entiendes que los recursos vienen de fondos públicos/impuestos ya recaudados?
 3. ¿Entiendes que la revocación puede hacerse dentro de la app con un clic?
-4. ¿Qué tan probable sería que participes directamente?
-5. ¿Qué tan probable sería que delegues?
-6. ¿En quién delegarías?
-7. ¿Qué efecto tiene la revocación con un clic?
-8. ¿Qué efecto tienen los reportes visibles?
-9. ¿Leerías reportes cortos o detallados?
-10. ¿Revocarías ante desalineación o inactividad?
-11. Si fueras delegado, ¿qué tan seguido usarías la plataforma?
-12. Si fueras delegado, ¿cuánto del vector de planificación revisarías?
-13. ¿Qué tan alineado estarías con un delegante cercano versus impersonal?
+4. ¿Qué tan probable sería que abras o pruebes la aplicación al menos una vez?
+5. ¿Qué tan probable sería que uses la aplicación al menos una vez al mes?
+6. ¿Qué tan probable sería que uses la aplicación si recibes recordatorios simples?
+7. ¿Qué tan probable sería que participes directamente revisando prioridades o proyectos?
+8. ¿Qué tan probable sería que participes directamente en planificación o priorización en vez de sólo leer o delegar?
+9. ¿Qué tan probable sería que delegues?
+10. ¿En quién delegarías?
+11. ¿Qué efecto tiene la revocación con un clic?
+12. ¿Qué efecto tienen los reportes visibles?
+13. ¿Leerías reportes cortos o detallados?
+14. ¿Revocarías ante desalineación o inactividad?
+15. Si fueras delegado, ¿qué tan seguido usarías la plataforma?
+16. Si fueras delegado, ¿cuánto del vector de planificación revisarías?
+17. ¿Qué tan alineado estarías con un delegante cercano versus impersonal?
 
 ## Output format
 
@@ -92,7 +96,7 @@ Devuelve sólo el siguiente objeto, con valores entre 0 y 1:
   "model_or_sample_info": {
     "model_name": "{{model_name}}",
     "temperature": {{temperature}},
-    "prompt_version": "v0.1",
+    "prompt_version": "v0.2",
     "date": "{{date}}",
     "country": "{{country_context}}",
     "language": "es"
@@ -104,8 +108,14 @@ Devuelve sólo el siguiente objeto, con valores entre 0 y 1:
     "one_click_revocation": true,
     "understanding_score": 0.0
   },
+  "platform_behavior": {
+    "platform_trial_probability": 0.0,
+    "monthly_platform_use_probability": 0.0,
+    "notification_driven_use_probability": 0.0
+  },
   "citizen_behavior": {
-    "direct_participation_probability": 0.0,
+    "direct_review_probability": 0.0,
+    "direct_planning_participation_probability": 0.0,
     "delegation_probability": 0.0,
     "preferred_delegate_type_distribution": {
       "family_member": 0.0,
