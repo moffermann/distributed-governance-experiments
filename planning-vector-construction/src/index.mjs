@@ -18,7 +18,8 @@ for (let i = 0; i < args.length; i++) {
   else { cli[key] = next; i++; }
 }
 
-const scenarioPath = resolve(cli.scenario ?? "experiments/planning-vector-construction/scenarios/core-v0-planning-channels.json");
+const HERE = decodeURIComponent(new URL(".", import.meta.url).pathname).replace(/^\/([A-Za-z]:)/, "$1");
+const scenarioPath = resolve(cli.scenario ?? resolve(HERE, "../scenarios/core-v0-planning-channels.json"));
 const scenario = JSON.parse(readFileSync(scenarioPath, "utf8"));
 if (cli.runs) scenario.runs = Number.parseInt(cli.runs, 10);
 if (cli.seed) scenario.seed = Number.parseInt(cli.seed, 10);
@@ -423,7 +424,7 @@ const csvTable = (summary) => {
   return rows.join("\n");
 };
 const writeOutputs = ({ raw, summary }) => {
-  const outDir = resolve("experiments/planning-vector-construction/results", scenario.scenario_id);
+  const outDir = resolve(HERE, "../results", scenario.scenario_id);
   mkdirSync(outDir, { recursive: true });
   const base = `${scenario.scenario_id}-seed${scenario.seed}-runs${scenario.runs}`;
   if (scenario.outputs?.rawJson) writeFileSync(resolve(outDir, `${base}.raw.json`), JSON.stringify(raw, null, 2));

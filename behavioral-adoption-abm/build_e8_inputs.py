@@ -63,13 +63,16 @@ def trajectory(history: list[dict]) -> tuple[list[float], list[float], float]:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate E8 behavioral participation inputs.")
     parser.add_argument("--seeds", type=int, default=10)
-    parser.add_argument("--output", default=str(ROOT.parent.parent / "research" / "e8-behavioral-inputs.json"))
+    # The committed copy consumed by the master paper's E8 lives in the master
+    # repository (distributed-governance-research/research/e8-behavioral-inputs.json);
+    # pass --output pointing there when regenerating it.
+    parser.add_argument("--output", default=str(ROOT / "outputs" / "e8-behavioral-inputs.json"))
     args = parser.parse_args()
 
     payload = {
         "generated": date.today().isoformat(),
         "mapping": "research/e8-behavioral-participation-design.md",
-        "behavioral_experiment": "experiments/behavioral-adoption-abm",
+        "behavioral_experiment": "github.com/moffermann/distributed-governance-experiments (behavioral-adoption-abm)",
         "paper_cycles": PAPER_CYCLES,
         "note": "d/pi per cycle from 104-week trajectories; delegation folded into informed (author-approved); llm-elicited priors, not empirical data.",
         "populations": {},
