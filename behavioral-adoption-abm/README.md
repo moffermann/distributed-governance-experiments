@@ -143,12 +143,14 @@ Research design:
 - [`RUN_2026_07_06_MESA_RESULTS.md`](RUN_2026_07_06_MESA_RESULTS.md) — first (pre-audit) Mesa run, kept as a dated record.
 - [`RUN_2026_07_06_POST_AUDIT_RESULTS.md`](RUN_2026_07_06_POST_AUDIT_RESULTS.md) — post-audit 10-seed sweep results and interpretation (pre-planning engine, kept as a dated record).
 - [`RUN_2026_07_06_PLANNING_LAYER_RESULTS.md`](RUN_2026_07_06_PLANNING_LAYER_RESULTS.md) — end-to-end planning results: emergent attentive share, distributed-vs-central comparison, value feedback loop, prediction accounting.
+- [`RUN_2026_07_06_LLM_CALIBRATED_RESULTS.md`](RUN_2026_07_06_LLM_CALIBRATED_RESULTS.md) — LLM-elicited priors vs synthetic: what is prior-sensitive and what is structural.
 
 Executable prototype:
 
 - [`run_experiment.py`](run_experiment.py) — convenience command-line runner.
 - [`run_sweep.py`](run_sweep.py) — multi-seed sweep across all scenarios with mean/min/max summaries and viability-flag frequencies.
 - [`run_planning_comparison.py`](run_planning_comparison.py) — distributed-vs-central sweep over planning attendance, with an attentive-only (no-delegation) variant.
+- [`apply_llm_calibration.py`](apply_llm_calibration.py) — maps a `planning-behavior-calibration` LLM panel onto ABM parameters and writes `scenarios/llm_calibrated.json` with provenance (see `OUTPUT_TO_BEHAVIORAL_ABM.md` in that experiment).
 - [`src/behavioral_adoption_abm/core.py`](src/behavioral_adoption_abm/core.py) — MVP model, agents, metrics, scenario loading, and result writers.
 - [`src/behavioral_adoption_abm/run.py`](src/behavioral_adoption_abm/run.py) — package CLI entry point.
 - [`scenarios/`](scenarios/) — baseline and stress scenarios.

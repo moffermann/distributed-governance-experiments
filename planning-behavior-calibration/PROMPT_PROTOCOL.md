@@ -63,6 +63,8 @@ raw output
 validated output
 ```
 
+When the provider does not expose temperature (e.g., the codex-exec backend), record `provider-default` and rely on persona variation for distributional spread.
+
 ## Why not one response per archetype?
 
 One response gives a point estimate.

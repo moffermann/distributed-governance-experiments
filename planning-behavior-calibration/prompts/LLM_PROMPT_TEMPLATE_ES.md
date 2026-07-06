@@ -84,6 +84,7 @@ Responde internamente las preguntas del cuestionario:
 15. Si fueras delegado, ¿qué tan seguido usarías la plataforma?
 16. Si fueras delegado, ¿cuánto del vector de planificación revisarías?
 17. ¿Qué tan alineado estarías con un delegante cercano versus impersonal?
+18. Si un familiar o vecino te pidiera ser SU delegado, ¿qué tan probable es que aceptes?
 
 ## Output format
 
@@ -96,7 +97,7 @@ Devuelve sólo el siguiente objeto, con valores entre 0 y 1:
   "model_or_sample_info": {
     "model_name": "{{model_name}}",
     "temperature": {{temperature}},
-    "prompt_version": "v0.2",
+    "prompt_version": "v0.3",
     "date": "{{date}}",
     "country": "{{country_context}}",
     "language": "es"
@@ -137,6 +138,7 @@ Devuelve sólo el siguiente objeto, con valores entre 0 y 1:
     "revocation_likelihood_after_inactivity": 0.0
   },
   "delegate_behavior": {
+    "would_accept_delegation": 0.0,
     "delegate_platform_use_rate": 0.0,
     "delegate_planning_coverage": 0.0,
     "delegate_responsibility_effect": 0.0,

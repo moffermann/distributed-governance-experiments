@@ -122,6 +122,28 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "stale_signal_retention": 0.50,
     "central_planner_bandwidth_fraction": 0.30,
     "central_planner_noise": 0.25,
+    # Attendance propensity per participation mode at planning rounds.
+    # Calibratable from planning-behavior-calibration panel output.
+    "planning_attendance_base": {
+        "direct_active": 0.55,
+        "hybrid": 0.40,
+        "profile_driven": 0.15,
+    },
+    # Beta(a, b) priors for citizen traits. Synthetic defaults; replaceable by
+    # llm-elicited or empirically fitted distributions (mark provenance in the
+    # scenario file).
+    "trait_distributions": {
+        "digital_confidence": [2.2, 2.0],
+        "civic_interest": [1.7, 2.3],
+        "privacy_concern": [2.2, 2.1],
+        "friction_tolerance": [2.0, 2.2],
+        "social_influence_weight": [2.0, 2.0],
+        "attention_budget": [1.6, 2.6],
+        "need_relevance": [2.0, 2.5],
+        "ideological_openness": [2.0, 1.8],
+        "control_preference": [2.0, 2.0],
+        "automation_trust": [1.8, 2.2],
+    },
     "social_graph_degree": 8,
     "random_social_tie_probability": 0.015,
     "participation_temperature": 0.75,
@@ -303,16 +325,17 @@ class CitizenAgent(mesa.Agent):  # type: ignore[misc]
         self.trust_core = clamp(rng.gauss(cfg["initial_trust_mean"], cfg["initial_trust_spread"]))
         self.trust_evidence = clamp(rng.gauss(0.48, 0.18))
         self.trust_fiscalization = clamp(rng.gauss(0.46, 0.18))
-        self.digital_confidence = clamp(rng.betavariate(2.2, 2.0))
-        self.civic_interest = clamp(rng.betavariate(1.7, 2.3))
-        self.privacy_concern = clamp(rng.betavariate(2.2, 2.1))
-        self.friction_tolerance = clamp(rng.betavariate(2.0, 2.2))
-        self.social_influence_weight = clamp(rng.betavariate(2.0, 2.0))
-        self.attention_budget = clamp(rng.betavariate(1.6, 2.6))
-        self.need_relevance = clamp(rng.betavariate(2.0, 2.5))
-        self.ideological_openness = clamp(rng.betavariate(2.0, 1.8))
-        self.control_preference = clamp(rng.betavariate(2.0, 2.0))
-        self.automation_trust = clamp(rng.betavariate(1.8, 2.2))
+        traits = cfg["trait_distributions"]
+        self.digital_confidence = clamp(rng.betavariate(*traits["digital_confidence"]))
+        self.civic_interest = clamp(rng.betavariate(*traits["civic_interest"]))
+        self.privacy_concern = clamp(rng.betavariate(*traits["privacy_concern"]))
+        self.friction_tolerance = clamp(rng.betavariate(*traits["friction_tolerance"]))
+        self.social_influence_weight = clamp(rng.betavariate(*traits["social_influence_weight"]))
+        self.attention_budget = clamp(rng.betavariate(*traits["attention_budget"]))
+        self.need_relevance = clamp(rng.betavariate(*traits["need_relevance"]))
+        self.ideological_openness = clamp(rng.betavariate(*traits["ideological_openness"]))
+        self.control_preference = clamp(rng.betavariate(*traits["control_preference"]))
+        self.automation_trust = clamp(rng.betavariate(*traits["automation_trust"]))
         self.values_position = rng.random()
         # Media reach limit for campaign-driven awareness (launch-stage ceiling).
         self.media_reachable = bernoulli(rng, cfg["awareness_ceiling"])
@@ -863,7 +886,7 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
         weights = [0.0] * j_count
         attentive = 0
         represented_weight = 0.0
-        attendance = {"direct_active": 0.55, "hybrid": 0.40, "profile_driven": 0.15}
+        attendance = cfg["planning_attendance_base"]
         for c in self.citizens:
             base = attendance.get(c.use_state)
             if base is None:

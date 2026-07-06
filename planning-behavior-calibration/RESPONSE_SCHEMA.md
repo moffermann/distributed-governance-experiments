@@ -113,6 +113,7 @@ All fields use `[0, 1]`.
 Required fields:
 
 ```text
+would_accept_delegation
 delegate_platform_use_rate
 delegate_planning_coverage
 delegate_responsibility_effect
@@ -121,6 +122,8 @@ alignment_with_close_delegator
 alignment_with_impersonal_delegators
 delegate_report_quality_willingness
 ```
+
+`would_accept_delegation` (added in prompt version v0.3) is the probability of accepting to act as delegate if a family member or neighbor asked — it anchors the behavioral ABM's `micro_delegate_willingness` parameter.
 
 ## `friction`
 

@@ -179,8 +179,10 @@ Possible calibration sources:
 Calibration discipline:
 
 ```text
-Mark every parameter as synthetic, assumed, literature-derived, prototype-derived, or pilot-derived.
+Mark every parameter as synthetic, assumed, literature-derived, llm-elicited, prototype-derived, or pilot-derived.
 ```
+
+`llm-elicited` (added 2026-07-06) sits between `assumed` and `prototype-derived`: structured synthetic priors from the planning-behavior-calibration panel, model-dependent and subject to stated-intention bias, never a substitute for human data.
 
 ## Stage 6 — Paper-grade replication package
 

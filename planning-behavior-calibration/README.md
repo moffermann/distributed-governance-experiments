@@ -6,7 +6,7 @@
 
 ## Status
 
-Design baseline for a third experiment.
+Executable LLM panel added (`src/run_llm_panel.py`, prompt version v0.3): runs the Spanish instrument against any OpenAI-compatible endpoint (LM Studio locally), enforces the response schema via structured output, stores raw + normalized responses with validation warnings, and fits per-archetype and pooled distributions. First panel run recorded under `results/`. Outputs map into the behavioral adoption ABM via [`OUTPUT_TO_BEHAVIORAL_ABM.md`](OUTPUT_TO_BEHAVIORAL_ABM.md).
 
 This experiment is separate from:
 
@@ -84,12 +84,16 @@ Without this context, answers about delegation and participation will be badly c
 - [`ARCHETYPES.md`](ARCHETYPES.md) — respondent archetypes for LLM and later human sampling.
 - [`QUESTIONNAIRE_ES.md`](QUESTIONNAIRE_ES.md) — Spanish survey/questionnaire instrument.
 - [`PROMPT_PROTOCOL.md`](PROMPT_PROTOCOL.md) — LLM prompting protocol and reproducibility requirements.
-- [`RESPONSE_SCHEMA.json`](RESPONSE_SCHEMA.json) — structured response schema.
+- [`RESPONSE_SCHEMA.md`](RESPONSE_SCHEMA.md) — structured response schema contract.
 - [`DISTRIBUTION_FITTING.md`](DISTRIBUTION_FITTING.md) — fitting beta/logit-normal/mixture distributions and plotting.
 - [`HUMAN_STUDY_PROTOCOL.md`](HUMAN_STUDY_PROTOCOL.md) — how the same instrument can be used with humans.
 - [`OUTPUT_TO_PLANNING_VECTOR_MODEL.md`](OUTPUT_TO_PLANNING_VECTOR_MODEL.md) — mapping fitted distributions into `planning-vector-construction`.
+- [`OUTPUT_TO_BEHAVIORAL_ABM.md`](OUTPUT_TO_BEHAVIORAL_ABM.md) — mapping panel outputs into `behavioral-adoption-abm` parameters, with validation targets and provenance rules.
 - [`prompts/LLM_PROMPT_TEMPLATE_ES.md`](prompts/LLM_PROMPT_TEMPLATE_ES.md) — reusable Spanish LLM prompt template.
 - [`instruments/SURVEY_INSTRUMENT_ES.md`](instruments/SURVEY_INSTRUMENT_ES.md) — human-facing Spanish survey draft.
+- [`src/run_llm_panel.py`](src/run_llm_panel.py) — executable LLM panel runner (LM Studio / any OpenAI-compatible endpoint / codex-exec backend; standard library only).
+- [`RUN_2026_07_06_LLM_PANEL_RESULTS.md`](RUN_2026_07_06_LLM_PANEL_RESULTS.md) — first panel runs: backend benchmark, pooled distributions, archetype differentiation, model sensitivity.
+- `results/` — dated panel runs: raw responses, normalized responses, fitted summaries.
 
 ## Evidence status
 
