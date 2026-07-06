@@ -1,0 +1,2970 @@
+{
+  "metadata": {
+    "run_id": "2026-07-06-gemma-3-4b-n15",
+    "respondent_source": "llm",
+    "model_name": "google/gemma-3-4b",
+    "provider": "http://localhost:1234/v1",
+    "temperature": 0.7,
+    "prompt_version": "v0.3",
+    "date": "2026-07-06",
+    "country": "Chile",
+    "language": "es",
+    "persona_seed": 42,
+    "n_requested": 90,
+    "n_ok": 90,
+    "n_failed": 0,
+    "methodological_statement": "LLM-elicited synthetic priors over behavioral parameters; not real citizens, not empirical data (PROMPT_PROTOCOL.md)."
+  },
+  "failures": [],
+  "pooled": {
+    "citizen_behavior.delegation_probability": {
+      "n": 90,
+      "mean": 0.7689,
+      "sd": 0.0514,
+      "p10": 0.7,
+      "p50": 0.8,
+      "p90": 0.8,
+      "beta_moments": [
+        50.9223,
+        15.3061
+      ]
+    },
+    "citizen_behavior.direct_planning_participation_probability": {
+      "n": 90,
+      "mean": 0.1391,
+      "sd": 0.0613,
+      "p10": 0.1,
+      "p50": 0.1,
+      "p90": 0.2,
+      "beta_moments": [
+        4.3005,
+        26.6136
+      ]
+    },
+    "citizen_behavior.direct_review_probability": {
+      "n": 90,
+      "mean": 0.2822,
+      "sd": 0.117,
+      "p10": 0.2,
+      "p50": 0.25,
+      "p90": 0.4,
+      "beta_moments": [
+        3.8957,
+        9.908
+      ]
+    },
+    "citizen_behavior.preferred_delegate_type_distribution.family_member": {
+      "n": 90,
+      "mean": 0.3406,
+      "sd": 0.0702,
+      "p10": 0.25,
+      "p50": 0.32,
+      "p90": 0.4348,
+      "beta_moments": [
+        15.163,
+        29.358
+      ]
+    },
+    "citizen_behavior.preferred_delegate_type_distribution.local_community_leader": {
+      "n": 90,
+      "mean": 0.0415,
+      "sd": 0.0251,
+      "p10": 0.0,
+      "p50": 0.04,
+      "p90": 0.0827,
+      "beta_moments": [
+        2.5813,
+        59.6558
+      ]
+    },
+    "citizen_behavior.preferred_delegate_type_distribution.partner_or_spouse": {
+      "n": 90,
+      "mean": 0.2288,
+      "sd": 0.0472,
+      "p10": 0.1654,
+      "p50": 0.24,
+      "p90": 0.3,
+      "beta_moments": [
+        17.8751,
+        60.2406
+      ]
+    },
+    "citizen_behavior.preferred_delegate_type_distribution.political_party_or_political_actor": {
+      "n": 90,
+      "mean": 0.0346,
+      "sd": 0.0154,
+      "p10": 0.0,
+      "p50": 0.04,
+      "p90": 0.0435,
+      "beta_moments": [
+        4.8458,
+        135.3684
+      ]
+    },
+    "citizen_behavior.preferred_delegate_type_distribution.public_influencer": {
+      "n": 90,
+      "mean": 0.0339,
+      "sd": 0.0151,
+      "p10": 0.0,
+      "p50": 0.04,
+      "p90": 0.0435,
+      "beta_moments": [
+        4.8578,
+        138.5728
+      ]
+    },
+    "citizen_behavior.preferred_delegate_type_distribution.public_institution_or_ngo": {
+      "n": 90,
+      "mean": 0.0338,
+      "sd": 0.0151,
+      "p10": 0.0,
+      "p50": 0.04,
+      "p90": 0.0435,
+      "beta_moments": [
+        4.7729,
+        136.6092
+      ]
+    },
+    "citizen_behavior.preferred_delegate_type_distribution.technical_expert": {
+      "n": 90,
+      "mean": 0.0341,
+      "sd": 0.0159,
+      "p10": 0.0,
+      "p50": 0.04,
+      "p90": 0.0435,
+      "beta_moments": [
+        4.3951,
+        124.3243
+      ]
+    },
+    "citizen_behavior.preferred_delegate_type_distribution.trusted_friend": {
+      "n": 90,
+      "mean": 0.1425,
+      "sd": 0.0359,
+      "p10": 0.0896,
+      "p50": 0.1334,
+      "p90": 0.2,
+      "beta_moments": [
+        13.4047,
+        80.6581
+      ]
+    },
+    "citizen_behavior.preferred_delegate_type_distribution.trusted_neighbor": {
+      "n": 90,
+      "mean": 0.0923,
+      "sd": 0.0226,
+      "p10": 0.0769,
+      "p50": 0.0845,
+      "p90": 0.12,
+      "beta_moments": [
+        15.0675,
+        148.1213
+      ]
+    },
+    "citizen_behavior.preferred_delegate_type_distribution.would_not_delegate": {
+      "n": 90,
+      "mean": 0.0179,
+      "sd": 0.0266,
+      "p10": 0.0,
+      "p50": 0.0,
+      "p90": 0.0481,
+      "beta_moments": [
+        0.4281,
+        23.4279
+      ]
+    },
+    "citizen_behavior.report_read_probability_detailed": {
+      "n": 90,
+      "mean": 0.1678,
+      "sd": 0.0786,
+      "p10": 0.1,
+      "p50": 0.15,
+      "p90": 0.3,
+      "beta_moments": [
+        3.6205,
+        17.9587
+      ]
+    },
+    "citizen_behavior.report_read_probability_short": {
+      "n": 90,
+      "mean": 0.3779,
+      "sd": 0.1227,
+      "p10": 0.3,
+      "p50": 0.3,
+      "p90": 0.6,
+      "beta_moments": [
+        5.522,
+        9.0913
+      ]
+    },
+    "citizen_behavior.report_visibility_effect": {
+      "n": 90,
+      "mean": 0.6558,
+      "sd": 0.0722,
+      "p10": 0.59,
+      "p50": 0.7,
+      "p90": 0.7,
+      "beta_moments": [
+        27.7271,
+        14.5541
+      ]
+    },
+    "citizen_behavior.revocation_ease_effect": {
+      "n": 90,
+      "mean": 0.8756,
+      "sd": 0.0473,
+      "p10": 0.8,
+      "p50": 0.9,
+      "p90": 0.9,
+      "beta_moments": [
+        41.7932,
+        5.9401
+      ]
+    },
+    "citizen_behavior.revocation_likelihood_after_inactivity": {
+      "n": 90,
+      "mean": 0.7632,
+      "sd": 0.1399,
+      "p10": 0.5,
+      "p50": 0.8,
+      "p90": 0.8644,
+      "beta_moments": [
+        6.2836,
+        1.9491
+      ]
+    },
+    "citizen_behavior.revocation_likelihood_after_misalignment": {
+      "n": 90,
+      "mean": 0.67,
+      "sd": 0.1048,
+      "p10": 0.6,
+      "p50": 0.65,
+      "p90": 0.8,
+      "beta_moments": [
+        12.8106,
+        6.3097
+      ]
+    },
+    "confidence.overall": {
+      "n": 90,
+      "mean": 0.6533,
+      "sd": 0.1407,
+      "p10": 0.45,
+      "p50": 0.65,
+      "p90": 0.85,
+      "beta_moments": [
+        6.8257,
+        3.623
+      ]
+    },
+    "context_understanding.understanding_score": {
+      "n": 90,
+      "mean": 0.7094,
+      "sd": 0.0722,
+      "p10": 0.6,
+      "p50": 0.7,
+      "p90": 0.8,
+      "beta_moments": [
+        27.3254,
+        11.1912
+      ]
+    },
+    "delegate_behavior.alignment_with_close_delegator": {
+      "n": 90,
+      "mean": 0.8064,
+      "sd": 0.0738,
+      "p10": 0.7,
+      "p50": 0.8,
+      "p90": 0.9,
+      "beta_moments": [
+        22.3302,
+        5.3595
+      ]
+    },
+    "delegate_behavior.alignment_with_impersonal_delegators": {
+      "n": 90,
+      "mean": 0.1963,
+      "sd": 0.0719,
+      "p10": 0.1,
+      "p50": 0.2,
+      "p90": 0.3,
+      "beta_moments": [
+        5.8036,
+        23.7562
+      ]
+    },
+    "delegate_behavior.delegate_planning_coverage": {
+      "n": 90,
+      "mean": 0.4272,
+      "sd": 0.1313,
+      "p10": 0.3,
+      "p50": 0.4,
+      "p90": 0.6,
+      "beta_moments": [
+        5.6398,
+        7.5614
+      ]
+    },
+    "delegate_behavior.delegate_platform_use_rate": {
+      "n": 90,
+      "mean": 0.6106,
+      "sd": 0.1365,
+      "p10": 0.4,
+      "p50": 0.6,
+      "p90": 0.8,
+      "beta_moments": [
+        7.1785,
+        4.5788
+      ]
+    },
+    "delegate_behavior.delegate_report_quality_willingness": {
+      "n": 90,
+      "mean": 0.7641,
+      "sd": 0.164,
+      "p10": 0.5,
+      "p50": 0.75,
+      "p90": 0.95,
+      "beta_moments": [
+        4.3568,
+        1.3449
+      ]
+    },
+    "delegate_behavior.delegate_responsibility_effect": {
+      "n": 90,
+      "mean": 0.7301,
+      "sd": 0.1964,
+      "p10": 0.4,
+      "p50": 0.8,
+      "p90": 0.9,
+      "beta_moments": [
+        2.9987,
+        1.1088
+      ]
+    },
+    "delegate_behavior.delegate_revocation_discipline_effect": {
+      "n": 90,
+      "mean": 0.6408,
+      "sd": 0.2304,
+      "p10": 0.3,
+      "p50": 0.7,
+      "p90": 0.9,
+      "beta_moments": [
+        2.1385,
+        1.1989
+      ]
+    },
+    "delegate_behavior.would_accept_delegation": {
+      "n": 90,
+      "mean": 0.7217,
+      "sd": 0.1243,
+      "p10": 0.6,
+      "p50": 0.7,
+      "p90": 0.9,
+      "beta_moments": [
+        8.6623,
+        3.3409
+      ]
+    },
+    "friction.need_for_assistance": {
+      "n": 90,
+      "mean": 0.5556,
+      "sd": 0.2221,
+      "p10": 0.3,
+      "p50": 0.5,
+      "p90": 0.805,
+      "beta_moments": [
+        2.2248,
+        1.7797
+      ]
+    },
+    "friction.perceived_ease_of_use": {
+      "n": 90,
+      "mean": 0.5628,
+      "sd": 0.1557,
+      "p10": 0.39,
+      "p50": 0.6,
+      "p90": 0.7,
+      "beta_moments": [
+        5.1484,
+        3.9993
+      ]
+    },
+    "friction.perceived_understanding": {
+      "n": 90,
+      "mean": 0.6367,
+      "sd": 0.1737,
+      "p10": 0.3,
+      "p50": 0.7,
+      "p90": 0.8,
+      "beta_moments": [
+        4.2472,
+        2.4238
+      ]
+    },
+    "platform_behavior.monthly_platform_use_probability": {
+      "n": 90,
+      "mean": 0.3,
+      "sd": 0.0989,
+      "p10": 0.2,
+      "p50": 0.3,
+      "p90": 0.4,
+      "beta_moments": [
+        6.1432,
+        14.3341
+      ]
+    },
+    "platform_behavior.notification_driven_use_probability": {
+      "n": 90,
+      "mean": 0.4241,
+      "sd": 0.1556,
+      "p10": 0.15,
+      "p50": 0.45,
+      "p90": 0.605,
+      "beta_moments": [
+        3.8519,
+        5.2298
+      ]
+    },
+    "platform_behavior.platform_trial_probability": {
+      "n": 90,
+      "mean": 0.5578,
+      "sd": 0.1583,
+      "p10": 0.3,
+      "p50": 0.6,
+      "p90": 0.7,
+      "beta_moments": [
+        4.9344,
+        3.9121
+      ]
+    }
+  },
+  "by_archetype": {
+    "A1": {
+      "citizen_behavior.delegation_probability": {
+        "n": 15,
+        "mean": 0.7367,
+        "sd": 0.0464,
+        "p10": 0.7,
+        "p50": 0.7,
+        "p90": 0.8,
+        "beta_moments": [
+          65.5595,
+          23.4353
+        ]
+      },
+      "citizen_behavior.direct_planning_participation_probability": {
+        "n": 15,
+        "mean": 0.098,
+        "sd": 0.0293,
+        "p10": 0.05,
+        "p50": 0.1,
+        "p90": 0.138,
+        "beta_moments": [
+          10.0221,
+          92.2443
+        ]
+      },
+      "citizen_behavior.direct_review_probability": {
+        "n": 15,
+        "mean": 0.2533,
+        "sd": 0.1147,
+        "p10": 0.1,
+        "p50": 0.3,
+        "p90": 0.4,
+        "beta_moments": [
+          3.3892,
+          9.9892
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.family_member": {
+        "n": 15,
+        "mean": 0.4272,
+        "sd": 0.0689,
+        "p10": 0.3388,
+        "p50": 0.4348,
+        "p90": 0.492,
+        "beta_moments": [
+          21.6069,
+          28.9699
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.local_community_leader": {
+        "n": 15,
+        "mean": 0.0304,
+        "sd": 0.0165,
+        "p10": 0.0,
+        "p50": 0.04,
+        "p90": 0.0435,
+        "beta_moments": [
+          3.2672,
+          104.1709
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.partner_or_spouse": {
+        "n": 15,
+        "mean": 0.2072,
+        "sd": 0.0425,
+        "p10": 0.16,
+        "p50": 0.2,
+        "p90": 0.2579,
+        "beta_moments": [
+          18.6684,
+          71.4454
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.political_party_or_political_actor": {
+        "n": 15,
+        "mean": 0.0349,
+        "sd": 0.0186,
+        "p10": 0.0038,
+        "p50": 0.04,
+        "p90": 0.0453,
+        "beta_moments": [
+          3.3444,
+          92.548
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.public_influencer": {
+        "n": 15,
+        "mean": 0.0306,
+        "sd": 0.0166,
+        "p10": 0.0037,
+        "p50": 0.04,
+        "p90": 0.0435,
+        "beta_moments": [
+          3.2788,
+          103.8883
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.public_institution_or_ngo": {
+        "n": 15,
+        "mean": 0.0292,
+        "sd": 0.0173,
+        "p10": 0.0,
+        "p50": 0.04,
+        "p90": 0.0435,
+        "beta_moments": [
+          2.727,
+          90.8147
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.technical_expert": {
+        "n": 15,
+        "mean": 0.0292,
+        "sd": 0.0173,
+        "p10": 0.0,
+        "p50": 0.04,
+        "p90": 0.0435,
+        "beta_moments": [
+          2.727,
+          90.8147
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.trusted_friend": {
+        "n": 15,
+        "mean": 0.1173,
+        "sd": 0.0396,
+        "p10": 0.0828,
+        "p50": 0.1,
+        "p90": 0.1591,
+        "beta_moments": [
+          7.6291,
+          57.4136
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.trusted_neighbor": {
+        "n": 15,
+        "mean": 0.0882,
+        "sd": 0.0209,
+        "p10": 0.0768,
+        "p50": 0.087,
+        "p90": 0.112,
+        "beta_moments": [
+          16.0747,
+          166.2116
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.would_not_delegate": {
+        "n": 15,
+        "mean": 0.006,
+        "sd": 0.0136,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 0.0278,
+        "beta_moments": [
+          0.1864,
+          31.0735
+        ]
+      },
+      "citizen_behavior.report_read_probability_detailed": {
+        "n": 15,
+        "mean": 0.1267,
+        "sd": 0.0403,
+        "p10": 0.1,
+        "p50": 0.1,
+        "p90": 0.2,
+        "beta_moments": [
+          8.511,
+          58.6808
+        ]
+      },
+      "citizen_behavior.report_read_probability_short": {
+        "n": 15,
+        "mean": 0.3139,
+        "sd": 0.0698,
+        "p10": 0.24,
+        "p50": 0.3,
+        "p90": 0.3829,
+        "beta_moments": [
+          13.5715,
+          29.659
+        ]
+      },
+      "citizen_behavior.report_visibility_effect": {
+        "n": 15,
+        "mean": 0.6647,
+        "sd": 0.0749,
+        "p10": 0.54,
+        "p50": 0.7,
+        "p90": 0.712,
+        "beta_moments": [
+          25.7352,
+          12.9837
+        ]
+      },
+      "citizen_behavior.revocation_ease_effect": {
+        "n": 15,
+        "mean": 0.83,
+        "sd": 0.0572,
+        "p10": 0.8,
+        "p50": 0.8,
+        "p90": 0.9,
+        "beta_moments": [
+          35.0209,
+          7.173
+        ]
+      },
+      "citizen_behavior.revocation_likelihood_after_inactivity": {
+        "n": 15,
+        "mean": 0.6753,
+        "sd": 0.1976,
+        "p10": 0.4316,
+        "p50": 0.7519,
+        "p90": 0.91,
+        "beta_moments": [
+          3.1157,
+          1.4983
+        ]
+      },
+      "citizen_behavior.revocation_likelihood_after_misalignment": {
+        "n": 15,
+        "mean": 0.6533,
+        "sd": 0.1087,
+        "p10": 0.6,
+        "p50": 0.6,
+        "p90": 0.86,
+        "beta_moments": [
+          11.8632,
+          6.2947
+        ]
+      },
+      "confidence.overall": {
+        "n": 15,
+        "mean": 0.6665,
+        "sd": 0.076,
+        "p10": 0.553,
+        "p50": 0.659,
+        "p90": 0.75,
+        "beta_moments": [
+          24.9932,
+          12.5084
+        ]
+      },
+      "context_understanding.understanding_score": {
+        "n": 15,
+        "mean": 0.6,
+        "sd": 0.0,
+        "p10": 0.6,
+        "p50": 0.6,
+        "p90": 0.6,
+        "beta_moments": null
+      },
+      "delegate_behavior.alignment_with_close_delegator": {
+        "n": 15,
+        "mean": 0.82,
+        "sd": 0.0852,
+        "p10": 0.7,
+        "p50": 0.8,
+        "p90": 0.9,
+        "beta_moments": [
+          15.8358,
+          3.4761
+        ]
+      },
+      "delegate_behavior.alignment_with_impersonal_delegators": {
+        "n": 15,
+        "mean": 0.1833,
+        "sd": 0.083,
+        "p10": 0.1,
+        "p50": 0.2,
+        "p90": 0.3,
+        "beta_moments": [
+          3.8012,
+          16.9327
+        ]
+      },
+      "delegate_behavior.delegate_planning_coverage": {
+        "n": 15,
+        "mean": 0.42,
+        "sd": 0.1108,
+        "p10": 0.3,
+        "p50": 0.4,
+        "p90": 0.6,
+        "beta_moments": [
+          7.9207,
+          10.938
+        ]
+      },
+      "delegate_behavior.delegate_platform_use_rate": {
+        "n": 15,
+        "mean": 0.5667,
+        "sd": 0.1193,
+        "p10": 0.44,
+        "p50": 0.6,
+        "p90": 0.7,
+        "beta_moments": [
+          9.2172,
+          7.0484
+        ]
+      },
+      "delegate_behavior.delegate_report_quality_willingness": {
+        "n": 15,
+        "mean": 0.7081,
+        "sd": 0.1995,
+        "p10": 0.4087,
+        "p50": 0.75,
+        "p90": 0.9,
+        "beta_moments": [
+          2.9686,
+          1.2239
+        ]
+      },
+      "delegate_behavior.delegate_responsibility_effect": {
+        "n": 15,
+        "mean": 0.7656,
+        "sd": 0.1776,
+        "p10": 0.54,
+        "p50": 0.8,
+        "p90": 0.9208,
+        "beta_moments": [
+          3.5916,
+          1.0993
+        ]
+      },
+      "delegate_behavior.delegate_revocation_discipline_effect": {
+        "n": 15,
+        "mean": 0.578,
+        "sd": 0.2055,
+        "p10": 0.34,
+        "p50": 0.5,
+        "p90": 0.812,
+        "beta_moments": [
+          2.7595,
+          2.0147
+        ]
+      },
+      "delegate_behavior.would_accept_delegation": {
+        "n": 15,
+        "mean": 0.7933,
+        "sd": 0.0929,
+        "p10": 0.7,
+        "p50": 0.8,
+        "p90": 0.9,
+        "beta_moments": [
+          14.2923,
+          3.7232
+        ]
+      },
+      "friction.need_for_assistance": {
+        "n": 15,
+        "mean": 0.8057,
+        "sd": 0.0863,
+        "p10": 0.7,
+        "p50": 0.8,
+        "p90": 0.9292,
+        "beta_moments": [
+          16.1439,
+          3.8923
+        ]
+      },
+      "friction.perceived_ease_of_use": {
+        "n": 15,
+        "mean": 0.3467,
+        "sd": 0.0718,
+        "p10": 0.24,
+        "p50": 0.4,
+        "p90": 0.4,
+        "beta_moments": [
+          14.8828,
+          28.0483
+        ]
+      },
+      "friction.perceived_understanding": {
+        "n": 15,
+        "mean": 0.4,
+        "sd": 0.1095,
+        "p10": 0.3,
+        "p50": 0.4,
+        "p90": 0.56,
+        "beta_moments": [
+          7.6,
+          11.4
+        ]
+      },
+      "platform_behavior.monthly_platform_use_probability": {
+        "n": 15,
+        "mean": 0.2133,
+        "sd": 0.034,
+        "p10": 0.2,
+        "p50": 0.2,
+        "p90": 0.26,
+        "beta_moments": [
+          30.7692,
+          113.4615
+        ]
+      },
+      "platform_behavior.notification_driven_use_probability": {
+        "n": 15,
+        "mean": 0.3049,
+        "sd": 0.1158,
+        "p10": 0.15,
+        "p50": 0.35,
+        "p90": 0.45,
+        "beta_moments": [
+          4.5155,
+          10.2927
+        ]
+      },
+      "platform_behavior.platform_trial_probability": {
+        "n": 15,
+        "mean": 0.3933,
+        "sd": 0.1289,
+        "p10": 0.3,
+        "p50": 0.4,
+        "p90": 0.58,
+        "beta_moments": [
+          5.2532,
+          8.1024
+        ]
+      }
+    },
+    "A2": {
+      "citizen_behavior.delegation_probability": {
+        "n": 15,
+        "mean": 0.7467,
+        "sd": 0.0718,
+        "p10": 0.64,
+        "p50": 0.8,
+        "p90": 0.8,
+        "beta_moments": [
+          26.6483,
+          9.0414
+        ]
+      },
+      "citizen_behavior.direct_planning_participation_probability": {
+        "n": 15,
+        "mean": 0.13,
+        "sd": 0.04,
+        "p10": 0.1,
+        "p50": 0.1,
+        "p90": 0.2,
+        "beta_moments": [
+          9.0594,
+          60.6281
+        ]
+      },
+      "citizen_behavior.direct_review_probability": {
+        "n": 15,
+        "mean": 0.2733,
+        "sd": 0.0998,
+        "p10": 0.2,
+        "p50": 0.2,
+        "p90": 0.4,
+        "beta_moments": [
+          5.1799,
+          13.771
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.family_member": {
+        "n": 15,
+        "mean": 0.3008,
+        "sd": 0.0429,
+        "p10": 0.2385,
+        "p50": 0.3077,
+        "p90": 0.3333,
+        "beta_moments": [
+          34.0036,
+          79.0469
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.local_community_leader": {
+        "n": 15,
+        "mean": 0.0457,
+        "sd": 0.0137,
+        "p10": 0.0385,
+        "p50": 0.0417,
+        "p90": 0.0635,
+        "beta_moments": [
+          10.5142,
+          219.5857
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.partner_or_spouse": {
+        "n": 15,
+        "mean": 0.2338,
+        "sd": 0.0398,
+        "p10": 0.1813,
+        "p50": 0.24,
+        "p90": 0.2793,
+        "beta_moments": [
+          26.209,
+          85.9137
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.political_party_or_political_actor": {
+        "n": 15,
+        "mean": 0.039,
+        "sd": 0.0053,
+        "p10": 0.0361,
+        "p50": 0.04,
+        "p90": 0.0428,
+        "beta_moments": [
+          50.9467,
+          1256.6037
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.public_influencer": {
+        "n": 15,
+        "mean": 0.039,
+        "sd": 0.0053,
+        "p10": 0.0361,
+        "p50": 0.04,
+        "p90": 0.0428,
+        "beta_moments": [
+          50.9467,
+          1256.6037
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.public_institution_or_ngo": {
+        "n": 15,
+        "mean": 0.0404,
+        "sd": 0.0023,
+        "p10": 0.0385,
+        "p50": 0.0417,
+        "p90": 0.0428,
+        "beta_moments": [
+          297.002,
+          7063.2116
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.technical_expert": {
+        "n": 15,
+        "mean": 0.0404,
+        "sd": 0.0023,
+        "p10": 0.0385,
+        "p50": 0.0417,
+        "p90": 0.0428,
+        "beta_moments": [
+          297.002,
+          7063.2116
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.trusted_friend": {
+        "n": 15,
+        "mean": 0.1417,
+        "sd": 0.0198,
+        "p10": 0.1192,
+        "p50": 0.1304,
+        "p90": 0.1667,
+        "beta_moments": [
+          43.5887,
+          264.0849
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.trusted_neighbor": {
+        "n": 15,
+        "mean": 0.0879,
+        "sd": 0.0183,
+        "p10": 0.0782,
+        "p50": 0.0833,
+        "p90": 0.1154,
+        "beta_moments": [
+          21.0755,
+          218.642
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.would_not_delegate": {
+        "n": 15,
+        "mean": 0.0315,
+        "sd": 0.0331,
+        "p10": 0.0,
+        "p50": 0.0385,
+        "p90": 0.0808,
+        "beta_moments": [
+          0.8488,
+          26.0563
+        ]
+      },
+      "citizen_behavior.report_read_probability_detailed": {
+        "n": 15,
+        "mean": 0.1467,
+        "sd": 0.0464,
+        "p10": 0.1,
+        "p50": 0.15,
+        "p90": 0.2,
+        "beta_moments": [
+          8.3691,
+          48.6928
+        ]
+      },
+      "citizen_behavior.report_read_probability_short": {
+        "n": 15,
+        "mean": 0.3267,
+        "sd": 0.0573,
+        "p10": 0.3,
+        "p50": 0.3,
+        "p90": 0.4,
+        "beta_moments": [
+          21.5203,
+          44.3581
+        ]
+      },
+      "citizen_behavior.report_visibility_effect": {
+        "n": 15,
+        "mean": 0.66,
+        "sd": 0.049,
+        "p10": 0.6,
+        "p50": 0.7,
+        "p90": 0.7,
+        "beta_moments": [
+          61.05,
+          31.45
+        ]
+      },
+      "citizen_behavior.revocation_ease_effect": {
+        "n": 15,
+        "mean": 0.8867,
+        "sd": 0.034,
+        "p10": 0.84,
+        "p50": 0.9,
+        "p90": 0.9,
+        "beta_moments": [
+          76.2192,
+          9.7423
+        ]
+      },
+      "citizen_behavior.revocation_likelihood_after_inactivity": {
+        "n": 15,
+        "mean": 0.83,
+        "sd": 0.0542,
+        "p10": 0.77,
+        "p50": 0.85,
+        "p90": 0.85,
+        "beta_moments": [
+          39.0949,
+          8.0074
+        ]
+      },
+      "citizen_behavior.revocation_likelihood_after_misalignment": {
+        "n": 15,
+        "mean": 0.6333,
+        "sd": 0.0978,
+        "p10": 0.54,
+        "p50": 0.6,
+        "p90": 0.75,
+        "beta_moments": [
+          14.7581,
+          8.5442
+        ]
+      },
+      "confidence.overall": {
+        "n": 15,
+        "mean": 0.6314,
+        "sd": 0.1157,
+        "p10": 0.5,
+        "p50": 0.65,
+        "p90": 0.75,
+        "beta_moments": [
+          10.3367,
+          6.0332
+        ]
+      },
+      "context_understanding.understanding_score": {
+        "n": 15,
+        "mean": 0.7367,
+        "sd": 0.0464,
+        "p10": 0.7,
+        "p50": 0.7,
+        "p90": 0.8,
+        "beta_moments": [
+          65.5595,
+          23.4353
+        ]
+      },
+      "delegate_behavior.alignment_with_close_delegator": {
+        "n": 15,
+        "mean": 0.7667,
+        "sd": 0.1011,
+        "p10": 0.64,
+        "p50": 0.8,
+        "p90": 0.9,
+        "beta_moments": [
+          12.65,
+          3.85
+        ]
+      },
+      "delegate_behavior.alignment_with_impersonal_delegators": {
+        "n": 15,
+        "mean": 0.24,
+        "sd": 0.0952,
+        "p10": 0.1,
+        "p50": 0.2,
+        "p90": 0.36,
+        "beta_moments": [
+          4.5882,
+          14.5294
+        ]
+      },
+      "delegate_behavior.delegate_planning_coverage": {
+        "n": 15,
+        "mean": 0.4,
+        "sd": 0.1278,
+        "p10": 0.3,
+        "p50": 0.4,
+        "p90": 0.56,
+        "beta_moments": [
+          5.4776,
+          8.2163
+        ]
+      },
+      "delegate_behavior.delegate_platform_use_rate": {
+        "n": 15,
+        "mean": 0.5867,
+        "sd": 0.1258,
+        "p10": 0.44,
+        "p50": 0.6,
+        "p90": 0.7,
+        "beta_moments": [
+          8.4045,
+          5.9213
+        ]
+      },
+      "delegate_behavior.delegate_report_quality_willingness": {
+        "n": 15,
+        "mean": 0.7933,
+        "sd": 0.147,
+        "p10": 0.62,
+        "p50": 0.8,
+        "p90": 0.98,
+        "beta_moments": [
+          5.2223,
+          1.3604
+        ]
+      },
+      "delegate_behavior.delegate_responsibility_effect": {
+        "n": 15,
+        "mean": 0.708,
+        "sd": 0.1415,
+        "p10": 0.6,
+        "p50": 0.8,
+        "p90": 0.8,
+        "beta_moments": [
+          6.5997,
+          2.7219
+        ]
+      },
+      "delegate_behavior.delegate_revocation_discipline_effect": {
+        "n": 15,
+        "mean": 0.68,
+        "sd": 0.2502,
+        "p10": 0.32,
+        "p50": 0.8,
+        "p90": 0.9,
+        "beta_moments": [
+          1.6837,
+          0.7923
+        ]
+      },
+      "delegate_behavior.would_accept_delegation": {
+        "n": 15,
+        "mean": 0.72,
+        "sd": 0.1314,
+        "p10": 0.54,
+        "p50": 0.7,
+        "p90": 0.9,
+        "beta_moments": [
+          7.6865,
+          2.9892
+        ]
+      },
+      "friction.need_for_assistance": {
+        "n": 15,
+        "mean": 0.3733,
+        "sd": 0.1389,
+        "p10": 0.27,
+        "p50": 0.35,
+        "p90": 0.43,
+        "beta_moments": [
+          4.1548,
+          6.9742
+        ]
+      },
+      "friction.perceived_ease_of_use": {
+        "n": 15,
+        "mean": 0.7,
+        "sd": 0.0894,
+        "p10": 0.6,
+        "p50": 0.7,
+        "p90": 0.8,
+        "beta_moments": [
+          17.675,
+          7.575
+        ]
+      },
+      "friction.perceived_understanding": {
+        "n": 15,
+        "mean": 0.7267,
+        "sd": 0.0929,
+        "p10": 0.6,
+        "p50": 0.7,
+        "p90": 0.8,
+        "beta_moments": [
+          16.0129,
+          6.0232
+        ]
+      },
+      "platform_behavior.monthly_platform_use_probability": {
+        "n": 15,
+        "mean": 0.3,
+        "sd": 0.073,
+        "p10": 0.24,
+        "p50": 0.3,
+        "p90": 0.4,
+        "beta_moments": [
+          11.5125,
+          26.8625
+        ]
+      },
+      "platform_behavior.notification_driven_use_probability": {
+        "n": 15,
+        "mean": 0.4367,
+        "sd": 0.1396,
+        "p10": 0.22,
+        "p50": 0.45,
+        "p90": 0.63,
+        "beta_moments": [
+          5.0749,
+          6.5471
+        ]
+      },
+      "platform_behavior.platform_trial_probability": {
+        "n": 15,
+        "mean": 0.5867,
+        "sd": 0.1258,
+        "p10": 0.42,
+        "p50": 0.6,
+        "p90": 0.7,
+        "beta_moments": [
+          8.4045,
+          5.9213
+        ]
+      }
+    },
+    "A3": {
+      "citizen_behavior.delegation_probability": {
+        "n": 15,
+        "mean": 0.78,
+        "sd": 0.04,
+        "p10": 0.7,
+        "p50": 0.8,
+        "p90": 0.8,
+        "beta_moments": [
+          82.875,
+          23.375
+        ]
+      },
+      "citizen_behavior.direct_planning_participation_probability": {
+        "n": 15,
+        "mean": 0.14,
+        "sd": 0.0554,
+        "p10": 0.1,
+        "p50": 0.1,
+        "p90": 0.2,
+        "beta_moments": [
+          5.3565,
+          32.9043
+        ]
+      },
+      "citizen_behavior.direct_review_probability": {
+        "n": 15,
+        "mean": 0.2667,
+        "sd": 0.1247,
+        "p10": 0.2,
+        "p50": 0.2,
+        "p90": 0.46,
+        "beta_moments": [
+          3.0857,
+          8.4857
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.family_member": {
+        "n": 15,
+        "mean": 0.3294,
+        "sd": 0.068,
+        "p10": 0.25,
+        "p50": 0.32,
+        "p90": 0.4209,
+        "beta_moments": [
+          15.4077,
+          31.3616
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.local_community_leader": {
+        "n": 15,
+        "mean": 0.0492,
+        "sd": 0.0275,
+        "p10": 0.0154,
+        "p50": 0.0417,
+        "p90": 0.0833,
+        "beta_moments": [
+          3.0027,
+          57.9901
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.partner_or_spouse": {
+        "n": 15,
+        "mean": 0.2186,
+        "sd": 0.0488,
+        "p10": 0.1627,
+        "p50": 0.2308,
+        "p90": 0.28,
+        "beta_moments": [
+          15.4407,
+          55.1916
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.political_party_or_political_actor": {
+        "n": 15,
+        "mean": 0.0354,
+        "sd": 0.014,
+        "p10": 0.0154,
+        "p50": 0.04,
+        "p90": 0.0428,
+        "beta_moments": [
+          6.1577,
+          168.0072
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.public_influencer": {
+        "n": 15,
+        "mean": 0.0354,
+        "sd": 0.014,
+        "p10": 0.0154,
+        "p50": 0.04,
+        "p90": 0.0428,
+        "beta_moments": [
+          6.1577,
+          168.0072
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.public_institution_or_ngo": {
+        "n": 15,
+        "mean": 0.0354,
+        "sd": 0.014,
+        "p10": 0.0154,
+        "p50": 0.04,
+        "p90": 0.0428,
+        "beta_moments": [
+          6.1577,
+          168.0072
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.technical_expert": {
+        "n": 15,
+        "mean": 0.0381,
+        "sd": 0.0184,
+        "p10": 0.0154,
+        "p50": 0.04,
+        "p90": 0.0435,
+        "beta_moments": [
+          4.1025,
+          103.482
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.trusted_friend": {
+        "n": 15,
+        "mean": 0.1448,
+        "sd": 0.0332,
+        "p10": 0.1062,
+        "p50": 0.1538,
+        "p90": 0.1867,
+        "beta_moments": [
+          16.103,
+          95.0902
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.trusted_neighbor": {
+        "n": 15,
+        "mean": 0.0975,
+        "sd": 0.0278,
+        "p10": 0.0769,
+        "p50": 0.087,
+        "p90": 0.123,
+        "beta_moments": [
+          10.995,
+          101.8312
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.would_not_delegate": {
+        "n": 15,
+        "mean": 0.0163,
+        "sd": 0.0235,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 0.041,
+        "beta_moments": [
+          0.4523,
+          27.3775
+        ]
+      },
+      "citizen_behavior.report_read_probability_detailed": {
+        "n": 15,
+        "mean": 0.1733,
+        "sd": 0.0772,
+        "p10": 0.1,
+        "p50": 0.15,
+        "p90": 0.3,
+        "beta_moments": [
+          3.997,
+          19.0627
+        ]
+      },
+      "citizen_behavior.report_read_probability_short": {
+        "n": 15,
+        "mean": 0.39,
+        "sd": 0.1268,
+        "p10": 0.3,
+        "p50": 0.3,
+        "p90": 0.6,
+        "beta_moments": [
+          5.3848,
+          8.4223
+        ]
+      },
+      "citizen_behavior.report_visibility_effect": {
+        "n": 15,
+        "mean": 0.6733,
+        "sd": 0.0442,
+        "p10": 0.6,
+        "p50": 0.7,
+        "p90": 0.7,
+        "beta_moments": [
+          75.0614,
+          36.4159
+        ]
+      },
+      "citizen_behavior.revocation_ease_effect": {
+        "n": 15,
+        "mean": 0.9,
+        "sd": 0.0,
+        "p10": 0.9,
+        "p50": 0.9,
+        "p90": 0.9,
+        "beta_moments": null
+      },
+      "citizen_behavior.revocation_likelihood_after_inactivity": {
+        "n": 15,
+        "mean": 0.7984,
+        "sd": 0.106,
+        "p10": 0.69,
+        "p50": 0.8,
+        "p90": 0.8959,
+        "beta_moments": [
+          10.6423,
+          2.6866
+        ]
+      },
+      "citizen_behavior.revocation_likelihood_after_misalignment": {
+        "n": 15,
+        "mean": 0.6867,
+        "sd": 0.0957,
+        "p10": 0.6,
+        "p50": 0.7,
+        "p90": 0.8,
+        "beta_moments": [
+          15.45,
+          7.05
+        ]
+      },
+      "confidence.overall": {
+        "n": 15,
+        "mean": 0.6862,
+        "sd": 0.0911,
+        "p10": 0.59,
+        "p50": 0.65,
+        "p90": 0.8,
+        "beta_moments": [
+          17.1034,
+          7.8208
+        ]
+      },
+      "context_understanding.understanding_score": {
+        "n": 15,
+        "mean": 0.74,
+        "sd": 0.049,
+        "p10": 0.7,
+        "p50": 0.7,
+        "p90": 0.8,
+        "beta_moments": [
+          58.5833,
+          20.5833
+        ]
+      },
+      "delegate_behavior.alignment_with_close_delegator": {
+        "n": 15,
+        "mean": 0.8087,
+        "sd": 0.0576,
+        "p10": 0.74,
+        "p50": 0.8,
+        "p90": 0.9,
+        "beta_moments": [
+          36.8985,
+          8.7303
+        ]
+      },
+      "delegate_behavior.alignment_with_impersonal_delegators": {
+        "n": 15,
+        "mean": 0.1913,
+        "sd": 0.0576,
+        "p10": 0.1,
+        "p50": 0.2,
+        "p90": 0.26,
+        "beta_moments": [
+          8.7303,
+          36.8985
+        ]
+      },
+      "delegate_behavior.delegate_planning_coverage": {
+        "n": 15,
+        "mean": 0.3933,
+        "sd": 0.134,
+        "p10": 0.3,
+        "p50": 0.4,
+        "p90": 0.52,
+        "beta_moments": [
+          4.8339,
+          7.4557
+        ]
+      },
+      "delegate_behavior.delegate_platform_use_rate": {
+        "n": 15,
+        "mean": 0.5867,
+        "sd": 0.1258,
+        "p10": 0.5,
+        "p50": 0.5,
+        "p90": 0.7,
+        "beta_moments": [
+          8.4045,
+          5.9213
+        ]
+      },
+      "delegate_behavior.delegate_report_quality_willingness": {
+        "n": 15,
+        "mean": 0.8,
+        "sd": 0.1549,
+        "p10": 0.64,
+        "p50": 0.8,
+        "p90": 0.98,
+        "beta_moments": [
+          4.5333,
+          1.1333
+        ]
+      },
+      "delegate_behavior.delegate_responsibility_effect": {
+        "n": 15,
+        "mean": 0.75,
+        "sd": 0.1653,
+        "p10": 0.6,
+        "p50": 0.75,
+        "p90": 0.9,
+        "beta_moments": [
+          4.3948,
+          1.4649
+        ]
+      },
+      "delegate_behavior.delegate_revocation_discipline_effect": {
+        "n": 15,
+        "mean": 0.67,
+        "sd": 0.2286,
+        "p10": 0.3,
+        "p50": 0.7,
+        "p90": 0.9,
+        "beta_moments": [
+          2.1643,
+          1.066
+        ]
+      },
+      "delegate_behavior.would_accept_delegation": {
+        "n": 15,
+        "mean": 0.7067,
+        "sd": 0.1109,
+        "p10": 0.6,
+        "p50": 0.7,
+        "p90": 0.86,
+        "beta_moments": [
+          11.2134,
+          4.6546
+        ]
+      },
+      "friction.need_for_assistance": {
+        "n": 15,
+        "mean": 0.4693,
+        "sd": 0.1498,
+        "p10": 0.3,
+        "p50": 0.45,
+        "p90": 0.68,
+        "beta_moments": [
+          4.7414,
+          5.361
+        ]
+      },
+      "friction.perceived_ease_of_use": {
+        "n": 15,
+        "mean": 0.61,
+        "sd": 0.0688,
+        "p10": 0.5,
+        "p50": 0.6,
+        "p90": 0.7,
+        "beta_moments": [
+          30.0489,
+          19.2116
+        ]
+      },
+      "friction.perceived_understanding": {
+        "n": 15,
+        "mean": 0.7133,
+        "sd": 0.0718,
+        "p10": 0.6,
+        "p50": 0.7,
+        "p90": 0.8,
+        "beta_moments": [
+          27.5802,
+          11.0836
+        ]
+      },
+      "platform_behavior.monthly_platform_use_probability": {
+        "n": 15,
+        "mean": 0.32,
+        "sd": 0.04,
+        "p10": 0.3,
+        "p50": 0.3,
+        "p90": 0.4,
+        "beta_moments": [
+          43.2,
+          91.8
+        ]
+      },
+      "platform_behavior.notification_driven_use_probability": {
+        "n": 15,
+        "mean": 0.4542,
+        "sd": 0.0791,
+        "p10": 0.4,
+        "p50": 0.45,
+        "p90": 0.5653,
+        "beta_moments": [
+          17.5649,
+          21.1058
+        ]
+      },
+      "platform_behavior.platform_trial_probability": {
+        "n": 15,
+        "mean": 0.62,
+        "sd": 0.04,
+        "p10": 0.6,
+        "p50": 0.6,
+        "p90": 0.7,
+        "beta_moments": [
+          90.675,
+          55.575
+        ]
+      }
+    },
+    "A4": {
+      "citizen_behavior.delegation_probability": {
+        "n": 15,
+        "mean": 0.7767,
+        "sd": 0.0478,
+        "p10": 0.7,
+        "p50": 0.8,
+        "p90": 0.8,
+        "beta_moments": [
+          58.0803,
+          16.7012
+        ]
+      },
+      "citizen_behavior.direct_planning_participation_probability": {
+        "n": 15,
+        "mean": 0.1033,
+        "sd": 0.034,
+        "p10": 0.07,
+        "p50": 0.1,
+        "p90": 0.13,
+        "beta_moments": [
+          8.1822,
+          71.0005
+        ]
+      },
+      "citizen_behavior.direct_review_probability": {
+        "n": 15,
+        "mean": 0.2933,
+        "sd": 0.1181,
+        "p10": 0.14,
+        "p50": 0.4,
+        "p90": 0.4,
+        "beta_moments": [
+          4.0637,
+          9.7898
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.family_member": {
+        "n": 15,
+        "mean": 0.3142,
+        "sd": 0.0699,
+        "p10": 0.24,
+        "p50": 0.3,
+        "p90": 0.4,
+        "beta_moments": [
+          13.5519,
+          29.5816
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.local_community_leader": {
+        "n": 15,
+        "mean": 0.0436,
+        "sd": 0.0314,
+        "p10": 0.0,
+        "p50": 0.04,
+        "p90": 0.0832,
+        "beta_moments": [
+          1.7965,
+          39.4254
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.partner_or_spouse": {
+        "n": 15,
+        "mean": 0.2368,
+        "sd": 0.0634,
+        "p10": 0.1624,
+        "p50": 0.2273,
+        "p90": 0.3,
+        "beta_moments": [
+          10.4066,
+          33.5389
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.political_party_or_political_actor": {
+        "n": 15,
+        "mean": 0.03,
+        "sd": 0.0182,
+        "p10": 0.0,
+        "p50": 0.04,
+        "p90": 0.0417,
+        "beta_moments": [
+          2.6197,
+          84.6232
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.public_influencer": {
+        "n": 15,
+        "mean": 0.0302,
+        "sd": 0.0183,
+        "p10": 0.0,
+        "p50": 0.04,
+        "p90": 0.0428,
+        "beta_moments": [
+          2.6162,
+          84.1247
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.public_institution_or_ngo": {
+        "n": 15,
+        "mean": 0.03,
+        "sd": 0.0182,
+        "p10": 0.0,
+        "p50": 0.04,
+        "p90": 0.0417,
+        "beta_moments": [
+          2.6197,
+          84.6232
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.technical_expert": {
+        "n": 15,
+        "mean": 0.03,
+        "sd": 0.0182,
+        "p10": 0.0,
+        "p50": 0.04,
+        "p90": 0.0417,
+        "beta_moments": [
+          2.6197,
+          84.6232
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.trusted_friend": {
+        "n": 15,
+        "mean": 0.1607,
+        "sd": 0.0383,
+        "p10": 0.108,
+        "p50": 0.1667,
+        "p90": 0.2,
+        "beta_moments": [
+          14.5858,
+          76.1972
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.trusted_neighbor": {
+        "n": 15,
+        "mean": 0.103,
+        "sd": 0.0274,
+        "p10": 0.08,
+        "p50": 0.1,
+        "p90": 0.125,
+        "beta_moments": [
+          12.5792,
+          109.4999
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.would_not_delegate": {
+        "n": 15,
+        "mean": 0.0215,
+        "sd": 0.0286,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 0.0636,
+        "beta_moments": [
+          0.5319,
+          24.2398
+        ]
+      },
+      "citizen_behavior.report_read_probability_detailed": {
+        "n": 15,
+        "mean": 0.1333,
+        "sd": 0.0568,
+        "p10": 0.1,
+        "p50": 0.1,
+        "p90": 0.2,
+        "beta_moments": [
+          4.6483,
+          30.2138
+        ]
+      },
+      "citizen_behavior.report_read_probability_short": {
+        "n": 15,
+        "mean": 0.3267,
+        "sd": 0.0772,
+        "p10": 0.3,
+        "p50": 0.3,
+        "p90": 0.46,
+        "beta_moments": [
+          11.7381,
+          24.1948
+        ]
+      },
+      "citizen_behavior.report_visibility_effect": {
+        "n": 15,
+        "mean": 0.5967,
+        "sd": 0.0464,
+        "p10": 0.54,
+        "p50": 0.6,
+        "p90": 0.63,
+        "beta_moments": [
+          66.0178,
+          44.6265
+        ]
+      },
+      "citizen_behavior.revocation_ease_effect": {
+        "n": 15,
+        "mean": 0.8767,
+        "sd": 0.0403,
+        "p10": 0.8,
+        "p50": 0.9,
+        "p90": 0.9,
+        "beta_moments": [
+          57.5538,
+          8.0969
+        ]
+      },
+      "citizen_behavior.revocation_likelihood_after_inactivity": {
+        "n": 15,
+        "mean": 0.7935,
+        "sd": 0.1096,
+        "p10": 0.67,
+        "p50": 0.8,
+        "p90": 0.91,
+        "beta_moments": [
+          10.0359,
+          2.6118
+        ]
+      },
+      "citizen_behavior.revocation_likelihood_after_misalignment": {
+        "n": 15,
+        "mean": 0.72,
+        "sd": 0.0812,
+        "p10": 0.64,
+        "p50": 0.7,
+        "p90": 0.84,
+        "beta_moments": [
+          21.2727,
+          8.2727
+        ]
+      },
+      "confidence.overall": {
+        "n": 15,
+        "mean": 0.4915,
+        "sd": 0.1319,
+        "p10": 0.351,
+        "p50": 0.5,
+        "p90": 0.65,
+        "beta_moments": [
+          6.5656,
+          6.7928
+        ]
+      },
+      "context_understanding.understanding_score": {
+        "n": 15,
+        "mean": 0.6967,
+        "sd": 0.0287,
+        "p10": 0.7,
+        "p50": 0.7,
+        "p90": 0.7,
+        "beta_moments": [
+          178.3561,
+          77.6574
+        ]
+      },
+      "delegate_behavior.alignment_with_close_delegator": {
+        "n": 15,
+        "mean": 0.7967,
+        "sd": 0.0531,
+        "p10": 0.72,
+        "p50": 0.8,
+        "p90": 0.86,
+        "beta_moments": [
+          44.9301,
+          11.4675
+        ]
+      },
+      "delegate_behavior.alignment_with_impersonal_delegators": {
+        "n": 15,
+        "mean": 0.2033,
+        "sd": 0.0531,
+        "p10": 0.14,
+        "p50": 0.2,
+        "p90": 0.28,
+        "beta_moments": [
+          11.4675,
+          44.9301
+        ]
+      },
+      "delegate_behavior.delegate_planning_coverage": {
+        "n": 15,
+        "mean": 0.4833,
+        "sd": 0.1386,
+        "p10": 0.34,
+        "p50": 0.4,
+        "p90": 0.7,
+        "beta_moments": [
+          5.7958,
+          6.1955
+        ]
+      },
+      "delegate_behavior.delegate_platform_use_rate": {
+        "n": 15,
+        "mean": 0.6733,
+        "sd": 0.1289,
+        "p10": 0.5,
+        "p50": 0.7,
+        "p90": 0.8,
+        "beta_moments": [
+          8.2366,
+          3.996
+        ]
+      },
+      "delegate_behavior.delegate_report_quality_willingness": {
+        "n": 15,
+        "mean": 0.7333,
+        "sd": 0.166,
+        "p10": 0.54,
+        "p50": 0.75,
+        "p90": 0.9,
+        "beta_moments": [
+          4.471,
+          1.6258
+        ]
+      },
+      "delegate_behavior.delegate_responsibility_effect": {
+        "n": 15,
+        "mean": 0.73,
+        "sd": 0.208,
+        "p10": 0.4,
+        "p50": 0.8,
+        "p90": 0.9,
+        "beta_moments": [
+          2.5955,
+          0.96
+        ]
+      },
+      "delegate_behavior.delegate_revocation_discipline_effect": {
+        "n": 15,
+        "mean": 0.6867,
+        "sd": 0.2148,
+        "p10": 0.38,
+        "p50": 0.8,
+        "p90": 0.9,
+        "beta_moments": [
+          2.5143,
+          1.1473
+        ]
+      },
+      "delegate_behavior.would_accept_delegation": {
+        "n": 15,
+        "mean": 0.6133,
+        "sd": 0.0865,
+        "p10": 0.54,
+        "p50": 0.6,
+        "p90": 0.7,
+        "beta_moments": [
+          18.8095,
+          11.8582
+        ]
+      },
+      "friction.need_for_assistance": {
+        "n": 15,
+        "mean": 0.6467,
+        "sd": 0.1839,
+        "p10": 0.4,
+        "p50": 0.75,
+        "p90": 0.8,
+        "beta_moments": [
+          3.7219,
+          2.0336
+        ]
+      },
+      "friction.perceived_ease_of_use": {
+        "n": 15,
+        "mean": 0.5368,
+        "sd": 0.0902,
+        "p10": 0.421,
+        "p50": 0.6,
+        "p90": 0.6,
+        "beta_moments": [
+          15.8854,
+          13.7058
+        ]
+      },
+      "friction.perceived_understanding": {
+        "n": 15,
+        "mean": 0.64,
+        "sd": 0.08,
+        "p10": 0.5,
+        "p50": 0.7,
+        "p90": 0.7,
+        "beta_moments": [
+          22.4,
+          12.6
+        ]
+      },
+      "platform_behavior.monthly_platform_use_probability": {
+        "n": 15,
+        "mean": 0.2533,
+        "sd": 0.0499,
+        "p10": 0.2,
+        "p50": 0.3,
+        "p90": 0.3,
+        "beta_moments": [
+          19.0,
+          56.0
+        ]
+      },
+      "platform_behavior.notification_driven_use_probability": {
+        "n": 15,
+        "mean": 0.3035,
+        "sd": 0.1273,
+        "p10": 0.15,
+        "p50": 0.3,
+        "p90": 0.45,
+        "beta_moments": [
+          3.6559,
+          8.39
+        ]
+      },
+      "platform_behavior.platform_trial_probability": {
+        "n": 15,
+        "mean": 0.4733,
+        "sd": 0.1389,
+        "p10": 0.3,
+        "p50": 0.6,
+        "p90": 0.6,
+        "beta_moments": [
+          5.644,
+          6.28
+        ]
+      }
+    },
+    "A5": {
+      "citizen_behavior.delegation_probability": {
+        "n": 15,
+        "mean": 0.7733,
+        "sd": 0.0442,
+        "p10": 0.7,
+        "p50": 0.8,
+        "p90": 0.8,
+        "beta_moments": [
+          68.5455,
+          20.0909
+        ]
+      },
+      "citizen_behavior.direct_planning_participation_probability": {
+        "n": 15,
+        "mean": 0.13,
+        "sd": 0.04,
+        "p10": 0.1,
+        "p50": 0.15,
+        "p90": 0.18,
+        "beta_moments": [
+          9.0594,
+          60.6281
+        ]
+      },
+      "citizen_behavior.direct_review_probability": {
+        "n": 15,
+        "mean": 0.2267,
+        "sd": 0.0854,
+        "p10": 0.14,
+        "p50": 0.2,
+        "p90": 0.36,
+        "beta_moments": [
+          5.2244,
+          17.8244
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.family_member": {
+        "n": 15,
+        "mean": 0.3478,
+        "sd": 0.0555,
+        "p10": 0.2819,
+        "p50": 0.32,
+        "p90": 0.41,
+        "beta_moments": [
+          25.2268,
+          47.2993
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.local_community_leader": {
+        "n": 15,
+        "mean": 0.0294,
+        "sd": 0.023,
+        "p10": 0.0,
+        "p50": 0.04,
+        "p90": 0.0424,
+        "beta_moments": [
+          1.5549,
+          51.3977
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.partner_or_spouse": {
+        "n": 15,
+        "mean": 0.2392,
+        "sd": 0.0478,
+        "p10": 0.1686,
+        "p50": 0.24,
+        "p90": 0.3,
+        "beta_moments": [
+          18.7776,
+          59.7346
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.political_party_or_political_actor": {
+        "n": 15,
+        "mean": 0.0276,
+        "sd": 0.0197,
+        "p10": 0.0,
+        "p50": 0.04,
+        "p90": 0.0442,
+        "beta_moments": [
+          1.8762,
+          66.0245
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.public_influencer": {
+        "n": 15,
+        "mean": 0.0276,
+        "sd": 0.0197,
+        "p10": 0.0,
+        "p50": 0.04,
+        "p90": 0.0442,
+        "beta_moments": [
+          1.8762,
+          66.0245
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.public_institution_or_ngo": {
+        "n": 15,
+        "mean": 0.0272,
+        "sd": 0.0193,
+        "p10": 0.0,
+        "p50": 0.04,
+        "p90": 0.0424,
+        "beta_moments": [
+          1.9017,
+          68.1152
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.technical_expert": {
+        "n": 15,
+        "mean": 0.0267,
+        "sd": 0.0189,
+        "p10": 0.0,
+        "p50": 0.04,
+        "p90": 0.041,
+        "beta_moments": [
+          1.9123,
+          69.7172
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.trusted_friend": {
+        "n": 15,
+        "mean": 0.1664,
+        "sd": 0.0314,
+        "p10": 0.1343,
+        "p50": 0.16,
+        "p90": 0.2,
+        "beta_moments": [
+          23.2948,
+          116.684
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.trusted_neighbor": {
+        "n": 15,
+        "mean": 0.0914,
+        "sd": 0.0137,
+        "p10": 0.08,
+        "p50": 0.0857,
+        "p90": 0.11,
+        "beta_moments": [
+          40.5607,
+          403.3044
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.would_not_delegate": {
+        "n": 15,
+        "mean": 0.0167,
+        "sd": 0.0297,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 0.0628,
+        "beta_moments": [
+          0.2943,
+          17.3072
+        ]
+      },
+      "citizen_behavior.report_read_probability_detailed": {
+        "n": 15,
+        "mean": 0.14,
+        "sd": 0.0583,
+        "p10": 0.1,
+        "p50": 0.1,
+        "p90": 0.2,
+        "beta_moments": [
+          4.8176,
+          29.5941
+        ]
+      },
+      "citizen_behavior.report_read_probability_short": {
+        "n": 15,
+        "mean": 0.33,
+        "sd": 0.077,
+        "p10": 0.3,
+        "p50": 0.3,
+        "p90": 0.46,
+        "beta_moments": [
+          11.9671,
+          24.2969
+        ]
+      },
+      "citizen_behavior.report_visibility_effect": {
+        "n": 15,
+        "mean": 0.64,
+        "sd": 0.1143,
+        "p10": 0.5,
+        "p50": 0.7,
+        "p90": 0.7,
+        "beta_moments": [
+          10.6449,
+          5.9878
+        ]
+      },
+      "citizen_behavior.revocation_ease_effect": {
+        "n": 15,
+        "mean": 0.86,
+        "sd": 0.0611,
+        "p10": 0.8,
+        "p50": 0.9,
+        "p90": 0.9,
+        "beta_moments": [
+          26.875,
+          4.375
+        ]
+      },
+      "citizen_behavior.revocation_likelihood_after_inactivity": {
+        "n": 15,
+        "mean": 0.7609,
+        "sd": 0.1316,
+        "p10": 0.54,
+        "p50": 0.8,
+        "p90": 0.8549,
+        "beta_moments": [
+          7.2317,
+          2.272
+        ]
+      },
+      "citizen_behavior.revocation_likelihood_after_misalignment": {
+        "n": 15,
+        "mean": 0.6433,
+        "sd": 0.068,
+        "p10": 0.6,
+        "p50": 0.6,
+        "p90": 0.7,
+        "beta_moments": [
+          31.2929,
+          17.3489
+        ]
+      },
+      "confidence.overall": {
+        "n": 15,
+        "mean": 0.6873,
+        "sd": 0.1626,
+        "p10": 0.47,
+        "p50": 0.75,
+        "p90": 0.85,
+        "beta_moments": [
+          4.8974,
+          2.2286
+        ]
+      },
+      "context_understanding.understanding_score": {
+        "n": 15,
+        "mean": 0.6833,
+        "sd": 0.0568,
+        "p10": 0.6,
+        "p50": 0.7,
+        "p90": 0.73,
+        "beta_moments": [
+          45.206,
+          20.9491
+        ]
+      },
+      "delegate_behavior.alignment_with_close_delegator": {
+        "n": 15,
+        "mean": 0.8333,
+        "sd": 0.0624,
+        "p10": 0.77,
+        "p50": 0.8,
+        "p90": 0.9,
+        "beta_moments": [
+          28.9286,
+          5.7857
+        ]
+      },
+      "delegate_behavior.alignment_with_impersonal_delegators": {
+        "n": 15,
+        "mean": 0.1733,
+        "sd": 0.0602,
+        "p10": 0.1,
+        "p50": 0.2,
+        "p90": 0.23,
+        "beta_moments": [
+          6.6834,
+          31.8748
+        ]
+      },
+      "delegate_behavior.delegate_planning_coverage": {
+        "n": 15,
+        "mean": 0.4,
+        "sd": 0.1414,
+        "p10": 0.3,
+        "p50": 0.4,
+        "p90": 0.56,
+        "beta_moments": [
+          4.4,
+          6.6
+        ]
+      },
+      "delegate_behavior.delegate_platform_use_rate": {
+        "n": 15,
+        "mean": 0.5433,
+        "sd": 0.1459,
+        "p10": 0.4,
+        "p50": 0.5,
+        "p90": 0.7,
+        "beta_moments": [
+          5.7892,
+          4.8658
+        ]
+      },
+      "delegate_behavior.delegate_report_quality_willingness": {
+        "n": 15,
+        "mean": 0.75,
+        "sd": 0.1483,
+        "p10": 0.54,
+        "p50": 0.75,
+        "p90": 0.93,
+        "beta_moments": [
+          5.642,
+          1.8807
+        ]
+      },
+      "delegate_behavior.delegate_responsibility_effect": {
+        "n": 15,
+        "mean": 0.6933,
+        "sd": 0.2516,
+        "p10": 0.34,
+        "p50": 0.8,
+        "p90": 0.96,
+        "beta_moments": [
+          1.636,
+          0.7236
+        ]
+      },
+      "delegate_behavior.delegate_revocation_discipline_effect": {
+        "n": 15,
+        "mean": 0.6233,
+        "sd": 0.2213,
+        "p10": 0.3,
+        "p50": 0.6,
+        "p90": 0.86,
+        "beta_moments": [
+          2.3661,
+          1.4298
+        ]
+      },
+      "delegate_behavior.would_accept_delegation": {
+        "n": 15,
+        "mean": 0.7433,
+        "sd": 0.1123,
+        "p10": 0.64,
+        "p50": 0.7,
+        "p90": 0.9,
+        "beta_moments": [
+          10.4924,
+          3.6229
+        ]
+      },
+      "friction.need_for_assistance": {
+        "n": 15,
+        "mean": 0.7137,
+        "sd": 0.1435,
+        "p10": 0.47,
+        "p50": 0.8,
+        "p90": 0.85,
+        "beta_moments": [
+          6.3664,
+          2.5536
+        ]
+      },
+      "friction.perceived_ease_of_use": {
+        "n": 15,
+        "mean": 0.46,
+        "sd": 0.102,
+        "p10": 0.34,
+        "p50": 0.4,
+        "p90": 0.6,
+        "beta_moments": [
+          10.5269,
+          12.3577
+        ]
+      },
+      "friction.perceived_understanding": {
+        "n": 15,
+        "mean": 0.5167,
+        "sd": 0.163,
+        "p10": 0.3,
+        "p50": 0.6,
+        "p90": 0.7,
+        "beta_moments": [
+          4.3419,
+          4.0618
+        ]
+      },
+      "platform_behavior.monthly_platform_use_probability": {
+        "n": 15,
+        "mean": 0.26,
+        "sd": 0.08,
+        "p10": 0.14,
+        "p50": 0.3,
+        "p90": 0.3,
+        "beta_moments": [
+          7.5563,
+          21.5063
+        ]
+      },
+      "platform_behavior.notification_driven_use_probability": {
+        "n": 15,
+        "mean": 0.4049,
+        "sd": 0.0965,
+        "p10": 0.27,
+        "p50": 0.45,
+        "p90": 0.4587,
+        "beta_moments": [
+          10.0752,
+          14.8101
+        ]
+      },
+      "platform_behavior.platform_trial_probability": {
+        "n": 15,
+        "mean": 0.5267,
+        "sd": 0.1236,
+        "p10": 0.34,
+        "p50": 0.6,
+        "p90": 0.6,
+        "beta_moments": [
+          8.0608,
+          7.2445
+        ]
+      }
+    },
+    "A6": {
+      "citizen_behavior.delegation_probability": {
+        "n": 15,
+        "mean": 0.8,
+        "sd": 0.0,
+        "p10": 0.8,
+        "p50": 0.8,
+        "p90": 0.8,
+        "beta_moments": null
+      },
+      "citizen_behavior.direct_planning_participation_probability": {
+        "n": 15,
+        "mean": 0.2333,
+        "sd": 0.0471,
+        "p10": 0.2,
+        "p50": 0.2,
+        "p90": 0.3,
+        "beta_moments": [
+          18.55,
+          60.95
+        ]
+      },
+      "citizen_behavior.direct_review_probability": {
+        "n": 15,
+        "mean": 0.38,
+        "sd": 0.0909,
+        "p10": 0.3,
+        "p50": 0.3,
+        "p90": 0.5,
+        "beta_moments": [
+          10.45,
+          17.05
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.family_member": {
+        "n": 15,
+        "mean": 0.324,
+        "sd": 0.0136,
+        "p10": 0.3077,
+        "p50": 0.3333,
+        "p90": 0.3333,
+        "beta_moments": [
+          381.1615,
+          795.1339
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.local_community_leader": {
+        "n": 15,
+        "mean": 0.0506,
+        "sd": 0.0246,
+        "p10": 0.0391,
+        "p50": 0.0417,
+        "p90": 0.0841,
+        "beta_moments": [
+          3.9519,
+          74.1935
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.partner_or_spouse": {
+        "n": 15,
+        "mean": 0.2375,
+        "sd": 0.0214,
+        "p10": 0.2256,
+        "p50": 0.24,
+        "p90": 0.25,
+        "beta_moments": [
+          93.3913,
+          299.8831
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.political_party_or_political_actor": {
+        "n": 15,
+        "mean": 0.0405,
+        "sd": 0.0017,
+        "p10": 0.0385,
+        "p50": 0.0417,
+        "p90": 0.0417,
+        "beta_moments": [
+          541.4578,
+          12826.4058
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.public_influencer": {
+        "n": 15,
+        "mean": 0.0405,
+        "sd": 0.0017,
+        "p10": 0.0385,
+        "p50": 0.0417,
+        "p90": 0.0417,
+        "beta_moments": [
+          541.4578,
+          12826.4058
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.public_institution_or_ngo": {
+        "n": 15,
+        "mean": 0.0405,
+        "sd": 0.0017,
+        "p10": 0.0385,
+        "p50": 0.0417,
+        "p90": 0.0417,
+        "beta_moments": [
+          541.4578,
+          12826.4058
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.technical_expert": {
+        "n": 15,
+        "mean": 0.0405,
+        "sd": 0.0017,
+        "p10": 0.0385,
+        "p50": 0.0417,
+        "p90": 0.0417,
+        "beta_moments": [
+          541.4578,
+          12826.4058
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.trusted_friend": {
+        "n": 15,
+        "mean": 0.1242,
+        "sd": 0.0177,
+        "p10": 0.1128,
+        "p50": 0.125,
+        "p90": 0.1445,
+        "beta_moments": [
+          42.7666,
+          301.6255
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.trusted_neighbor": {
+        "n": 15,
+        "mean": 0.086,
+        "sd": 0.019,
+        "p10": 0.0752,
+        "p50": 0.0833,
+        "p90": 0.1154,
+        "beta_moments": [
+          18.5902,
+          197.5337
+        ]
+      },
+      "citizen_behavior.preferred_delegate_type_distribution.would_not_delegate": {
+        "n": 15,
+        "mean": 0.0157,
+        "sd": 0.0193,
+        "p10": 0.0,
+        "p50": 0.0,
+        "p90": 0.04,
+        "beta_moments": [
+          0.6389,
+          40.036
+        ]
+      },
+      "citizen_behavior.report_read_probability_detailed": {
+        "n": 15,
+        "mean": 0.2867,
+        "sd": 0.0499,
+        "p10": 0.2,
+        "p50": 0.3,
+        "p90": 0.3,
+        "beta_moments": [
+          23.2661,
+          57.8946
+        ]
+      },
+      "citizen_behavior.report_read_probability_short": {
+        "n": 15,
+        "mean": 0.58,
+        "sd": 0.04,
+        "p10": 0.5,
+        "p50": 0.6,
+        "p90": 0.6,
+        "beta_moments": [
+          87.725,
+          63.525
+        ]
+      },
+      "citizen_behavior.report_visibility_effect": {
+        "n": 15,
+        "mean": 0.7,
+        "sd": 0.0,
+        "p10": 0.7,
+        "p50": 0.7,
+        "p90": 0.7,
+        "beta_moments": null
+      },
+      "citizen_behavior.revocation_ease_effect": {
+        "n": 15,
+        "mean": 0.9,
+        "sd": 0.0,
+        "p10": 0.9,
+        "p50": 0.9,
+        "p90": 0.9,
+        "beta_moments": null
+      },
+      "citizen_behavior.revocation_likelihood_after_inactivity": {
+        "n": 15,
+        "mean": 0.7213,
+        "sd": 0.137,
+        "p10": 0.5,
+        "p50": 0.8,
+        "p90": 0.83,
+        "beta_moments": [
+          7.0029,
+          2.7054
+        ]
+      },
+      "citizen_behavior.revocation_likelihood_after_misalignment": {
+        "n": 15,
+        "mean": 0.6833,
+        "sd": 0.1374,
+        "p10": 0.5,
+        "p50": 0.75,
+        "p90": 0.83,
+        "beta_moments": [
+          7.1449,
+          3.311
+        ]
+      },
+      "confidence.overall": {
+        "n": 15,
+        "mean": 0.7567,
+        "sd": 0.0873,
+        "p10": 0.65,
+        "p50": 0.75,
+        "p90": 0.85,
+        "beta_moments": [
+          17.5214,
+          5.6346
+        ]
+      },
+      "context_understanding.understanding_score": {
+        "n": 15,
+        "mean": 0.8,
+        "sd": 0.0,
+        "p10": 0.8,
+        "p50": 0.8,
+        "p90": 0.8,
+        "beta_moments": null
+      },
+      "delegate_behavior.alignment_with_close_delegator": {
+        "n": 15,
+        "mean": 0.8133,
+        "sd": 0.0499,
+        "p10": 0.8,
+        "p50": 0.8,
+        "p90": 0.9,
+        "beta_moments": [
+          48.8,
+          11.2
+        ]
+      },
+      "delegate_behavior.alignment_with_impersonal_delegators": {
+        "n": 15,
+        "mean": 0.1867,
+        "sd": 0.0499,
+        "p10": 0.1,
+        "p50": 0.2,
+        "p90": 0.2,
+        "beta_moments": [
+          11.2,
+          48.8
+        ]
+      },
+      "delegate_behavior.delegate_planning_coverage": {
+        "n": 15,
+        "mean": 0.4667,
+        "sd": 0.1011,
+        "p10": 0.4,
+        "p50": 0.4,
+        "p90": 0.6,
+        "beta_moments": [
+          10.8957,
+          12.4522
+        ]
+      },
+      "delegate_behavior.delegate_platform_use_rate": {
+        "n": 15,
+        "mean": 0.7067,
+        "sd": 0.0854,
+        "p10": 0.6,
+        "p50": 0.7,
+        "p90": 0.82,
+        "beta_moments": [
+          19.3902,
+          8.0488
+        ]
+      },
+      "delegate_behavior.delegate_report_quality_willingness": {
+        "n": 15,
+        "mean": 0.8,
+        "sd": 0.1366,
+        "p10": 0.62,
+        "p50": 0.75,
+        "p90": 0.98,
+        "beta_moments": [
+          6.0571,
+          1.5143
+        ]
+      },
+      "delegate_behavior.delegate_responsibility_effect": {
+        "n": 15,
+        "mean": 0.7333,
+        "sd": 0.2063,
+        "p10": 0.5,
+        "p50": 0.8,
+        "p90": 0.96,
+        "beta_moments": [
+          2.6366,
+          0.9587
+        ]
+      },
+      "delegate_behavior.delegate_revocation_discipline_effect": {
+        "n": 15,
+        "mean": 0.6067,
+        "sd": 0.2373,
+        "p10": 0.3,
+        "p50": 0.6,
+        "p90": 0.88,
+        "beta_moments": [
+          1.9651,
+          1.2741
+        ]
+      },
+      "delegate_behavior.would_accept_delegation": {
+        "n": 15,
+        "mean": 0.7533,
+        "sd": 0.1258,
+        "p10": 0.6,
+        "p50": 0.7,
+        "p90": 0.9,
+        "beta_moments": [
+          8.0941,
+          2.6503
+        ]
+      },
+      "friction.need_for_assistance": {
+        "n": 15,
+        "mean": 0.3247,
+        "sd": 0.0508,
+        "p10": 0.3,
+        "p50": 0.3,
+        "p90": 0.4,
+        "beta_moments": [
+          27.2146,
+          56.6085
+        ]
+      },
+      "friction.perceived_ease_of_use": {
+        "n": 15,
+        "mean": 0.7233,
+        "sd": 0.0655,
+        "p10": 0.7,
+        "p50": 0.7,
+        "p90": 0.8,
+        "beta_moments": [
+          33.0278,
+          12.6328
+        ]
+      },
+      "friction.perceived_understanding": {
+        "n": 15,
+        "mean": 0.8233,
+        "sd": 0.0544,
+        "p10": 0.8,
+        "p50": 0.8,
+        "p90": 0.9,
+        "beta_moments": [
+          39.6964,
+          8.5179
+        ]
+      },
+      "platform_behavior.monthly_platform_use_probability": {
+        "n": 15,
+        "mean": 0.4533,
+        "sd": 0.0806,
+        "p10": 0.4,
+        "p50": 0.4,
+        "p90": 0.6,
+        "beta_moments": [
+          16.8603,
+          20.3315
+        ]
+      },
+      "platform_behavior.notification_driven_use_probability": {
+        "n": 15,
+        "mean": 0.6407,
+        "sd": 0.0602,
+        "p10": 0.6,
+        "p50": 0.6,
+        "p90": 0.75,
+        "beta_moments": [
+          40.1074,
+          22.4952
+        ]
+      },
+      "platform_behavior.platform_trial_probability": {
+        "n": 15,
+        "mean": 0.7467,
+        "sd": 0.0785,
+        "p10": 0.7,
+        "p50": 0.7,
+        "p90": 0.9,
+        "beta_moments": [
+          22.1978,
+          7.5314
+        ]
+      }
+    }
+  },
+  "pooled_preferred_delegate_type": {
+    "family_member": 0.3406,
+    "partner_or_spouse": 0.2288,
+    "trusted_friend": 0.1425,
+    "trusted_neighbor": 0.0923,
+    "local_community_leader": 0.0415,
+    "technical_expert": 0.0341,
+    "public_institution_or_ngo": 0.0338,
+    "political_party_or_political_actor": 0.0346,
+    "public_influencer": 0.0339,
+    "would_not_delegate": 0.0179
+  },
+  "context_check_flags": 0
+}

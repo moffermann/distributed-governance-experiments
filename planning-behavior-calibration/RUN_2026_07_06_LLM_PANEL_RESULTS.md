@@ -7,7 +7,7 @@ First executable runs of the calibration instrument (prompt version v0.3, Spanis
 | Panel | Backend | Personas | Valid | Wall time | Effective rate |
 |---|---|---:|---:|---:|---:|
 | `2026-07-06-gpt-5.5-n15` | codex-exec (gpt-5.5, reasoning `low`) | 90 | 90/90 | 105 s | 1.2 s/resp |
-| `2026-07-06-gemma-3-4b-n15` | LM Studio local (gemma-3-4b) | 90 | see results folder | ~20 s/resp serialized | — |
+| `2026-07-06-gemma-3-4b-n15` | LM Studio local (gemma-3-4b) | 90 | 90/90 | 1,864 s | 20.7 s/resp |
 
 Backend benchmark (same panel prompt, 12 parallel requests): codex-exec ~2.0 s effective per response vs ~20.3 s on the serialized local server — ~10–17× throughput. Notes: codex reasoning effort `minimal` is rejected (incompatible with the model's built-in tools); `low` is the fast tier that works; codex does not expose temperature, so runs record `provider-default` and rely on persona variation for spread. Local-server parallelism is possible by loading multiple instances of the same model and using the runner's `--models` round-robin.
 
@@ -29,7 +29,7 @@ Archetype differentiation is coherent: the older low-digital archetype (A1) show
 
 ## Model sensitivity
 
-The gemma-3-4b pilot (12 responses) produced much higher delegation (0.75) and delegate acceptance (0.73) with less plausible archetype ordering (A1 accepting delegation at 0.85). Both models converge on the micro-over-institutional delegate preference (gemma 84/15, gpt-5.5 74/23) and on `delegate_planning_coverage` around 0.40–0.52, inside the trusted-microdelegation prior band. Read only cross-model-stable patterns as informative; per-model levels are priors, not findings.
+The full gemma-3-4b panel (n=90, same personas and prompt) produced much higher delegation (0.77 vs 0.52) and delegate acceptance (0.72 vs 0.42), much lower direct planning participation (0.14 vs 0.42), and less plausible archetype ordering (in the pilot, low-digital elders accepted delegation at 0.85). Both models converge on the micro-over-institutional delegate preference (gemma 84.6/13.6, gpt-5.5 74.1/22.7, would-not-delegate ≤3%) and on `delegate_planning_coverage` inside the trusted-microdelegation prior band (0.43 and 0.52 vs the 0.35–0.70 priors). Read only cross-model-stable patterns as informative; per-model levels are priors, not findings.
 
 ## Downstream use
 
