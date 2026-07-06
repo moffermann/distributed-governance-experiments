@@ -139,6 +139,7 @@ Research design:
 - [`ROADMAP.md`](ROADMAP.md) — staged plan from documentation to executable Mesa/Python simulation and later calibration.
 - [`IMPLEMENTATION_NOTES.md`](IMPLEMENTATION_NOTES.md) — current implementation boundary, run instructions, and next technical steps.
 - [`CORE_V0_CONFORMANCE_AUDIT.md`](CORE_V0_CONFORMANCE_AUDIT.md) — audit of the implementation against the Core v0 corpus: findings, corrections, certification, and declared gaps.
+- [`COMMENT_SIGNAL_LAYER_NOTE.md`](COMMENT_SIGNAL_LAYER_NOTE.md) — recorded author design direction: the citizen-comment layer as a qualitative reputational signal surface, with its conformance guardrails and insertion points.
 - [`PLANNING_LAYER_DESIGN.md`](PLANNING_LAYER_DESIGN.md) — pre-registered design of the end-to-end planning layer: attentive citizens, delegated signals, distributed vs central vector construction, and the value chain.
 - [`RUN_2026_07_06_MESA_RESULTS.md`](RUN_2026_07_06_MESA_RESULTS.md) — first (pre-audit) Mesa run, kept as a dated record.
 - [`RUN_2026_07_06_POST_AUDIT_RESULTS.md`](RUN_2026_07_06_POST_AUDIT_RESULTS.md) — post-audit 10-seed sweep results and interpretation (pre-planning engine, kept as a dated record).

@@ -87,7 +87,7 @@ Research framing:
 - [`IMPLEMENTED_VARIANTS.md`](IMPLEMENTED_VARIANTS.md) — architecture variants currently implemented in the executable v0 engine.
 - [`PLANNING_INFORMATION_MODEL.md`](PLANNING_INFORMATION_MODEL.md) — central versus distributed planning signals and their relationship to latent value.
 - [`PLANNING_CALIBRATION_FROM_EXPERIMENT_2.md`](PLANNING_CALIBRATION_FROM_EXPERIMENT_2.md) — how planning-vector construction calibrates ABM planning-signal mixes.
-- [`AGENTS_AND_ATTACKS.md`](AGENTS_AND_ATTACKS.md) — agents, adversarial behaviors, and attack library.
+- [`AGENTS_AND_ATTACKS.md`](AGENTS_AND_ATTACKS.md) — agents, adversarial behaviors, and attack library. Backlog note: the citizen-comment reputational surface and its astroturf/brigading attack pair are recorded in `../behavioral-adoption-abm/COMMENT_SIGNAL_LAYER_NOTE.md`.
 - [`METRICS_AND_RESULTS.md`](METRICS_AND_RESULTS.md) — outcome metrics and interpretation discipline.
 - [`RESULT_INTERPRETATION_NOTES.md`](RESULT_INTERPRETATION_NOTES.md) — how to distinguish budget absorption, actual value, verified value, reported value, leakage, and visibility gaps.
 - [`ROADMAP.md`](ROADMAP.md) — staged build plan from design to replication package.
