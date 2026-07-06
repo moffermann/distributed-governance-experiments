@@ -4,35 +4,35 @@
   "seed": 42,
   "ticks": 104,
   "population_size": 1000,
-  "micro_delegate_willingness": 0.4523,
-  "institutional_delegation_propensity": 0.2347,
-  "permanent_rejection_rate": 0.0,
+  "micro_delegate_willingness": 0.4755,
+  "institutional_delegation_propensity": 0.2354,
+  "permanent_rejection_rate": 0.0777,
   "planning_attendance_base": {
-    "direct_active": 0.4499,
-    "hybrid": 0.3272,
-    "profile_driven": 0.1227
+    "direct_active": 0.4349,
+    "hybrid": 0.3163,
+    "profile_driven": 0.1186
   },
   "trait_distributions": {
     "digital_confidence": [
-      3.4435,
-      1.8451
+      4.8573,
+      2.3893
     ]
   },
   "_provenance": {
     "source": "llm-elicited synthetic priors (not empirical data)",
-    "panel_run_id": "2026-07-06-gpt-5.5-n15",
+    "panel_run_id": "2026-07-06-gpt-5.5-N1000-weighted",
     "model_name": "gpt-5.5",
     "temperature": "provider-default",
     "prompt_version": "v0.3",
     "date": "2026-07-06",
-    "n_responses": 90,
+    "n_responses": 1000,
     "mapping": "experiments/planning-behavior-calibration/OUTPUT_TO_BEHAVIORAL_ABM.md",
     "validation_targets": {
-      "citizen_behavior.delegation_probability": 0.5191,
-      "platform_behavior.monthly_platform_use_probability": 0.4408,
-      "delegate_behavior.delegate_platform_use_rate": 0.5358,
-      "delegate_behavior.delegate_planning_coverage": 0.5162,
-      "citizen_behavior.revocation_likelihood_after_misalignment": 0.8211
+      "citizen_behavior.delegation_probability": 0.5297,
+      "platform_behavior.monthly_platform_use_probability": 0.4366,
+      "delegate_behavior.delegate_platform_use_rate": 0.5362,
+      "delegate_behavior.delegate_planning_coverage": 0.502,
+      "citizen_behavior.revocation_likelihood_after_misalignment": 0.81
     }
   }
 }

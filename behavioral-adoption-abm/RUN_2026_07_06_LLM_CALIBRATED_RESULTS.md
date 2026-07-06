@@ -52,6 +52,10 @@ The elicited institutional-delegation propensity (0.235) lands almost exactly on
 
 The same instrument on the local `gemma-3-4b` panel produces markedly different pooled levels (e.g., delegation probability 0.75 vs 0.52; would-accept-delegation 0.73 vs 0.42, with implausible archetype orderings such as low-digital elders accepting delegation at 0.85). Both models agree on the micro-over-institutional delegate preference (84/15 and 74/23). LLM-elicited priors are model-dependent; any downstream use must cite panel run id and model, and conclusions should be limited to patterns stable across models until human data exists.
 
+## Recalibration from the N=1000 weighted panel (same day)
+
+The scenario was re-derived from the 1,000-persona population-weighted panel over the extended 20-archetype set (`planning-behavior-calibration/RUN_2026_07_06_N1000_PANEL_RESULTS.md`). Mapped parameters moved little — micro willingness 0.452 → 0.475, attendance base 0.450 → 0.435 — with one qualitative fix: the ideologically-opposed archetype supplies genuine rejection, so `permanent_rejection_rate` maps to 0.078 instead of the n=90 panel's implausible 0.000. Re-run (10 seeds): registered 68.3%, active 49.8%, delegator share 24.1%, attentive share 4.0%, evidence undersupply 10/10 seeds, value 0.38. The structural findings now hold across three prior sources: synthetic, llm-elicited n=90, and llm-elicited N=1000 weighted.
+
 ## Backend note
 
 The panel's codex-exec backend (OpenAI Codex CLI, ChatGPT-plan auth) processes requests with true server-side parallelism: 90 personas in 105 s (~1.2 s effective per response) against ~20 s per response on the serialized local LM Studio server — roughly a 17× throughput gain at 12 concurrent requests, with schema-enforced output in both backends. Reasoning effort `minimal` is rejected by the model's built-in tools; `low` is the fast tier that works.

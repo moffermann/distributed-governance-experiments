@@ -37,34 +37,57 @@ from pathlib import Path
 
 PROMPT_VERSION = "v0.3"
 
-ARCHETYPES = {
-    "A1": "Persona mayor, comodidad limitada con aplicaciones móviles, puede depender de la familia para tareas digitales.",
-    "A2": "Adulto que trabaja a tiempo completo, poco tiempo para participación cívica, usa aplicaciones móviles con comodidad.",
-    "A3": "Ciudadano políticamente atento, sigue los asuntos públicos, compara proyectos, valora la transparencia.",
-    "A4": "Ciudadano desconfiado de políticos, instituciones y posiblemente de delegados.",
-    "A5": "Ciudadano rural o territorialmente distante de las instituciones centrales, valora el conocimiento local.",
-    "A6": "Joven digitalmente activo, cómodo con aplicaciones, notificaciones e interfaces de decisión en línea.",
+# Archetype metadata: description, assumed population weight (NOT census-fitted;
+# provenance: assumed — see ARCHETYPES.md, extended set), and per-archetype
+# variation ranges. Weights sum to 1.0 and drive --total-n allocation.
+ARCHETYPES: dict[str, dict] = {
+    "A1": {"description": "Persona mayor, comodidad limitada con aplicaciones móviles, puede depender de la familia para tareas digitales.",
+           "weight": 0.08, "age_bands": ["65-74", "75+"], "digital_literacy": ["baja", "media-baja"]},
+    "A2": {"description": "Adulto que trabaja a tiempo completo, poco tiempo para participación cívica, usa aplicaciones móviles con comodidad.",
+           "weight": 0.12, "age_bands": ["30-44", "45-59"], "digital_literacy": ["media", "alta"]},
+    "A3": {"description": "Ciudadano políticamente atento, sigue los asuntos públicos, compara proyectos, valora la transparencia.",
+           "weight": 0.04, "age_bands": ["30-44", "45-59", "60-69"], "digital_literacy": ["media", "alta"]},
+    "A4": {"description": "Ciudadano desconfiado de políticos, instituciones y posiblemente de delegados.",
+           "weight": 0.07, "age_bands": ["25-39", "40-59"], "digital_literacy": ["media-baja", "media", "alta"]},
+    "A5": {"description": "Ciudadano rural o territorialmente distante de las instituciones centrales, valora el conocimiento local.",
+           "weight": 0.06, "age_bands": ["30-49", "50-69"], "digital_literacy": ["baja", "media"], "settings": ["rural", "ciudad intermedia"]},
+    "A6": {"description": "Joven digitalmente activo, cómodo con aplicaciones, notificaciones e interfaces de decisión en línea.",
+           "weight": 0.08, "age_bands": ["18-24", "25-29"], "digital_literacy": ["alta"]},
+    "A7": {"description": "Trabajador informal o de aplicaciones (reparto, comercio ambulante, oficios); ingresos variables, muy poco tiempo, contacto diario con problemas urbanos.",
+           "weight": 0.06, "age_bands": ["25-39", "40-54"], "digital_literacy": ["media", "media-baja"]},
+    "A8": {"description": "Persona a cargo del hogar y del cuidado de niños o adultos mayores; conoce de cerca las necesidades del barrio, tiempo fragmentado.",
+           "weight": 0.06, "age_bands": ["30-44", "45-59"], "digital_literacy": ["media-baja", "media"]},
+    "A9": {"description": "Estudiante de educación superior; alta comodidad digital, bajo ingreso, interés cívico variable, mucha vida en línea.",
+           "weight": 0.05, "age_bands": ["18-24"], "digital_literacy": ["alta"]},
+    "A10": {"description": "Dueño o dueña de un pequeño negocio (almacén, taller, pyme); pragmático, poco tiempo, muy interesado en infraestructura y seguridad local.",
+            "weight": 0.04, "age_bands": ["35-49", "50-64"], "digital_literacy": ["media", "alta"]},
+    "A11": {"description": "Funcionario público; conoce el Estado por dentro, respeta los procedimientos y desconfía de soluciones tecnológicas que prometen demasiado.",
+            "weight": 0.03, "age_bands": ["30-44", "45-59"], "digital_literacy": ["media", "alta"]},
+    "A12": {"description": "Profesional de primera línea en salud o educación; vocación de servicio, ve necesidades sociales directamente, jornadas extenuantes.",
+            "weight": 0.04, "age_bands": ["28-44", "45-59"], "digital_literacy": ["media", "alta"]},
+    "A13": {"description": "Persona jubilada activa en organizaciones (junta de vecinos, club, parroquia); tiempo disponible, muy integrada a su comunidad.",
+            "weight": 0.05, "age_bands": ["60-69", "70-79"], "digital_literacy": ["media-baja", "media"]},
+    "A14": {"description": "Persona desempleada o con trabajo precario; necesidades materiales urgentes, baja confianza en promesas institucionales.",
+            "weight": 0.04, "age_bands": ["25-39", "40-59"], "digital_literacy": ["media-baja", "media"]},
+    "A15": {"description": "Persona con discapacidad o movilidad reducida; una app puede habilitar participación antes imposible, pero la accesibilidad le preocupa.",
+            "weight": 0.03, "age_bands": ["30-49", "50-69"], "digital_literacy": ["media-baja", "media", "alta"]},
+    "A16": {"description": "Migrante con pocos años en el país; redes comunitarias fuertes, dudas sobre su elegibilidad y poca familiaridad institucional.",
+            "weight": 0.03, "age_bands": ["25-39", "40-54"], "digital_literacy": ["media", "alta"]},
+    "A17": {"description": "Ciudadano ideológicamente contrario a este tipo de plataformas; considera que la participación digital despolitiza o legitima al sistema.",
+            "weight": 0.04, "age_bands": ["25-44", "45-64"], "digital_literacy": ["media", "alta"]},
+    "A18": {"description": "Usuario digital intensivo pero apolítico; usa el celular para entretención y redes, los asuntos públicos le aburren.",
+            "weight": 0.04, "age_bands": ["18-29", "30-44"], "digital_literacy": ["alta"]},
+    "A19": {"description": "Dirigente social o vecinal en ejercicio; acostumbrado a representar a otros, candidato natural a recibir delegaciones.",
+            "weight": 0.02, "age_bands": ["40-59", "60-69"], "digital_literacy": ["media", "alta"]},
+    "A20": {"description": "Profesional tecnológico y adoptador temprano; revisará cómo funciona el sistema por dentro antes de confiar en él.",
+            "weight": 0.02, "age_bands": ["25-39", "40-49"], "digital_literacy": ["alta"]},
 }
+
+assert abs(sum(a["weight"] for a in ARCHETYPES.values()) - 1.0) < 1e-9
 
 # Permitted prompt variations (PROMPT_PROTOCOL.md); core app facts never change.
 VARIATIONS = {
     "setting": ["urbano", "rural", "ciudad intermedia"],
-    "age_band": {
-        "A1": ["65-74", "75+"],
-        "A2": ["30-44", "45-59"],
-        "A3": ["30-44", "45-59", "60-69"],
-        "A4": ["25-39", "40-59"],
-        "A5": ["30-49", "50-69"],
-        "A6": ["18-24", "25-29"],
-    },
-    "digital_literacy": {
-        "A1": ["baja", "media-baja"],
-        "A2": ["media", "alta"],
-        "A3": ["media", "alta"],
-        "A4": ["media-baja", "media", "alta"],
-        "A5": ["baja", "media"],
-        "A6": ["alta"],
-    },
     "political_interest": ["bajo", "medio", "alto"],
     "time_availability": ["muy poco", "algo", "bastante"],
     "family_trust": ["media", "alta"],
@@ -212,18 +235,29 @@ QUESTION_BLOCK = (
 
 
 def build_persona(archetype_id: str, rng: random.Random, country: str) -> dict:
+    spec = ARCHETYPES[archetype_id]
     return {
         "archetype_id": archetype_id,
-        "description": ARCHETYPES[archetype_id],
+        "description": spec["description"],
         "country": country,
-        "setting": rng.choice(VARIATIONS["setting"] if archetype_id != "A5" else ["rural", "ciudad intermedia"]),
-        "age_band": rng.choice(VARIATIONS["age_band"][archetype_id]),
-        "digital_literacy": rng.choice(VARIATIONS["digital_literacy"][archetype_id]),
+        "setting": rng.choice(spec.get("settings", VARIATIONS["setting"])),
+        "age_band": rng.choice(spec["age_bands"]),
+        "digital_literacy": rng.choice(spec["digital_literacy"]),
         "political_interest": rng.choice(VARIATIONS["political_interest"]),
         "time_availability": rng.choice(VARIATIONS["time_availability"]),
         "family_trust": rng.choice(VARIATIONS["family_trust"]),
         "institutional_trust": rng.choice(VARIATIONS["institutional_trust"]),
     }
+
+
+def allocate_total(total_n: int) -> dict[str, int]:
+    """Largest-remainder allocation of total_n personas by archetype weight."""
+    exact = {a: spec["weight"] * total_n for a, spec in ARCHETYPES.items()}
+    counts = {a: int(v) for a, v in exact.items()}
+    remainder = total_n - sum(counts.values())
+    for a in sorted(exact, key=lambda a: exact[a] - counts[a], reverse=True)[:remainder]:
+        counts[a] += 1
+    return counts
 
 
 def build_user_prompt(persona: dict) -> str:
@@ -385,7 +419,8 @@ def main() -> None:
              "base model in LM Studio for real server-side parallelism; mixing different "
              "base models in one panel contaminates the fitted distributions.",
     )
-    parser.add_argument("--n-per-archetype", type=int, default=20)
+    parser.add_argument("--n-per-archetype", type=int, default=20, help="Equal allocation per archetype (ignored if --total-n is set).")
+    parser.add_argument("--total-n", type=int, default=None, help="Total personas allocated across archetypes proportionally to their assumed population weights.")
     parser.add_argument("--temperature", type=float, default=0.7)
     parser.add_argument("--max-tokens", type=int, default=1200)
     parser.add_argument("--concurrency", type=int, default=6)
@@ -402,13 +437,18 @@ def main() -> None:
     if len(base_models) > 1:
         print(f"WARNING: mixing different base models in one panel: {sorted(base_models)} — "
               "distributions will be contaminated; prefer instances of one model.")
-    run_id = f"{date.today().isoformat()}-{model_pool[0].split('/')[-1].split(':')[0]}-n{args.n_per_archetype}"
+    if args.total_n:
+        counts = allocate_total(args.total_n)
+        run_id = f"{date.today().isoformat()}-{model_pool[0].split('/')[-1].split(':')[0]}-N{args.total_n}-weighted"
+    else:
+        counts = {a: args.n_per_archetype for a in ARCHETYPES}
+        run_id = f"{date.today().isoformat()}-{model_pool[0].split('/')[-1].split(':')[0]}-n{args.n_per_archetype}"
     out_dir = Path(args.output_dir) if args.output_dir else Path(__file__).resolve().parent.parent / "results" / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
 
     personas = []
-    for archetype_id in ARCHETYPES:
-        for i in range(args.n_per_archetype):
+    for archetype_id, n_arch in counts.items():
+        for i in range(n_arch):
             persona = build_persona(archetype_id, rng, args.country)
             persona["response_id"] = f"{run_id}-{archetype_id}-{i:03d}"
             personas.append(persona)
@@ -444,7 +484,7 @@ def main() -> None:
             except Exception as exc:  # noqa: BLE001 - recorded, run continues
                 failures.append({"response_id": persona["response_id"], "error": str(exc)})
             if done % 10 == 0 or done == len(personas):
-                print(f"{done}/{len(personas)} responses ({time.time() - started:.0f}s)")
+                print(f"{done}/{len(personas)} responses ({time.time() - started:.0f}s)", flush=True)
 
     metadata = {
         "run_id": run_id, "respondent_source": "llm", "model_name": ",".join(model_pool),
@@ -452,6 +492,8 @@ def main() -> None:
         "temperature": args.temperature if args.backend == "openai-compatible" else "provider-default",
         "prompt_version": PROMPT_VERSION, "date": date.today().isoformat(),
         "country": args.country, "language": "es", "persona_seed": args.seed,
+        "allocation": "population-weighted (assumed weights, not census-fitted)" if args.total_n else "equal per archetype",
+        "archetype_counts": counts,
         "n_requested": len(personas), "n_ok": len(results), "n_failed": len(failures),
         "methodological_statement": (
             "LLM-elicited synthetic priors over behavioral parameters; not real citizens, "

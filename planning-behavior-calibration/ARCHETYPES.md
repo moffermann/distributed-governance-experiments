@@ -1,5 +1,7 @@
 # Archetypes
 
+> Extended 2026-07-06: the original six citizen archetypes (A1–A6) were joined by fourteen more (A7–A20, defined at the end of this document) with assumed population weights, so large panels can approximate a realistic population mix instead of an equal-weight archetype grid. Weights are declared assumptions, not census-fitted values.
+
 ## Purpose
 
 This document defines respondent archetypes for LLM calibration and future human sampling.
@@ -186,6 +188,35 @@ Expected relevance:
 - low alignment;
 - high manipulation risk;
 - revocation depends on whether delegators read reports and understand misalignment.
+
+## Extended citizen archetype set (A7–A20, added 2026-07-06)
+
+Fourteen additional citizen archetypes broaden coverage of the population's occupational, material, and attitudinal variation. Full prompt-facing descriptions and per-archetype variation ranges live in `src/run_llm_panel.py`; weights are assumed population shares (provenance: assumed), used by the runner's `--total-n` population-weighted allocation.
+
+| Id | Archetype | Assumed weight |
+|---|---|---:|
+| A1 | Older low-digital-literacy citizen | 0.08 |
+| A2 | Busy working adult | 0.12 |
+| A3 | Politically attentive citizen | 0.04 |
+| A4 | Low-trust citizen | 0.07 |
+| A5 | Rural or territorially distant citizen | 0.06 |
+| A6 | Young digitally active citizen | 0.08 |
+| A7 | Informal / gig worker | 0.06 |
+| A8 | Primary caregiver running a household | 0.06 |
+| A9 | Higher-education student | 0.05 |
+| A10 | Small-business owner | 0.04 |
+| A11 | Public-sector employee | 0.03 |
+| A12 | Front-line health/education professional | 0.04 |
+| A13 | Retiree active in community organizations | 0.05 |
+| A14 | Unemployed / precarious worker | 0.04 |
+| A15 | Person with disability or reduced mobility | 0.03 |
+| A16 | Recent migrant | 0.03 |
+| A17 | Ideologically opposed citizen | 0.04 |
+| A18 | Digitally intensive but apolitical user | 0.04 |
+| A19 | Acting neighborhood/social leader | 0.02 |
+| A20 | Tech professional / early adopter | 0.02 |
+
+The set deliberately includes archetypes expected to reject or ignore the platform (A17, A18) and natural delegate candidates (A13, A19) so that non-use and delegation supply both emerge from composition rather than from tuning.
 
 ## Sampling rule
 

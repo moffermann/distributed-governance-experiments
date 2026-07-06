@@ -93,6 +93,8 @@ Without this context, answers about delegation and participation will be badly c
 - [`instruments/SURVEY_INSTRUMENT_ES.md`](instruments/SURVEY_INSTRUMENT_ES.md) — human-facing Spanish survey draft.
 - [`src/run_llm_panel.py`](src/run_llm_panel.py) — executable LLM panel runner (LM Studio / any OpenAI-compatible endpoint / codex-exec backend; standard library only).
 - [`RUN_2026_07_06_LLM_PANEL_RESULTS.md`](RUN_2026_07_06_LLM_PANEL_RESULTS.md) — first panel runs: backend benchmark, pooled distributions, archetype differentiation, model sensitivity.
+- [`RUN_2026_07_06_N1000_PANEL_RESULTS.md`](RUN_2026_07_06_N1000_PANEL_RESULTS.md) — N=1000 population-weighted panel over the 20-archetype set: convergence by n≈500–750, composition-vs-scale decomposition, new-archetype face validity.
+- [`src/analyze_convergence.py`](src/analyze_convergence.py) — convergence and composition analysis for large panel runs.
 - `results/` — dated panel runs: raw responses, normalized responses, fitted summaries.
 
 ## Evidence status
