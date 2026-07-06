@@ -1,0 +1,15 @@
+{
+  "scenario_id": "high_friction_launch",
+  "description": "Core is available but difficult to understand; onboarding and interface friction are high.",
+  "seed": 42,
+  "ticks": 104,
+  "population_size": 1000,
+  "initial_awareness": 0.10,
+  "campaign_intensity": 0.030,
+  "onboarding_friction": 0.72,
+  "interface_complexity": 0.70,
+  "ai_tutor_quality": 0.20,
+  "decision_clarity": 0.28,
+  "public_legitimacy": 0.40,
+  "privacy_guarantee_strength": 0.42
+}
