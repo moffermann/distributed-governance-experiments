@@ -1,0 +1,3 @@
+# The MVP can run with Python's standard library only.
+# Install Mesa to run it on Mesa's native Agent/Model base classes.
+mesa>=3,<5
