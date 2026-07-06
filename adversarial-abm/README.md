@@ -92,6 +92,7 @@ Research framing:
 - [`RESULT_INTERPRETATION_NOTES.md`](RESULT_INTERPRETATION_NOTES.md) — how to distinguish budget absorption, actual value, verified value, reported value, leakage, and visibility gaps.
 - [`ROADMAP.md`](ROADMAP.md) — staged build plan from design to replication package.
 - [`ENGINE_AUDIT_2026_07_06.md`](ENGINE_AUDIT_2026_07_06.md) — engine v0.4 audit: comparator-noise bug, dead population channels implemented, Core v0 conformance checklist, pre/post baseline.
+- [`RUN_2026_07_06_BEHAVIORAL_INTEGRATION_RESULTS.md`](RUN_2026_07_06_BEHAVIORAL_INTEGRATION_RESULTS.md) — Experiment C: architectures under behaviorally generated populations; ranking invariant, Core advantage 2.0–2.7×, no-default participation collapses to zero.
 
 Technical design:
 

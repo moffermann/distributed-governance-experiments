@@ -138,6 +138,8 @@ thin_market_failure_rate
 
 ## Stage 4 — Integration with institutional architecture experiment
 
+Status: first pass complete (2026-07-06). Mapping pre-registered in `OUTPUT_TO_ADVERSARIAL_ABM.md`, adapter in `build_adversarial_scenario.py`, integrated runs and prediction accounting in `../adversarial-abm/RUN_2026_07_06_BEHAVIORAL_INTEGRATION_RESULTS.md`: the architecture ranking is behavioral-population-invariant, the Core-distributed advantage holds at 2.0–2.7×, and no-default participation collapses to zero delivery under every generated population.
+
 Deliverables:
 
 - behavioral-output JSON schema;
