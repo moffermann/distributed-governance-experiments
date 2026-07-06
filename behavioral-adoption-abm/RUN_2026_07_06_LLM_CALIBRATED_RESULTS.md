@@ -56,6 +56,14 @@ The same instrument on the local `gemma-3-4b` panel produces markedly different 
 
 The scenario was re-derived from the 1,000-persona population-weighted panel over the extended 20-archetype set (`planning-behavior-calibration/RUN_2026_07_06_N1000_PANEL_RESULTS.md`). Mapped parameters moved little — micro willingness 0.452 → 0.475, attendance base 0.450 → 0.435 — with one qualitative fix: the ideologically-opposed archetype supplies genuine rejection, so `permanent_rejection_rate` maps to 0.078 instead of the n=90 panel's implausible 0.000. Re-run (10 seeds): registered 68.3%, active 49.8%, delegator share 24.1%, attentive share 4.0%, evidence undersupply 10/10 seeds, value 0.38. The structural findings now hold across three prior sources: synthetic, llm-elicited n=90, and llm-elicited N=1000 weighted.
 
+## Distribution-based calibration and the mean-sufficiency check (added same day)
+
+Two follow-ups on whether pooled *means* are the right thing to inject:
+
+**Mapping correction.** The attendance inversion had divided by the willingness civic factor (0.5 + E[civic] = 0.925) instead of the attendance civic factor (0.5 + 0.5·E[civic] = 0.7125), understating attendance by ~23%. Corrected: `planning_attendance_base.direct_active` maps to 0.565 (not 0.435), and the calibrated attentive share is ~5.0%.
+
+**Mean vs distribution, resolved empirically and theoretically.** For any parameter that terminates in a Bernoulli draw (e.g. delegate willingness), E[bernoulli(P)] = E[P]: the mean is provably sufficient and a fitted distribution adds nothing. A distribution matters only under nonlinearity (trait sigmoids — which is why trait priors are Beta-configurable) or **persistence**. The new `planning_attendance_distribution` config draws a persistent per-citizen attendance propensity from the panel's fitted Beta(2.36, 3.51) — the same subpopulation attends round after round — generated as `scenarios/llm_calibrated_dist.json` via `--distributions`. Result (10 seeds each): attentive share 4.98% (mean mode) vs 4.70% (persistent mode), distributed correlation 0.981 vs 0.979, value overlapping. Persistence narrows *who* attends, but delegated representation keeps the planning vector's quality intact — the mean approach is adequate for this model, now as a checked result rather than an assumption. The distribution machinery stays available for when person-persistent signal biases enter the model, where it would bind.
+
 ## Backend note
 
 The panel's codex-exec backend (OpenAI Codex CLI, ChatGPT-plan auth) processes requests with true server-side parallelism: 90 personas in 105 s (~1.2 s effective per response) against ~20 s per response on the serialized local LM Studio server — roughly a 17× throughput gain at 12 concurrent requests, with schema-enforced output in both backends. Reasoning effort `minimal` is rejected by the model's built-in tools; `low` is the fast tier that works.

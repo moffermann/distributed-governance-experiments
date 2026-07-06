@@ -129,6 +129,14 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "hybrid": 0.40,
         "profile_driven": 0.15,
     },
+    # Optional Beta(a, b) for a PERSISTENT per-citizen planning-attendance
+    # propensity (distribution-based calibration). When set, each citizen
+    # draws one propensity at init and attends with
+    # propensity × (mode base / direct base) × scale — so the same
+    # subpopulation attends round after round, instead of an i.i.d. draw.
+    # For quantities that end in a Bernoulli, E[bernoulli(P)] = E[P]: only
+    # persistence and nonlinearity make a distribution matter over its mean.
+    "planning_attendance_distribution": None,
     # Beta(a, b) priors for citizen traits. Synthetic defaults; replaceable by
     # llm-elicited or empirically fitted distributions (mark provenance in the
     # scenario file).
@@ -345,6 +353,8 @@ class CitizenAgent(mesa.Agent):  # type: ignore[misc]
         )
         self.delegated_weight = 0.0  # weight received from other citizens
         self.consecutive_active_ticks = 0
+        dist = cfg.get("planning_attendance_distribution")
+        self.attendance_propensity = clamp(rng.betavariate(*dist)) if dist else None
 
     @property
     def is_active(self) -> bool:
@@ -891,7 +901,11 @@ class BehavioralAdoptionModel(mesa.Model):  # type: ignore[misc]
             base = attendance.get(c.use_state)
             if base is None:
                 continue
-            p_attend = base * (0.5 + 0.5 * c.civic_interest) * cfg["planning_attendance_scale"]
+            if c.attendance_propensity is not None:
+                # Persistent propensity: the same subpopulation attends each round.
+                p_attend = c.attendance_propensity * (base / attendance["direct_active"]) * cfg["planning_attendance_scale"]
+            else:
+                p_attend = base * (0.5 + 0.5 * c.civic_interest) * cfg["planning_attendance_scale"]
             if not bernoulli(self.random, p_attend):
                 continue
             attentive += 1

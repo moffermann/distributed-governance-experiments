@@ -95,6 +95,7 @@ Without this context, answers about delegation and participation will be badly c
 - [`RUN_2026_07_06_LLM_PANEL_RESULTS.md`](RUN_2026_07_06_LLM_PANEL_RESULTS.md) — first panel runs: backend benchmark, pooled distributions, archetype differentiation, model sensitivity.
 - [`RUN_2026_07_06_N1000_PANEL_RESULTS.md`](RUN_2026_07_06_N1000_PANEL_RESULTS.md) — N=1000 population-weighted panel over the 20-archetype set: convergence by n≈500–750, composition-vs-scale decomposition, new-archetype face validity.
 - [`src/analyze_convergence.py`](src/analyze_convergence.py) — convergence and composition analysis for large panel runs.
+- [`src/analyze_distributions.py`](src/analyze_distributions.py) — Beta fits with KS quality, archetype-mixture detection, histogram figures, and cross-panel distribution tests (requires matplotlib).
 - `results/` — dated panel runs: raw responses, normalized responses, fitted summaries.
 
 ## Evidence status

@@ -1,6 +1,6 @@
 {
-  "scenario_id": "llm_calibrated",
-  "description": "Baseline behavioral parameters replaced, where mappable, by LLM-elicited synthetic priors from the planning-behavior-calibration panel (OUTPUT_TO_BEHAVIORAL_ABM.md). Not empirical data.",
+  "scenario_id": "llm_calibrated_dist",
+  "description": "Baseline behavioral parameters replaced, where mappable, by LLM-elicited synthetic priors from the planning-behavior-calibration panel (OUTPUT_TO_BEHAVIORAL_ABM.md). Distribution mode: planning attendance is a persistent per-citizen propensity drawn from the panel's fitted Beta. Not empirical data.",
   "seed": 42,
   "ticks": 104,
   "population_size": 1000,
@@ -12,6 +12,10 @@
     "hybrid": 0.4106,
     "profile_driven": 0.154
   },
+  "planning_attendance_distribution": [
+    2.3659,
+    3.515
+  ],
   "trait_distributions": {
     "digital_confidence": [
       4.8573,

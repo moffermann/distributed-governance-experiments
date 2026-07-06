@@ -1,0 +1,105 @@
+{
+  "panel": "2026-07-06-gpt-5.5-N1000-weighted",
+  "n": 1000,
+  "compare": "2026-07-06-gemma-3-4b-n15",
+  "fields": {
+    "platform_behavior.platform_trial_probability": {
+      "mean": 0.7062,
+      "sd": 0.165,
+      "beta": [
+        4.678,
+        1.946
+      ],
+      "ks_distance": 0.1107,
+      "archetype_mean_spread": 0.71,
+      "compare_mean": 0.5578,
+      "compare_mean_percentile_in_panel": 0.15,
+      "compare_mean_z_vs_sampling_dist": -28.4,
+      "distribution_overlap_coefficient": 0.2677
+    },
+    "platform_behavior.monthly_platform_use_probability": {
+      "mean": 0.4366,
+      "sd": 0.1717,
+      "beta": [
+        3.207,
+        4.138
+      ],
+      "ks_distance": 0.0702,
+      "archetype_mean_spread": 0.5557,
+      "compare_mean": 0.3,
+      "compare_mean_percentile_in_panel": 0.226,
+      "compare_mean_z_vs_sampling_dist": -25.2,
+      "distribution_overlap_coefficient": 0.2646
+    },
+    "citizen_behavior.direct_planning_participation_probability": {
+      "mean": 0.4023,
+      "sd": 0.187,
+      "beta": [
+        2.363,
+        3.511
+      ],
+      "ks_distance": 0.0464,
+      "archetype_mean_spread": 0.5443,
+      "compare_mean": 0.1391,
+      "compare_mean_percentile_in_panel": 0.074,
+      "compare_mean_z_vs_sampling_dist": -44.5,
+      "distribution_overlap_coefficient": 0.1867
+    },
+    "citizen_behavior.delegation_probability": {
+      "mean": 0.5297,
+      "sd": 0.1469,
+      "beta": [
+        5.586,
+        4.959
+      ],
+      "ks_distance": 0.1058,
+      "archetype_mean_spread": 0.4999,
+      "compare_mean": 0.7689,
+      "compare_mean_percentile_in_panel": 0.984,
+      "compare_mean_z_vs_sampling_dist": 51.5,
+      "distribution_overlap_coefficient": 0.1544
+    },
+    "delegate_behavior.would_accept_delegation": {
+      "mean": 0.4398,
+      "sd": 0.1563,
+      "beta": [
+        3.995,
+        5.088
+      ],
+      "ks_distance": 0.0751,
+      "archetype_mean_spread": 0.6793,
+      "compare_mean": 0.7217,
+      "compare_mean_percentile_in_panel": 0.968,
+      "compare_mean_z_vs_sampling_dist": 57.0,
+      "distribution_overlap_coefficient": 0.2179
+    },
+    "delegate_behavior.delegate_platform_use_rate": {
+      "mean": 0.5362,
+      "sd": 0.1677,
+      "beta": [
+        4.204,
+        3.637
+      ],
+      "ks_distance": 0.0861,
+      "archetype_mean_spread": 0.5515,
+      "compare_mean": 0.6106,
+      "compare_mean_percentile_in_panel": 0.628,
+      "compare_mean_z_vs_sampling_dist": 14.0,
+      "distribution_overlap_coefficient": 0.3732
+    },
+    "delegate_behavior.delegate_planning_coverage": {
+      "mean": 0.502,
+      "sd": 0.1465,
+      "beta": [
+        5.342,
+        5.3
+      ],
+      "ks_distance": 0.0593,
+      "archetype_mean_spread": 0.4493,
+      "compare_mean": 0.4272,
+      "compare_mean_percentile_in_panel": 0.302,
+      "compare_mean_z_vs_sampling_dist": -16.1,
+      "distribution_overlap_coefficient": 0.3566
+    }
+  }
+}

@@ -38,7 +38,11 @@ def beta_mean(params: list[float]) -> float:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Apply LLM panel calibration to the behavioral ABM.")
     parser.add_argument("--panel", required=True, help="Panel results directory (contains panel_summary.json).")
-    parser.add_argument("--output", default=str(ROOT / "scenarios" / "llm_calibrated.json"))
+    parser.add_argument("--output", default=None, help="Defaults to scenarios/llm_calibrated.json (or llm_calibrated_dist.json with --distributions).")
+    parser.add_argument("--distributions", action="store_true",
+                        help="Distribution-based calibration: planning attendance becomes a PERSISTENT per-citizen "
+                             "propensity drawn from the panel's fitted Beta, instead of a mean base. For "
+                             "Bernoulli-terminal parameters the mean is provably sufficient, so those stay scalar.")
     args = parser.parse_args()
 
     panel_dir = Path(args.panel)
@@ -52,11 +56,15 @@ def main() -> None:
         if line.strip()
     ]
 
-    civic_multiplier = 0.5 + beta_mean(DEFAULT_CONFIG["trait_distributions"]["civic_interest"])
+    civic_mean = beta_mean(DEFAULT_CONFIG["trait_distributions"]["civic_interest"])
+    # Two different civic factors in the model: willingness uses (0.5 + civic),
+    # planning attendance uses (0.5 + 0.5*civic).
+    willingness_multiplier = 0.5 + civic_mean
+    attendance_multiplier = 0.5 + 0.5 * civic_mean
 
     # micro_delegate_willingness: ABM expresses willingness with p = w * (0.5 + civic).
     would_accept = pooled["delegate_behavior.would_accept_delegation"]["mean"]
-    micro_willingness = clamp(would_accept / civic_multiplier)
+    micro_willingness = clamp(would_accept / willingness_multiplier)
 
     # institutional_delegation_propensity: institutional mass among those who would delegate.
     types = summary["pooled_preferred_delegate_type"]
@@ -73,11 +81,11 @@ def main() -> None:
     rejection_weight = 0.6 * (1.0 - openness_mean) + 0.4 * privacy_mean
     permanent_rejection_rate = clamp(share_refusing / rejection_weight if rejection_weight > 0 else share_refusing)
 
-    # planning attendance: direct base inverted by the civic multiplier; hybrid
+    # planning attendance: direct base inverted by its own civic factor; hybrid
     # and profile keep their synthetic ratios to direct.
     direct_planning = pooled["citizen_behavior.direct_planning_participation_probability"]["mean"]
     base = DEFAULT_CONFIG["planning_attendance_base"]
-    direct_base = clamp(direct_planning / civic_multiplier)
+    direct_base = clamp(direct_planning / attendance_multiplier)
     attendance = {
         "direct_active": round(direct_base, 4),
         "hybrid": round(direct_base * base["hybrid"] / base["direct_active"], 4),
@@ -98,12 +106,16 @@ def main() -> None:
         )
     }
 
+    attendance_beta = pooled["citizen_behavior.direct_planning_participation_probability"]["beta_moments"]
+    scenario_id = "llm_calibrated_dist" if args.distributions else "llm_calibrated"
     scenario = {
-        "scenario_id": "llm_calibrated",
+        "scenario_id": scenario_id,
         "description": (
             "Baseline behavioral parameters replaced, where mappable, by LLM-elicited synthetic priors "
             "from the planning-behavior-calibration panel (OUTPUT_TO_BEHAVIORAL_ABM.md). "
-            "Not empirical data."
+            + ("Distribution mode: planning attendance is a persistent per-citizen propensity drawn from "
+               "the panel's fitted Beta. " if args.distributions else "")
+            + "Not empirical data."
         ),
         "seed": 42,
         "ticks": 104,
@@ -112,6 +124,7 @@ def main() -> None:
         "institutional_delegation_propensity": round(institutional_propensity, 4),
         "permanent_rejection_rate": round(permanent_rejection_rate, 4),
         "planning_attendance_base": attendance,
+        **({"planning_attendance_distribution": attendance_beta} if args.distributions and attendance_beta else {}),
         **({"trait_distributions": {"digital_confidence": ease_beta}} if ease_beta else {}),
         "_provenance": {
             "source": "llm-elicited synthetic priors (not empirical data)",
@@ -126,7 +139,7 @@ def main() -> None:
         },
     }
 
-    out = Path(args.output)
+    out = Path(args.output) if args.output else ROOT / "scenarios" / f"{scenario_id}.json"
     out.write_text(json.dumps(scenario, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     print(f"wrote {out}")

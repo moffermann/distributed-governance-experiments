@@ -57,6 +57,24 @@ The orderings are coherent without any tuning: the opposed archetype finally sup
 - `delegate_planning_coverage` 0.502, inside the trusted-microdelegation prior band.
 - Remapped into the ABM (`behavioral-adoption-abm/scenarios/llm_calibrated.json`, provenance updated): registered 68.3%, active 49.8%, attentive share 4.0%, verification undersupply 10/10 seeds, value 0.38 — the structural findings survive a third consecutive prior source.
 
+## Distribution analysis (added same day)
+
+`src/analyze_distributions.py` fits Betas by method of moments, renders histograms with fitted overlays to `results/<run>/figures/`, and tests a second panel against the first's empirical distribution. Key numbers at N=1000:
+
+| Field | Beta(a, b) | KS | archetype-mean spread |
+|---|---|---:|---:|
+| platform_trial_probability | (4.68, 1.95) | 0.111 | 0.71 |
+| monthly_platform_use_probability | (3.21, 4.14) | 0.070 | 0.56 |
+| direct_planning_participation_probability | (2.36, 3.51) | 0.046 | 0.54 |
+| delegation_probability | (5.59, 4.96) | 0.106 | 0.50 |
+| would_accept_delegation | (3.99, 5.09) | 0.075 | 0.68 |
+| delegate_platform_use_rate | (4.20, 3.64) | 0.086 | 0.55 |
+| delegate_planning_coverage | (5.34, 5.30) | 0.059 | 0.45 |
+
+The fields are **archetype mixtures**, not clean Betas: per-archetype means span up to 0.71 (trial: opposed 0.17 → tech professional 0.88), which is what degrades the single-Beta fit on trial and delegation (KS ~0.11). Where a distribution is needed downstream, prefer the per-archetype mixture or empirical resampling over the pooled Beta.
+
+**Is gemma inside the gpt-5.5 distribution?** Both statements are true and they answer different questions. Gemma's pooled means fall inside the *person-level* support of the gpt-5.5 panel — at the tails (delegation at the 98th percentile, would-accept at the 97th, direct participation at the 7th): individual "gemma-like" respondents exist in the gpt-5.5 population. But as a *population*, gemma is definitively different: against the sampling distribution of the mean, |z| runs 14–57, and the distribution overlap coefficients are only 0.15–0.37 — partly because gemma's person-level spread is 2–3× narrower (it collapses heterogeneity, sd 0.05 on delegation vs 0.15). Gemma is not a plausible resample of gpt-5.5; it is a different prior with a few of its moments landing inside the other's tails.
+
 ## Caveats
 
 Assumed archetype weights are not census-fitted; the convergence shown is *within-model* stability of gpt-5.5 under persona variation, not agreement with human behavior. Model-to-model divergence (see the gemma comparison) remains the larger uncertainty, and the human instrument remains the calibration that counts.
