@@ -154,6 +154,7 @@ Executable prototype:
 - [`apply_llm_calibration.py`](apply_llm_calibration.py) — maps a `planning-behavior-calibration` LLM panel onto ABM parameters and writes `scenarios/llm_calibrated.json` with provenance (see `OUTPUT_TO_BEHAVIORAL_ABM.md` in that experiment).
 - [`OUTPUT_TO_ADVERSARIAL_ABM.md`](OUTPUT_TO_ADVERSARIAL_ABM.md) — Experiment C pre-registered mapping: behavioral populations replace the adversarial ABM's imposed population block.
 - [`build_adversarial_scenario.py`](build_adversarial_scenario.py) — Experiment C adapter: sweep means → generated adversarial scenarios with provenance (results in `../adversarial-abm/RUN_2026_07_06_BEHAVIORAL_INTEGRATION_RESULTS.md`).
+- [`build_e8_inputs.py`](build_e8_inputs.py) — E8 bridge: per-seed participation trajectories for the paper engine (design `research/e8-behavioral-participation-design.md`, results in `research/simulation-results.md` §E8).
 - [`src/behavioral_adoption_abm/core.py`](src/behavioral_adoption_abm/core.py) — MVP model, agents, metrics, scenario loading, and result writers.
 - [`src/behavioral_adoption_abm/run.py`](src/behavioral_adoption_abm/run.py) — package CLI entry point.
 - [`scenarios/`](scenarios/) — baseline and stress scenarios.
