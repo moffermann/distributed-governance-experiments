@@ -50,10 +50,11 @@ const f = (x, d = 3) => x.toFixed(d);
 const lines = [];
 lines.push(`# Experiment F-2: the control-cost frontier (engine v${LONG_ENGINE_VERSION})`);
 lines.push(``);
-lines.push(`V_total = verifiedValue / (delivery budget + human cost + machine cost + evidence premium); tranche=${tranche.toFixed(0)}, machine cost 0.1%/milestone (declared), rho=${rho}; pull W*=7; ${RUNS} runs, seed ${SEED}`);
+lines.push(`V_total = verifiedValue / (delivery budget + human cost + machine cost + evidence premium); tranche=${tranche.toFixed(0)}, rho=${rho}; pull W*=7; ${RUNS} runs, seed ${SEED}.`);
+lines.push(`Machine cost swept over {0.1%/milestone (hosted-API stipulation), 0 (open-weights local: energy/hardware are sunk or marginal — author correction 2026-07-07)}.`);
 lines.push(``);
-lines.push(`| K | regime | h (human %/milestone) | e (evidence %/milestone) | V plain | control+evidence cost (% of budget) | V per TOTAL budget |`);
-lines.push(`|---:|---|---:|---:|---:|---:|---:|`);
+lines.push(`| K | regime | h (human %/milestone) | e (evidence %/milestone) | machine cost | V plain | control+evidence cost (% of budget) | V per TOTAL budget |`);
+lines.push(`|---:|---|---:|---:|---:|---:|---:|---:|`);
 const summary = [];
 for (const { K, regime, m } of cells) {
   const humanVerifs = m.humanLoadPerCycle.mean * cycles;
@@ -63,10 +64,12 @@ for (const { K, regime, m } of cells) {
   const verifiedValue = m.verifiedValuePerBudgetYear.mean * totalBudget;
   for (const h of [0.03, 0.06, 0.10]) {
     for (const e of [0.005, 0.02, 0.05]) {
-      const controlCost = h * tranche * humanVerifs + 0.001 * tranche * aiVerifs + e * tranche * milestones;
-      const vTotal = verifiedValue / (totalBudget + controlCost);
-      lines.push(`| ${K} | ${regime} | ${(h * 100).toFixed(0)}% | ${(e * 100).toFixed(1)}% | ${f(m.verifiedValuePerBudgetYear.mean)} | ${f(100 * controlCost / totalBudget, 1)}% | ${f(vTotal)} |`);
-      summary.push({ K, regime, h, e, vTotal, controlShare: controlCost / totalBudget });
+      for (const mc of [0.001, 0]) {
+        const controlCost = h * tranche * humanVerifs + mc * tranche * aiVerifs + e * tranche * milestones;
+        const vTotal = verifiedValue / (totalBudget + controlCost);
+        lines.push(`| ${K} | ${regime} | ${(h * 100).toFixed(0)}% | ${(e * 100).toFixed(1)}% | ${mc === 0 ? "0 (local)" : "0.1%"} | ${f(m.verifiedValuePerBudgetYear.mean)} | ${f(100 * controlCost / totalBudget, 1)}% | ${f(vTotal)} |`);
+        summary.push({ K, regime, h, e, mc, vTotal, controlShare: controlCost / totalBudget });
+      }
     }
   }
 }
@@ -75,7 +78,7 @@ lines.push(``);
 lines.push(`## Dominance notes`);
 for (const K of [6, 4]) {
   for (const h of [0.03, 0.06, 0.10]) {
-    const get = (regime, e) => summary.find((s) => s.K === K && s.regime.startsWith(regime) && s.h === h && s.e === e)?.vTotal ?? 0;
+    const get = (regime, e) => summary.find((s) => s.K === K && s.regime.startsWith(regime) && s.h === h && s.e === e && s.mc === 0)?.vTotal ?? 0;
     const doms = [0.005, 0.02, 0.05].map((e) => `e=${(e * 100).toFixed(1)}%: ${get("layered", e) >= get("triage", e) ? "layered>=triage" : "triage>layered"}`);
     lines.push(`- K=${K}, h=${(h * 100).toFixed(0)}%: ${doms.join("; ")}`);
   }
