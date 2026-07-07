@@ -34,10 +34,10 @@ from behavioral_adoption_abm.core import BehavioralAdoptionModel, load_config  #
 
 ARCH_LABELS = {
     "status_quo": "Status quo",
-    "participatory_weak_verification": "Particip. sin default",
-    "participatory_weak_verification_full_budget": "Particip. saliencia",
-    "core_v0_tutored_mandated_agenda": "Tutelado, agenda mandatada",
-    "core_v0_tutored_distributed_agenda": "Tutelado, agenda distribuida",
+    "participatory_weak_verification": "Particip. no default",
+    "participatory_weak_verification_full_budget": "Particip. salience",
+    "core_v0_tutored_mandated_agenda": "Tutored, mandated agenda",
+    "core_v0_tutored_distributed_agenda": "Tutored, distributed agenda",
 }
 SCENARIOS = [
     ("baseline-medium", "imposed"),
@@ -76,8 +76,8 @@ def fig_architectures() -> None:
         ax.bar([i + (k - 2) * width for i in x], means, width, yerr=sds, capsize=2, label=label)
     ax.set_xticks(list(x))
     ax.set_xticklabels([ARCH_LABELS[a] for a in archs], rotation=15, ha="right", fontsize=9)
-    ax.set_ylabel("valor verificado / presupuesto")
-    ax.set_title("Arquitecturas bajo poblaciones impuestas y conductuales (media ± DE, 20 corridas)")
+    ax.set_ylabel("verified value / budget")
+    ax.set_title("Architectures under imposed and behavioral populations (mean ± SD, 20 runs)")
     ax.legend(fontsize=8)
     fig.tight_layout()
     fig.savefig(FIG / "architectures_verified_value.png", dpi=130)
@@ -109,8 +109,8 @@ def fig_expc_ratios() -> None:
     ax.axvline(1.0, color="black", linewidth=1)
     for i, r in enumerate(ratios):
         ax.text(r + 0.03, i, f"{r:.2f}×", va="center", fontsize=9)
-    ax.set_xlabel("V(Core v0 distribuido) ÷ V(status quo), razón de medias")
-    ax.set_title("Experimento C: ventaja de Core v0 por población")
+    ax.set_xlabel("V(Core v0 distributed) / V(status quo), ratio of means")
+    ax.set_title("Experiment C: Core v0 advantage per population")
     fig.tight_layout()
     fig.savefig(FIG / "expc_core_advantage.png", dpi=130)
     plt.close(fig)
@@ -137,8 +137,8 @@ def fig_planning_ladder() -> None:
     ax.scatter(means, range(len(rows)), c=colors, zorder=3)
     ax.set_yticks(range(len(rows)))
     ax.set_yticklabels(names, fontsize=8)
-    ax.set_xlabel("corr(vector de plan, valor social latente)")
-    ax.set_title("Escalera de calidad de vectores de planificación (verde: Core v0, café: representativo, gris: saliencia)")
+    ax.set_xlabel("corr(planning vector, latent social value)")
+    ax.set_title("Planning-vector quality ladder (green: Core v0, brown: representative, gray: salience)")
     fig.tight_layout()
     fig.savefig(FIG / "planning_correlation_ladder.png", dpi=130)
     plt.close(fig)
@@ -172,9 +172,9 @@ def fig_behavioral_trajectories() -> None:
             ax.plot(ticks, [h[key] for h in model.history], ls, color=color,
                     label=f"{label} ({scen})" if True else None, linewidth=1.6, alpha=0.9)
         finals[scen] = model.final_metrics()
-    ax.set_xlabel("semana")
-    ax.set_ylabel("proporción de la población")
-    ax.set_title("Trayectorias de adopción (línea continua: baseline sintético; discontinua: calibrado LLM; seed 42)")
+    ax.set_xlabel("week")
+    ax.set_ylabel("population share")
+    ax.set_title("Adoption trajectories (solid: synthetic baseline; dashed: LLM-calibrated; seed 42)")
     ax.legend(fontsize=7, ncol=2)
     fig.tight_layout()
     fig.savefig(FIG / "behavioral_adoption_trajectories.png", dpi=130)
@@ -199,11 +199,11 @@ def fig_semi_open_transition() -> None:
     blended = [r["blended"] for r in rows]
     sq = blended[0]
     fig, ax = plt.subplots(figsize=(8, 4.5))
-    ax.plot(e, blended, "o-", color="#2a7", linewidth=2, label="V(blend) semi-abierto")
-    ax.axhline(sq, color="#888", linestyle="--", linewidth=1, label=f"status quo puro ({sq:.3f})")
-    ax.set_xlabel("proporción del presupuesto en el envelope (e)")
-    ax.set_ylabel("valor verificado / presupuesto (blend)")
-    ax.set_title("Régimen semi-abierto: la curva del camino de transición (docs/110)")
+    ax.plot(e, blended, "o-", color="#2a7", linewidth=2, label="V(blend) semi-open")
+    ax.axhline(sq, color="#888", linestyle="--", linewidth=1, label=f"pure status quo ({sq:.3f})")
+    ax.set_xlabel("budget share in the envelope (e)")
+    ax.set_ylabel("verified value / budget (blend)")
+    ax.set_title("Semi-open regime: the transition path (docs/110)")
     ax.legend(fontsize=8)
     fig.tight_layout()
     fig.savefig(FIG / "semi_open_transition_path.png", dpi=130)
@@ -231,14 +231,14 @@ def fig_release_policies() -> None:
     ax1.set_yticks(list(y))
     ax1.set_yticklabels(labels, fontsize=8)
     ax1.invert_yaxis()
-    ax1.set_xlabel("valor verificado / presupuesto-año")
-    ax1.set_title("E-1a: políticas de liberación (brazo Core)")
+    ax1.set_xlabel("verified value / budget-year")
+    ax1.set_title("E-1a: release policies (core arm)")
     ax2.barh(list(y), wip, color="#a52")
     ax2.set_yticks(list(y))
     ax2.set_yticklabels([""] * len(rows))
     ax2.invert_yaxis()
-    ax2.set_xlabel("WIP congelado (meses de presupuesto)")
-    ax2.set_title("capital congelado en escrow")
+    ax2.set_xlabel("frozen WIP (months of budget)")
+    ax2.set_title("capital frozen in escrow")
     fig.tight_layout()
     fig.savefig(FIG / "e1a_release_policies.png", dpi=130)
     plt.close(fig)
