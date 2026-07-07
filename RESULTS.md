@@ -154,6 +154,23 @@ Sources: `evidence-panel/F0_RESULTS.md`, `adversarial-abm/RUN_2026_07_07_EXPERIM
 
 Source: `adversarial-abm/RUN_2026_07_07_EXPERIMENT_F0V2_RESULTS.md`, `evidence-panel/F0_V2_RESULTS.md`.
 
+## Statistical hardening (review-round rigor)
+
+- **Ratio CIs** (`RATIO_CIS.md`, Fieller + paired bootstrap): every Core-vs-status-quo ratio excludes 1.0 by a wide margin (baseline 2.05× [1.86, 2.26] … high-friction 2.69× [2.54, 2.84]); Fieller and bootstrap agree — F1 is interval-robust.
+- **Lapsing-funds annuality** (engine v0.11 `lapsing` flag): under strict fiscal-year annuality (unspent treasury lapses, encumbered escrow carries), the pull rule's V is **unchanged** (0.304 with and without lapse) — because pull keeps the treasury near-drained, it is naturally annuality-compatible and does not depend on carryforward. Answers the practitioner Q1 fatal.
+
+## Experiment G: the collusive adversary (engine v0.11)
+
+| Finding | Number |
+|---|---|
+| Collusion 0→50% (intact stack) | **leak ×25** (0.0021 → 0.052) — first attack to move leak an order of magnitude |
+| Verified-value advantage under collusion | survives: 2.72× → 2.56× (honest majority carries delivery; the security story is the leak column, not the V ratio) |
+| Contraposition rescue under 20% collusion | **halved** (degraded-stack leak 0.017 non-colluding → 0.033 colluding) — colluded milestones produce no contradiction |
+| Adaptive targeting / anchor poisoning | real but bounded on the intact stack (per-milestone inequality still binds) |
+| Design consequence | cross-layer collusion resistance is first-class: verified beneficial ownership, contributor Sybil-resistance, assigner decentralization |
+
+F-3/F-4 are hereby scoped to a **non-colluding** adversary. Source: `adversarial-abm/RUN_2026_07_07_EXPERIMENT_G_RESULTS.md`.
+
 ## Bridge to the master paper (E8, lives in the master repository)
 
 The behavioral trajectories replaced the paper engine's imposed participation: headline V(A2)/V(S′) = 2.26 [2.23, 2.30] at scale (vs 2.22 imposed), 2.15–2.9× across populations and scales, launch dynamics cost 1.7%. Recorded in the master repository's `research/simulation-results.md` §E8.

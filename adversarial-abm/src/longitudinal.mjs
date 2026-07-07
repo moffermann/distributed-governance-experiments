@@ -96,6 +96,10 @@ const DEFAULTS = {
   contraposition: null,   // { coverage, catch }
   // Experiment G: collusive/adaptive/anchor-poisoning adversary.
   adversary: null,        // { collusion:{rate}, adaptiveGain, anchorPoison }
+  // Lapsing-funds annuality (review round 1 practitioner Q1): at each year
+  // boundary the unspent TREASURY lapses (carryforward disallowed). The pull
+  // rule then degenerates to within-year metering. OFF by default.
+  lapsing: false,
 };
 
 const loadPopulation = () => {
@@ -639,6 +643,7 @@ export const runLongitudinal = (archId, policyFn, cfg, seed) => {
   for (let cycle = 0; cycle < cycles; cycle++) {
     state.cycleOfYear = cycle % cfg.cyclesPerYear;
     if (state.cycleOfYear === 0) {
+      if (cfg.lapsing) state.treasury = 0; // annuality: unspent appropriation lapses
       state.treasury += cfg.annualBudget;
       turnoverExecutors(rng, state, cfg);
     }
