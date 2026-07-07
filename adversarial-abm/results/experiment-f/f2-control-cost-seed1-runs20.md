@@ -1,4 +1,4 @@
-# Experiment F-2: the control-cost frontier (engine v0.9.0)
+# Experiment F-2: the control-cost frontier (engine v0.11.0)
 
 V_total = verifiedValue / (delivery budget + human cost + machine cost + evidence premium); tranche=400, rho=0.3; pull W*=7; 20 runs, seed 1.
 Machine cost swept over {0.1%/milestone (hosted-API stipulation), 0 (open-weights local: energy/hardware are sunk or marginal — author correction 2026-07-07)}.

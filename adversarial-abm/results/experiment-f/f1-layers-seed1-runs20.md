@@ -1,4 +1,4 @@
-# Experiment F-1: layers vs confidence (engine v0.9.0)
+# Experiment F-1: layers vs confidence (engine v0.11.0)
 
 common-cause model: P(clear|diverted) = rho + (1-rho)*fp^k, fp=0.05/layer, falseFlag=0.1/layer (any-flag refers); gaming adds to the shared mass; pull W*=7; 20 runs, seed 1
 

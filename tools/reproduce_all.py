@@ -46,12 +46,31 @@ if not QUICK:
         run([sys.executable, "build_adversarial_scenario.py", "--sweep", "outputs/expc-sweep/sweep_summary.json",
              "--source", source, "--scenario-id", scen], cwd=ROOT / "behavioral-adoption-abm")
 
-# 5. Experiment E program (longitudinal engine v0.8; anchors reproduce v0.6/v0.7).
+# 5. Experiment E/F/G deterministic engine cells (longitudinal engine v0.11;
+#    anchors reproduce v0.6-v0.10 exactly). The F-0 LIVE-MODEL panel is NOT here
+#    (needs model backends); its committed scoring, however, is regenerable —
+#    see step 5b.
 run(["node", "adversarial-abm/src/longitudinal.mjs"])
 run(["node", "adversarial-abm/src/e_sensitivity_k.mjs"])
 run(["node", "adversarial-abm/src/e1c.mjs"])
 run(["node", "adversarial-abm/src/e1b.mjs"])
 run(["node", "adversarial-abm/src/e1d.mjs"])
+run(["node", "adversarial-abm/src/e_f1.mjs"])
+run(["node", "adversarial-abm/src/e_f2.mjs"])
+run(["node", "adversarial-abm/src/e_f34.mjs"])
+run(["node", "adversarial-abm/src/e_g.mjs"])
+run([sys.executable, "tools/ratio_cis.py"])
+
+# 5b. F-0 panel SCORING (deterministic; reads committed verdict jsonl, no live
+#     models). The panel RUNS themselves (evidence-panel/run_panel.py) require
+#     model backends and are the only step excluded from one-command repro.
+import os as _os  # noqa: E402
+for _inst in ("v1", "v3"):
+    env = {**_os.environ, "PANEL_INSTRUMENT": _inst}
+    try:
+        subprocess.run([sys.executable, "evidence-panel/analyze_panel.py"], cwd=ROOT, env=env, check=True)
+    except Exception as exc:  # noqa: BLE001
+        print(f"panel scoring {_inst} skipped: {exc}")
 
 # 6. Cross-framework docking (optional: requires mesa).
 if not QUICK:
