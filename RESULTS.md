@@ -103,7 +103,20 @@ Candidate Core v0 rule: meter release against throughput × cycle time of the de
 | **One-cycle timeout + reassignment** (author's instrument, corrected) | recovers ~80% of stall damage; longer timeouts bleed value; never exceeds the no-stall ceiling |
 | Demand smoothing as implemented | net harmful (delay-biased jitter) — demoted pending delay-neutral reimplementation |
 
-Source: `adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1C_RESULTS.md`. E-1b (adaptive adversaries, evidence gaming, degraded-stack coupling) completes the bundle before the master pipeline.
+Source: `adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1C_RESULTS.md`.
+
+## Experiment E-1b: adaptive adversaries (engine v0.8) — program closure
+
+| Finding | Number |
+|---|---|
+| Congestion attack surface at calibrated capacity under pull | **does not engage** (backlog 0.2 cycles; results identical to 3 decimals) |
+| Timing-aware adversary at joint failure (K=4 + day-zero, queue 30) | +15% leak vs +6% under pull; **V flat** — slack absorbs floor-level detection |
+| Evidence gaming vs AI lane, intact stack (skill 0.55) | leak 0.006 → 0.010, V flat — the stack deters upstream of any verifier |
+| Degraded stack (docs/111 violation) × any verification | V ≈ 0.114–0.118, leak ≈ 0.06 regardless — **no verifier compensates a broken incentive floor**; reproduces the static ablation's K10 cross-engine |
+| Reputation compounding over 8 years (P5) | null-in-range: advantage flat and robust from cycle 1, no growth, no erosion |
+| Worst adaptive intact cell | 0.302 — still 2.7× the status quo |
+
+Program closure: **size the capacity (E-1a), meter the release (E-1a), protect the margin (docs/111)** — everything else is optimization. Source: `adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1B_RESULTS.md`. Evidence bundle for the master pipeline complete, pending author verdict.
 
 ## Bridge to the master paper (E8, lives in the master repository)
 

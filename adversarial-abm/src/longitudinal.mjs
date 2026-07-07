@@ -21,12 +21,17 @@ import {
   ARCHITECTURES, mulberry32, clamp, sigmoid, normal, sampleDist, weightedPick, drawSample,
 } from "./index.mjs";
 
-export const LONG_ENGINE_VERSION = "0.7.0";
+export const LONG_ENGINE_VERSION = "0.8.0";
 // v0.7 (Experiment E-1c, pre-registered in ../EXPERIMENT_E1C_VERIFICATION_DESIGN.md):
 // AI triage lanes on milestone verification, verification windows
 // (timeout-reassignment over stalling fiscalizers), and milestone demand
 // smoothing. All three are OFF by default and consume zero RNG draws when
 // disabled — v0.6 runs reproduce exactly (regression-anchored).
+// v0.8 (Experiment E-1b, ../EXPERIMENT_E1B_ADVERSARIES_DESIGN.md): verification
+// staleness (evidence goes cold in a backlog), timing-aware opportunists,
+// evidence gaming against the AI lane, per-run architecture overrides, a
+// reputation-compounding isolation switch, and per-year value series. All OFF
+// by default; the v0.6/v0.7 anchor reproduces exactly.
 const HERE = decodeURIComponent(new URL(".", import.meta.url).pathname).replace(/^\/([A-Za-z]:)/, "$1");
 
 // ---------------------------------------------------------------------------
@@ -54,6 +59,12 @@ const DEFAULTS = {
   ai: null,        // { pi, falsePass, falseFlag, sampleRate, dossierBoost }
   stall: null,     // { pStall, stallCycles, timeout } (timeout null = no window)
   smoothing: false, // stagger milestone due dates (+/- 2 cycles) to flatten demand
+  // E-1b extensions (all disabled by default; zero RNG cost when off):
+  staleness: null,        // { rate, floor }: detection degrades with queue age
+  timingAware: false,     // opportunists anticipate stale detection from the backlog
+  evidenceGaming: null,   // { skill }: diverted milestones raise AI false-pass
+  archOverride: null,     // per-run architecture field overrides (degraded-stack cells)
+  reputationCompounding: true, // false = stake scale 1 and reputation-blind selection (P5 isolation)
 };
 
 const loadPopulation = () => {
@@ -268,7 +279,7 @@ const activateReady = (rng, state, arch, cfg, cycle) => {
     activated += p.funded;
     // Executor selection: reputation informs (weights), never excludes.
     const pool = state.executors.filter((e) => e.active);
-    p.executor = arch.futureSelectionLoss > 0.05
+    p.executor = (cfg.reputationCompounding && arch.futureSelectionLoss > 0.05)
       ? weightedPick(rng, pool, (e) => 0.25 + cfg.selectionReputationWeight * e.reputation)
       : pool[Math.floor(rng() * pool.length)];
     p.executor.tenureProjects++;
@@ -289,7 +300,7 @@ const activateReady = (rng, state, arch, cfg, cycle) => {
     // reputation terms scale with the executor's stake, normalized to 1 at the
     // initial reputation 0.5 so t=0 matches the static inequality).
     const ex = p.executor;
-    const stakeScale = ex.reputation / 0.5;
+    const stakeScale = cfg.reputationCompounding ? ex.reputation / 0.5 : 1;
     if (ex.type === "opportunistic") {
       const fraudGain = p.fraudOpportunity * (1 - arch.retention);
       // Under AI triage, sophisticated opportunists anticipate the END-TO-END
@@ -298,8 +309,15 @@ const activateReady = (rng, state, arch, cfg, cycle) => {
       let effDetection = detectionProbability(p, arch);
       if (cfg.ai) {
         const dHuman = clamp(effDetection * (cfg.ai.dossierBoost ?? 1), 0.01, 0.98);
-        const { pi, falsePass, sampleRate } = cfg.ai;
-        effDetection = pi * ((1 - falsePass) * dHuman + falsePass * sampleRate * dHuman) + (1 - pi) * dHuman;
+        const { pi, sampleRate } = cfg.ai;
+        // Evidence gaming (E-1b): the gamer knows their own skill against the AI.
+        const fp = cfg.evidenceGaming ? Math.min(0.95, cfg.ai.falsePass + cfg.evidenceGaming.skill) : cfg.ai.falsePass;
+        effDetection = pi * ((1 - fp) * dHuman + fp * sampleRate * dHuman) + (1 - pi) * dHuman;
+      }
+      // Timing awareness (E-1b): the opportunist observes the verification
+      // backlog and anticipates stale detection — congestion invites diversion.
+      if (cfg.timingAware && cfg.staleness) {
+        effDetection *= Math.max(cfg.staleness.floor, 1 - cfg.staleness.rate * (state.verifyQueue.length / cfg.verifyCapacity));
       }
       const x = -1.0
         + 4.0 * fraudGain
@@ -336,11 +354,15 @@ const payMilestone = (state, cfg, p, confidence, cycle) => {
   p.paidOut += tranche;
   p.actualValue += (potentialValue * p.executionQuality) / M;
   p.verifiedValue += (potentialValue * p.executionQuality * confidence) / M;
+  state.verifiedByYear[Math.min(state.verifiedByYear.length - 1, Math.floor(cycle / cfg.cyclesPerYear))] += (potentialValue * p.executionQuality * confidence) / M;
   p.milestonesVerified++;
   if (p.milestonesVerified >= M) {
     p.status = "done";
     p.finishedCycle = cycle;
-    if (p.diverted) p.leakage = p.diversionShare * p.budgetTarget; // never caught
+    if (p.diverted) {
+      p.leakage = p.diversionShare * p.budgetTarget; // never caught
+      state.leakByYear[Math.min(state.leakByYear.length - 1, Math.floor(cycle / cfg.cyclesPerYear))] += p.leakage;
+    }
     state.releasedPool += Math.max(0, p.escrow);
     p.escrow = 0;
     p.executor.reputation = clamp(p.executor.reputation + cfg.reputationGain * p.executionQuality, 0, 1);
@@ -365,7 +387,8 @@ const progressExecution = (rng, state, arch, cfg, cycle) => {
         state.verifyQueue.push({ p, milestone, completedCycle: cycle });
         continue;
       }
-      const cleared = p.diverted ? rng() < cfg.ai.falsePass : !(rng() < cfg.ai.falseFlag);
+      const fpEff = p.diverted && cfg.evidenceGaming ? Math.min(0.95, cfg.ai.falsePass + cfg.evidenceGaming.skill) : cfg.ai.falsePass;
+      const cleared = p.diverted ? rng() < fpEff : !(rng() < cfg.ai.falseFlag);
       if (!cleared) {
         // Lane b: flagged referral (the human sees the AI dossier).
         state.verifyQueue.push({ p, milestone, completedCycle: cycle, flagged: true });
@@ -389,6 +412,7 @@ const terminateDetected = (state, arch, cfg, p, cycle, trancheInHand) => {
   p.status = "terminated";
   p.finishedCycle = cycle;
   p.leakage = p.diversionShare * p.paidOut + p.diversionShare * trancheInHand;
+  state.leakByYear[Math.min(state.leakByYear.length - 1, Math.floor(cycle / cfg.cyclesPerYear))] += p.leakage;
   const recovered = Math.max(0, p.escrow - trancheInHand) + arch.guarantee * p.budgetTarget;
   state.releasedPool += recovered;
   state.recoveredTotal += recovered;
@@ -401,11 +425,14 @@ const verifyOne = (rng, state, arch, cfg, item, cycle) => {
   const { p, milestone, audit } = item;
   if (p.status !== "active" && !(audit && p.status === "done")) return; // terminated/expired while queued
   state.humanVerifications++;
-  const dHuman = cfg.ai ? clamp(detectionProbability(p, arch) * (cfg.ai.dossierBoost ?? 1), 0.01, 0.98) : detectionProbability(p, arch);
+  let dHuman = cfg.ai ? clamp(detectionProbability(p, arch) * (cfg.ai.dossierBoost ?? 1), 0.01, 0.98) : detectionProbability(p, arch);
+  // Staleness (E-1b): evidence goes cold while it waits in the backlog.
+  if (cfg.staleness) dHuman *= Math.max(cfg.staleness.floor, 1 - cfg.staleness.rate * (cycle - item.completedCycle));
   if (audit) {
     // Lane c: the tranche is already paid; a hit claws back what remains.
     if (p.diverted && p.detectedAt === null && rng() < dHuman) {
-      if (p.status === "done") { // fully paid before the audit landed
+      if (p.status === "done") { // fully paid before the audit landed;
+        // its leak was already recorded by payMilestone's done branch.
         p.detectedAt = cycle;
         p.leakage = p.diversionShare * p.budgetTarget;
         state.releasedPool += arch.guarantee * p.budgetTarget;
@@ -481,7 +508,7 @@ const turnoverExecutors = (rng, state, cfg) => {
 export const runLongitudinal = (archId, policyFn, cfg, seed) => {
   const rng = mulberry32(seed >>> 0);
   projectSeq = 0;
-  const arch = ARCHITECTURES[archId];
+  const arch = cfg.archOverride ? { ...ARCHITECTURES[archId], ...cfg.archOverride } : ARCHITECTURES[archId];
   const cycles = cfg.years * cfg.cyclesPerYear;
   const state = {
     projects: [],
@@ -490,6 +517,8 @@ export const runLongitudinal = (archId, policyFn, cfg, seed) => {
     stalled: [],
     autoReleased: 0,
     humanVerifications: 0,
+    verifiedByYear: new Array(cfg.years).fill(0),
+    leakByYear: new Array(cfg.years).fill(0),
     treasury: 0,
     releasedPool: 0,
     releasedCum: 0,
@@ -565,6 +594,8 @@ export const runLongitudinal = (archId, policyFn, cfg, seed) => {
     unreleasedEnd: state.treasury / totalBudget,
     autoReleasedShare: state.autoReleased / Math.max(1, state.autoReleased + state.humanVerifications),
     humanLoadPerCycle: state.humanVerifications / cycles,
+    ...Object.fromEntries(state.verifiedByYear.map((v, i) => [`vy${i + 1}`, v / cfg.annualBudget])),
+    ...Object.fromEntries(state.leakByYear.map((v, i) => [`ly${i + 1}`, v / cfg.annualBudget])),
   };
 };
 
