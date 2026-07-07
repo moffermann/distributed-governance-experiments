@@ -2,7 +2,9 @@
 
 Registered 2026-07-07, before any implementation or run. Author direction recorded in the master corpus (verification-throughput note, "Layered heterogeneous machine verification"). Candidate second satellite paper; results decide whether F becomes a section or a standalone paper.
 
-**Sequencing (author instruction):** the local model layer is refreshed *before* the F-0 panel runs — latest Qwen family (Alibaba), latest available Gemma generation, and ideally DeepSeek as a third family (open-weights distills allow a local, account-free option if hardware permits), alongside the hosted frontier family already in use (codex backend). The correlation measurement requires **at least three genuinely distinct model families**.
+**Sequencing (author instruction):** the local model layer is refreshed *before* the F-0 panel runs — latest Qwen family (Alibaba), latest available Gemma generation, and ideally DeepSeek as a third local family (open-weights distills allow a local, account-free option if hardware permits) — alongside **two hosted frontier families: the codex backend already in use, and Claude (Fable), added at the author's instruction** (headless CLI backend, mirroring the codex-exec pattern). The correlation measurement requires **at least three genuinely distinct model families**; the target panel is five.
+
+**Orchestrator-as-subject disclosure.** The agent orchestrating this experiment program belongs to one of the tested families (Claude). The design neutralizes the judge-and-party surface mechanically: the vignette set with its ground-truth labels is committed *before* any panel run; every verdict is machine-scored against those labels with no orchestrator discretion; all families run the identical prompt protocol; and per-family model versions are recorded in provenance blocks. The orchestrator writes the instrument, not the grades.
 
 ## The question and its correction
 
