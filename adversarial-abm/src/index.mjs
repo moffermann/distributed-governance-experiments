@@ -38,7 +38,9 @@ const parseArgs = () => {
   return out;
 };
 
-const ENGINE_VERSION = "0.5.0"; // bump on any behavior-affecting engine change
+const ENGINE_VERSION = "0.5.1"; // bump on any behavior-affecting engine change
+// v0.5.1: canonical regime naming per master docs/110 (ids relabeled with
+// legacy aliases); numeric behavior unchanged.
 // v0.5 (ablation program): parameterized module (import { runScenario } from
 // "./index.mjs" — CLI behavior unchanged when run directly), per-architecture
 // scenario overrides (scenario.architectureOverrides), and the three attack
@@ -222,28 +224,27 @@ const ARCHITECTURES = {
     socialProofDamping: 1.00,
     passiveAllocationMode: "salience",
   },
-  core_v0_tutored_central_planning: {
-    id: "core_v0_tutored_central_planning",
-    // Author clarification (2026-07-06): central planning is NOT part of Core
-    // v0's architecture proposal; this variant is the TRANSITION SCAFFOLD — a
-    // tutored deployment inheriting the incumbent authority's default vector.
-    label: "Core v0 controls / transition scaffold: incumbent central default (not the architecture's proposal)",
+  // Canonical regime names per the master corpus's operating-regime ladder
+  // (docs/110): tutored regime with mandated agenda (the transition scaffold —
+  // centralized planning is NOT part of Core v0's architecture proposal), and
+  // tutored regime with distributed agenda. Old ids kept as legacy aliases.
+  core_v0_tutored_mandated_agenda: {
+    id: "core_v0_tutored_mandated_agenda",
+    label: "Core v0 — tutored regime, mandated agenda (transition scaffold: incumbent default vector)",
     ...coreBase,
     planningSource: "central",
   },
-  core_v0_tutored_distributed_planning: {
-    id: "core_v0_tutored_distributed_planning",
-    label: "Core v0 tutored / distributed parallel planning default",
-    ...coreBase,
-    planningSource: "distributed",
-  },
-  core_v0_simple: {
-    id: "core_v0_simple",
-    label: "Core v0 simplified / legacy alias for distributed planning default",
+  core_v0_tutored_distributed_agenda: {
+    id: "core_v0_tutored_distributed_agenda",
+    label: "Core v0 — tutored regime, distributed agenda",
     ...coreBase,
     planningSource: "distributed",
   },
 };
+// Legacy aliases (pre-docs/110 names); they resolve to the canonical variants.
+ARCHITECTURES.core_v0_tutored_central_planning = ARCHITECTURES.core_v0_tutored_mandated_agenda;
+ARCHITECTURES.core_v0_tutored_distributed_planning = ARCHITECTURES.core_v0_tutored_distributed_agenda;
+ARCHITECTURES.core_v0_simple = ARCHITECTURES.core_v0_tutored_distributed_agenda;
 
 // Per-architecture field overrides (scenario.architectureOverrides[archId])
 // support the ablation program's mechanism knock-outs without new variants.

@@ -1,6 +1,6 @@
 # Ablation and sensitivity results
 
-engine v0.5.0, population: behavioral-llm-calibrated, 20 runs, seed 1, arms: status_quo + core_v0_tutored_distributed_planning
+engine v0.5.1, population: behavioral-llm-calibrated, 20 runs, seed 1, arms: status_quo + core_v0_tutored_distributed_agenda
 intact reference: V=0.277±0.043, leak=0.010, visGap=0.006, sel=0.616, ratio vs status quo=2.19x
 
 ## Mechanism knock-outs (sorted by verified-value loss)

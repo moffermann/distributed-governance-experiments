@@ -9,7 +9,7 @@ import { resolve } from "node:path";
 import { ENGINE_VERSION, runScenario } from "./index.mjs";
 
 const HERE = decodeURIComponent(new URL(".", import.meta.url).pathname).replace(/^\/([A-Za-z]:)/, "$1");
-const CORE = "core_v0_tutored_distributed_planning";
+const CORE = "core_v0_tutored_distributed_agenda";
 const SQ = "status_quo";
 
 const base = JSON.parse(readFileSync(resolve(HERE, "../scenarios/behavioral-llm-calibrated.json"), "utf8"));

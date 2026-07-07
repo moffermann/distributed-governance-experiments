@@ -36,8 +36,8 @@ ARCH_LABELS = {
     "status_quo": "Status quo",
     "participatory_weak_verification": "Particip. sin default",
     "participatory_weak_verification_full_budget": "Particip. saliencia",
-    "core_v0_tutored_central_planning": "Core v0 central",
-    "core_v0_tutored_distributed_planning": "Core v0 distribuido",
+    "core_v0_tutored_mandated_agenda": "Tutelado, agenda mandatada",
+    "core_v0_tutored_distributed_agenda": "Tutelado, agenda distribuida",
 }
 SCENARIOS = [
     ("baseline-medium", "imposed"),
@@ -83,7 +83,7 @@ def fig_architectures() -> None:
     fig.savefig(FIG / "architectures_verified_value.png", dpi=130)
     plt.close(fig)
 
-    core = {label: data[sid]["core_v0_tutored_distributed_planning"]["verifiedValuePerBudget_mean"] for sid, label in SCENARIOS}
+    core = {label: data[sid]["core_v0_tutored_distributed_agenda"]["verifiedValuePerBudget_mean"] for sid, label in SCENARIOS}
     sq = {label: data[sid]["status_quo"]["verifiedValuePerBudget_mean"] for sid, label in SCENARIOS}
     weak = {label: data[sid]["participatory_weak_verification"]["verifiedValuePerBudget_mean"] for sid, label in SCENARIOS}
     descriptions.extend([
@@ -102,7 +102,7 @@ def fig_expc_ratios() -> None:
     labels, ratios = [], []
     for sid, label in SCENARIOS:
         d = read_adversarial(sid)
-        ratio = d["core_v0_tutored_distributed_planning"]["verifiedValuePerBudget_mean"] / d["status_quo"]["verifiedValuePerBudget_mean"]
+        ratio = d["core_v0_tutored_distributed_agenda"]["verifiedValuePerBudget_mean"] / d["status_quo"]["verifiedValuePerBudget_mean"]
         labels.append(label)
         ratios.append(ratio)
     ax.barh(labels, ratios)

@@ -4,6 +4,19 @@ Every load-bearing concept in these experiments, mapped to the master-corpus obj
 
 Conventions: `docs/NN` are accepted resolutions in the master corpus; `H0NN`/`C0NN` are corpus hypotheses/contradiction records; experiment locations name the engine or document that implements the concept.
 
+## Operating-regime vocabulary (master docs/110)
+
+The master corpus formalized the operating-regime ladder (docs/110). Experiment naming anchors to the canonical vocabulary so no variant requires reinterpretation:
+
+| Canonical regime (docs/110) | Adversarial ABM variant | Planning-vector variants | Deprecated names (legacy aliases) |
+|---|---|---|---|
+| Tutored regime, mandated agenda (transition scaffold) | `core_v0_tutored_mandated_agenda` | `central_*` representative family (comparator role) | `core_v0_tutored_central_planning` |
+| Tutored regime, distributed agenda | `core_v0_tutored_distributed_agenda` | `core_v0_tutored_distributed_voluntary` / `_mandated` | `core_v0_tutored_distributed_planning`, `core_v0_simple` |
+| Semi-open regime (bounded envelope, automatic protocol approval) | **no variant yet** — candidate future work | **no variant yet** | — |
+| Open regime | — (open-mode lifecycle not modeled) | `core_v0_open_*` family (planning construction only) | — |
+
+Run documents dated before 2026-07-06 use the legacy names; this table is the map. Centralized planning appears in experiments only as the status-quo comparator or the transition scaffold — never as the architecture's proposal.
+
 ## Citizen-side concepts
 
 | Experiment concept | Where implemented | Core v0 anchor | Anchoring rule |

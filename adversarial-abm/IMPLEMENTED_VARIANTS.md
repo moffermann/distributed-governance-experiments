@@ -81,9 +81,9 @@ from
 failure because the budget was spent through weak rules
 ```
 
-## 4. `core_v0_tutored_central_planning`
+## 4. `core_v0_tutored_mandated_agenda` (formerly `core_v0_tutored_central_planning`)
 
-**Framing (author clarification, 2026-07-06): this variant is a transition scaffold, not the architecture.** Centralized planning is not part of Core v0's formal proposal; it appears here because a tutored deployment may inherit the incumbent authority's default vector while the downstream controls are already Core v0's. The architecture's spirit in semi-open and open regimes is a fully distributed agenda; tutored-with-distributed-planning is the not-yet-formalized combination (the master corpus's parallel-agenda design direction is its candidate).
+**Canonical name per the master corpus's operating-regime ladder (docs/110): tutored regime, mandated agenda — the transition scaffold, not the architecture.** Centralized planning is not part of Core v0's formal proposal; it appears here because a tutored deployment may inherit the incumbent authority's default vector while the downstream controls are already Core v0's. The old id remains a legacy alias.
 
 Simplified Core v0 downstream controls with a central low-information default planning layer.
 
@@ -108,7 +108,9 @@ This approximates a tutored Core v0 deployment where the authority still supplie
 
 This variant is important because it shows how much Core v0 can improve accountability even when planning remains centrally weak.
 
-## 5. `core_v0_tutored_distributed_planning`
+## 5. `core_v0_tutored_distributed_agenda` (formerly `core_v0_tutored_distributed_planning`)
+
+**Canonical name per docs/110: tutored regime, distributed agenda.**
 
 Simplified Core v0 downstream controls with a distributed parallel planning/default layer.
 
@@ -133,13 +135,13 @@ This approximates a tutored or semi-open Core v0 deployment where society constr
 
 It is not full open mode. It is a simplified proxy for distributed planning information being closer to latent public value than central planning.
 
-## Legacy alias: `core_v0_simple`
+## Legacy aliases
 
-`core_v0_simple` remains as a legacy alias for a distributed-planning Core v0 simplification, but the baseline scenario should now prefer the explicit names:
+`core_v0_tutored_central_planning`, `core_v0_tutored_distributed_planning`, and `core_v0_simple` remain as legacy aliases resolving to the canonical docs/110 names; scenarios and new writing should use:
 
 ```text
-core_v0_tutored_central_planning
-core_v0_tutored_distributed_planning
+core_v0_tutored_mandated_agenda
+core_v0_tutored_distributed_agenda
 ```
 
 ## Population channels (engine v0.4)
@@ -152,21 +154,20 @@ The engine reads five attack blocks: `salienceCascade` (visibility herding), `we
 
 ## Current known simplifications
 
-The v0 executable does not yet implement:
+The executable does not yet implement:
 
 - real project spawning/replacement after closure;
 - full milestone objects;
 - explicit evidence producer agents;
 - explicit fiscalizer assignment pools;
 - full distributed signal elicitation;
-- strategic signal manipulation;
-- fiscalizer collusion;
 - complaint paths;
-- agenda capture;
 - reputation decay over multiple projects;
-- ablation variants;
 - calibration from audit evidence;
-- country/legal effects.
+- country/legal effects;
+- a semi-open regime variant (bounded envelope with automatic protocol approval, docs/110) — the natural next variant.
+
+Implemented since v0.5 and removed from this list: fiscalizer collusion, agenda capture, coordinated signal bias (strategic signal manipulation at the allocation stage), and the ablation program's architecture overrides.
 
 ## Design rule
 

@@ -1,6 +1,6 @@
 {
   "scenario_id": "central_planning",
-  "description": "End-to-end comparator: identical behavioral population to baseline, but the default layer follows a bandwidth-limited, salience-guided central planning vector instead of the distributed one.",
+  "description": "End-to-end comparator (docs/110 vocabulary: tutored regime, mandated agenda - the transition scaffold): identical behavioral population to baseline, but the default layer follows a bandwidth-limited, salience-guided central vector instead of the distributed one. Centralized planning is the comparator, not the architecture's proposal.",
   "seed": 42,
   "ticks": 104,
   "population_size": 1000,

@@ -8,8 +8,8 @@ Verified value per unit of budget (mean over 20 runs, seed 1, engine v0.4.x):
 
 | Architecture | imposed | behavioral synthetic | behavioral LLM | high friction | delegation-first |
 |---|---:|---:|---:|---:|---:|
-| Core v0 tutored distributed | 0.262 | 0.307 | 0.277 | **0.340** | 0.300 |
-| Core v0 tutored central | 0.214 | 0.231 | 0.224 | 0.274 | 0.239 |
+| Core v0 — tutored, distributed agenda | 0.262 | 0.307 | 0.277 | **0.340** | 0.300 |
+| Core v0 — tutored, mandated agenda (transition scaffold) | 0.214 | 0.231 | 0.224 | 0.274 | 0.239 |
 | Status quo | 0.128 | 0.127 | 0.127 | 0.127 | 0.128 |
 | Participatory (salience full-budget) | 0.104 | 0.104 | 0.103 | 0.105 | 0.107 |
 | Participatory (no default layer) | 0.029 | **0.000** | **0.000** | **0.000** | **0.000** |
@@ -84,4 +84,4 @@ The behavioral trajectories replaced the paper engine's imposed participation: h
 | `planning-behavior-calibration/RUN_2026_07_06_N1000_PANEL_RESULTS.md` | panel at scale | prompt v0.3 | 20 weighted archetypes | persona seed 42 |
 | `planning-vector-construction/results/` | supporting | v0.5.1 | core-v0-planning-channels v0.5 | 42, 200 runs |
 
-Engine audits: `behavioral-adoption-abm/CORE_V0_CONFORMANCE_AUDIT.md`, `adversarial-abm/ENGINE_AUDIT_2026_07_06.md`, `planning-vector-construction/ENGINE_AUDIT_2026_07_06.md`. Core v0 anchoring: [`TRACEABILITY_MATRIX.md`](TRACEABILITY_MATRIX.md).
+Engine audits: `behavioral-adoption-abm/CORE_V0_CONFORMANCE_AUDIT.md`, `adversarial-abm/ENGINE_AUDIT_2026_07_06.md`, `planning-vector-construction/ENGINE_AUDIT_2026_07_06.md`. Core v0 anchoring and the operating-regime naming map (master docs/110): [`TRACEABILITY_MATRIX.md`](TRACEABILITY_MATRIX.md) — run documents dated before 2026-07-06 use the legacy variant names.

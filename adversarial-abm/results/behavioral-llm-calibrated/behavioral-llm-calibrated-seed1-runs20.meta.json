@@ -1,5 +1,5 @@
 {
-  "engine_version": "0.5.0",
+  "engine_version": "0.5.1",
   "scenario_id": "behavioral-llm-calibrated",
   "scenario_version": "0.4",
   "seed": 1,
@@ -8,7 +8,7 @@
     "status_quo",
     "participatory_weak_verification",
     "participatory_weak_verification_full_budget",
-    "core_v0_tutored_central_planning",
-    "core_v0_tutored_distributed_planning"
+    "core_v0_tutored_mandated_agenda",
+    "core_v0_tutored_distributed_agenda"
   ]
 }
