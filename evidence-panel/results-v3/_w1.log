@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "C:\devel\claude-projects\distributed-governance-experiments\evidence-panel\run_panel.py", line 30, in <module>
+    VIGNETTES = json.loads((HERE / _vfile).read_text(encoding="utf-8"))["cases"]
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Gamer\AppData\Local\Programs\Python\Python312\Lib\pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Gamer\AppData\Local\Programs\Python\Python312\Lib\pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\devel\\claude-projects\\distributed-governance-experiments\\evidence-panel\\vignettes_v3 .json'

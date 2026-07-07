@@ -21,7 +21,18 @@ import {
   ARCHITECTURES, mulberry32, clamp, sigmoid, normal, sampleDist, weightedPick, drawSample,
 } from "./index.mjs";
 
-export const LONG_ENGINE_VERSION = "0.10.0";
+export const LONG_ENGINE_VERSION = "0.11.0";
+// v0.11 (Experiment G, ../EXPERIMENT_G_COLLUSIVE_ADVERSARY_DESIGN.md): a
+// collusive, multi-period, adaptive adversary. cfg.adversary = {
+//   collusion: {rate}      — a ring controls executor + its verifiers + its
+//                            contributors on a share of opportunist milestones;
+//                            for those, cross-layer outcomes are set by the ring
+//                            (diverts, cleared, no contradiction) → protection is
+//                            the MINIMUM not the product;
+//   adaptiveGain           — opportunists tilt toward the low-detection blind
+//                            spot (raises effective fraudOpportunity);
+//   anchorPoison           — degrades effective detection (poisoned price ref);
+// } — all OFF by default; the v0.6-v0.10 anchor reproduces exactly.
 // v0.10 (F-3/F-4, author questions 2026-07-07): contraposed independent
 // evidence — cfg.contraposition = { coverage, catch }: a diverted milestone
 // with independent evidence coverage risks a machine-detected contradiction
@@ -83,6 +94,8 @@ const DEFAULTS = {
   aiDrift: null,          // { startCycle, rate }
   // F-4: independent contraposed evidence (author design 2026-07-07).
   contraposition: null,   // { coverage, catch }
+  // Experiment G: collusive/adaptive/anchor-poisoning adversary.
+  adversary: null,        // { collusion:{rate}, adaptiveGain, anchorPoison }
 };
 
 const loadPopulation = () => {
@@ -319,8 +332,22 @@ const activateReady = (rng, state, arch, cfg, cycle) => {
     // initial reputation 0.5 so t=0 matches the static inequality).
     const ex = p.executor;
     const stakeScale = cfg.reputationCompounding ? ex.reputation / 0.5 : 1;
+    // Experiment G collusion: a share of opportunist milestones belong to a ring
+    // that also controls their verifiers and contributors. For those, the
+    // diversion decision is NOT a deterrence bet — the ring diverts and the
+    // downstream layers are pre-arranged to clear (set in verify/contraposition).
+    if (ex.type === "opportunistic" && cfg.adversary?.collusion && rng() < cfg.adversary.collusion.rate) {
+      p.colluded = true;
+      p.diverted = true;
+      p.diversionShare = clamp(0.20 + 0.60 * p.fraudOpportunity + normal(rng, 0, 0.05), 0.05, 0.95);
+      p.executionQuality = clamp((1 - p.diversionShare) * (0.55 + 0.45 * ex.ability), 0.02, 1);
+      continue;
+    }
     if (ex.type === "opportunistic") {
-      const fraudGain = p.fraudOpportunity * (1 - arch.retention);
+      // Adaptive targeting: the ring tilts toward the low-detection blind spot,
+      // raising effective fraud opportunity; anchor poisoning depresses detection.
+      const adaptive = cfg.adversary?.adaptiveGain ?? 0;
+      const fraudGain = clamp(p.fraudOpportunity + adaptive, 0, 1) * (1 - arch.retention);
       // Under AI triage, sophisticated opportunists anticipate the END-TO-END
       // detection probability (the E-1c deterrence coupling): a leaky AI lane
       // weakens deterrence upstream, not only downstream leakage.
@@ -350,6 +377,9 @@ const activateReady = (rng, state, arch, cfg, cycle) => {
       if (cfg.contraposition) {
         effDetection = 1 - (1 - effDetection) * (1 - cfg.contraposition.coverage * cfg.contraposition.catch);
       }
+      // Anchor poisoning (Experiment G): a poisoned exogenous price reference
+      // depresses effective detection of value fraud.
+      if (cfg.adversary?.anchorPoison) effDetection *= (1 - cfg.adversary.anchorPoison);
       const x = -1.0
         + 4.0 * fraudGain
         + 2.0 * p.verificationDifficulty
@@ -408,9 +438,18 @@ const progressExecution = (rng, state, arch, cfg, cycle) => {
     while (p.status === "active" && p.milestonesDone < p.milestoneCycles.length && p.milestoneCycles[p.milestonesDone] <= cycle) {
       p.milestonesDone++;
       const milestone = p.milestonesDone;
+      // Experiment G: a colluded milestone's verifiers AND contributors are
+      // controlled by the ring — the tranche auto-releases with no detection and
+      // no contradiction (protection is the MINIMUM, not the product).
+      if (p.colluded) {
+        state.autoReleased++;
+        payMilestone(state, cfg, p, reviewConfidenceOf(p, arch), cycle);
+        continue;
+      }
       // Contraposition (F-4): a diverted milestone with independent evidence
       // coverage risks a machine-detected contradiction — routed to human
       // review with a contradiction dossier regardless of the AI lanes.
+      // Colluded milestones never trigger it (contributors are captured/silenced).
       if (cfg.contraposition && p.diverted && p.detectedAt === null && rng() < cfg.contraposition.coverage * cfg.contraposition.catch) {
         state.verifyQueue.push({ p, milestone, completedCycle: cycle, flagged: true, contradiction: true });
         continue;
