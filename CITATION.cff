@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use these experiments or their results, please cite this repository."
+title: "Distributed Governance — Computational Experiments"
+authors:
+  - family-names: "Offermann"
+    given-names: "Mauricio"
+license: MIT
+repository-code: "https://github.com/moffermann/distributed-governance-experiments"
+abstract: >-
+  Satellite computational-experiments workspace of the distributed governance
+  research program: adversarial and behavioral agent-based models
+  stress-testing, calibrating, and extending the Core v0 public-resource
+  allocation architecture. Companion to the working paper
+  (doi:10.5281/zenodo.21228492).
+keywords:
+  - agent-based modeling
+  - distributed governance
+  - participatory budgeting
+  - public accountability
+  - adversarial validation
+references:
+  - type: article
+    title: "Distributed Resource Governance: An Architecture for Transparent Public Resource Allocation with Adversarial Validation"
+    authors:
+      - family-names: "Offermann"
+        given-names: "Mauricio"
+    doi: 10.5281/zenodo.21228492
