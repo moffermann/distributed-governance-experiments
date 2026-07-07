@@ -62,10 +62,19 @@ def parse_verdict(raw: str) -> dict:
 
 
 def call_ollama(model: str, prompt: str) -> str:
-    proc = subprocess.run(["ollama", "run", model, prompt], capture_output=True, timeout=900, stdin=subprocess.DEVNULL)
-    if proc.returncode != 0:
-        raise RuntimeError(proc.stderr.decode("utf-8", "replace")[-300:])
-    return proc.stdout.decode("utf-8", "replace")
+    # HTTP API instead of the CLI: complete non-streamed responses, JSON-mode
+    # decoding, temperature 0 for panel reproducibility; thinking disabled for
+    # reasoning models (they emit malformed JSON under grammar constraint).
+    import urllib.request
+    body = {"model": model, "prompt": prompt, "stream": False, "format": "json",
+            "options": {"temperature": 0}}
+    if "deepseek" in model or "qwen" in model:
+        body["think"] = False  # thinking models emit empty/malformed JSON under grammar constraint
+    req = urllib.request.Request("http://localhost:11434/api/generate",
+                                 data=json.dumps(body).encode("utf-8"),
+                                 headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=900) as resp:
+        return json.loads(resp.read().decode("utf-8"))["response"]
 
 
 CODEX_SCHEMA: Path | None = None
@@ -92,7 +101,8 @@ def call_codex(prompt: str) -> str:
 
 def call_claude(prompt: str) -> str:
     claude = shutil.which("claude.cmd") or shutil.which("claude") or "claude"
-    proc = subprocess.run([claude, "-p", "--output-format", "text", prompt], capture_output=True, timeout=600, stdin=subprocess.DEVNULL)
+    # Prompt via stdin: the Windows .cmd shim mangles argv containing quotes/newlines.
+    proc = subprocess.run([claude, "-p", "--output-format", "text"], input=prompt.encode("utf-8"), capture_output=True, timeout=600)
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.decode("utf-8", "replace")[-300:])
     return proc.stdout.decode("utf-8", "replace")
