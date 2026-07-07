@@ -17,7 +17,7 @@
       ],
       "targetCorrelationRange": [0.43, 0.47],
       "selectedTargetCorrelation": 0.44,
-      "generatorParameter": "centralPlanningSignalMix",
+      "generatorParameter": "centralPrioritizationSignalMix",
       "selectedGeneratorMix": 0.39
     },
     "distributedPlanningCalibration": {
@@ -27,7 +27,7 @@
       ],
       "targetCorrelationRange": [0.80, 0.85],
       "selectedTargetCorrelation": 0.83,
-      "generatorParameter": "distributedPlanningSignalMix",
+      "generatorParameter": "distributedPrioritizationSignalMix",
       "selectedGeneratorMix": 0.66
     }
   },
@@ -45,8 +45,8 @@
     "scarcity": 3.0,
     "latentValue": { "dist": "beta", "alpha": 2, "beta": 2 },
     "salienceCorrelation": 0.2,
-    "centralPlanningSignalMix": 0.39,
-    "distributedPlanningSignalMix": 0.66,
+    "centralPrioritizationSignalMix": 0.39,
+    "distributedPrioritizationSignalMix": 0.66,
     "verificationDifficulty": { "dist": "beta", "alpha": 2, "beta": 2 },
     "executionDifficulty": { "dist": "beta", "alpha": 2, "beta": 3 },
     "fraudOpportunity": { "dist": "beta", "alpha": 1.5, "beta": 3 }

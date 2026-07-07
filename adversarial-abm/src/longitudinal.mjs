@@ -157,14 +157,14 @@ const makeLongProject = (rng, cfg, cycle) => {
   const pCfg = cfg.projects;
   const latentValue = sampleDist(rng, pCfg.latentValue);
   const salience = clamp(pCfg.salienceCorrelation * latentValue + (1 - pCfg.salienceCorrelation) * rng(), 0.01, 0.99);
-  const centralMix = pCfg.centralPlanningSignalMix ?? 0.15;
-  const distributedMix = pCfg.distributedPlanningSignalMix ?? 0.70;
+  const centralMix = pCfg.centralPrioritizationSignalMix ?? 0.15;
+  const distributedMix = pCfg.distributedPrioritizationSignalMix ?? 0.70;
   return {
     id: `L-${String(++projectSeq).padStart(4, "0")}`,
     latentValue,
     salience,
-    centralPlanningWeight: clamp(centralMix * latentValue + (1 - centralMix) * rng(), 0.01, 0.99),
-    distributedPlanningWeight: clamp(distributedMix * latentValue + (1 - distributedMix) * rng(), 0.01, 0.99),
+    centralPrioritizationWeight: clamp(centralMix * latentValue + (1 - centralMix) * rng(), 0.01, 0.99),
+    distributedPrioritizationWeight: clamp(distributedMix * latentValue + (1 - distributedMix) * rng(), 0.01, 0.99),
     verificationDifficulty: sampleDist(rng, pCfg.verificationDifficulty),
     executionDifficulty: sampleDist(rng, pCfg.executionDifficulty),
     fraudOpportunity: sampleDist(rng, pCfg.fraudOpportunity),
@@ -260,7 +260,7 @@ const allocateSalienceUnits = (rng, state, arch, cfg, units) => {
 };
 
 const allocateDefaultUnits = (state, arch, amount) => {
-  const score = (p) => (arch.planningSource === "distributed" ? p.distributedPlanningWeight : p.centralPlanningWeight);
+  const score = (p) => (arch.prioritizationSource === "distributed" ? p.distributedPrioritizationWeight : p.centralPrioritizationWeight);
   const open = fundingProjects(state).sort((a, b) => score(b) - score(a));
   let budget = amount;
   for (const p of open) {
@@ -278,7 +278,7 @@ const allocateCycle = (rng, state, arch, cfg) => {
     leftover = allocateDefaultUnits(state, arch, pool);
   } else {
     const pop = cfg.population;
-    const hasDefaultLayer = arch.passiveAllocationMode === "planning";
+    const hasDefaultLayer = arch.passiveAllocationMode === "prioritization";
     const attentive = Math.round(pool * pop.attentiveShare);
     const salience = Math.round(pool * pop.salienceShare);
     const profile = hasDefaultLayer ? Math.round(pool * (pop.profileShare ?? 0)) : 0;

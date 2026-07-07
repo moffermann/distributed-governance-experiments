@@ -222,9 +222,9 @@
       "ratio": 2.3921031787270346
     },
     {
-      "name": "distributedPlanningSignalMix",
+      "name": "distributedPrioritizationSignalMix",
       "value": 0.2,
-      "label": "distributedPlanningSignalMix-0.2",
+      "label": "distributedPrioritizationSignalMix-0.2",
       "V": 0.20626817677236678,
       "Vsd": 0.031185182229869886,
       "leak": 0,
@@ -234,9 +234,9 @@
       "ratio": 1.6274645775487087
     },
     {
-      "name": "distributedPlanningSignalMix",
+      "name": "distributedPrioritizationSignalMix",
       "value": 0.4,
-      "label": "distributedPlanningSignalMix-0.4",
+      "label": "distributedPrioritizationSignalMix-0.4",
       "V": 0.23182584564749606,
       "Vsd": 0.0492600770509346,
       "leak": 0.011626343356730353,
@@ -246,9 +246,9 @@
       "ratio": 1.8291156583399766
     },
     {
-      "name": "distributedPlanningSignalMix",
+      "name": "distributedPrioritizationSignalMix",
       "value": 0.66,
-      "label": "distributedPlanningSignalMix-0.66",
+      "label": "distributedPrioritizationSignalMix-0.66",
       "V": 0.2771480107007982,
       "Vsd": 0.04301408754101332,
       "leak": 0.009541494868097083,
@@ -258,9 +258,9 @@
       "ratio": 2.1867094440428745
     },
     {
-      "name": "distributedPlanningSignalMix",
+      "name": "distributedPrioritizationSignalMix",
       "value": 0.8,
-      "label": "distributedPlanningSignalMix-0.8",
+      "label": "distributedPrioritizationSignalMix-0.8",
       "V": 0.29784244200661814,
       "Vsd": 0.04887681947442445,
       "leak": 0.009178916580600636,

@@ -1,6 +1,6 @@
 scenario: baseline-medium v0.4 | engine: v0.5.1
 runs: 20, base seed: 1, cycles: 24, citizens: 10000, projects: 40
-centralPlanningSignalMix: 0.39, distributedPlanningSignalMix: 0.66
+centralPrioritizationSignalMix: 0.39, distributedPrioritizationSignalMix: 0.66
 architectures: status_quo, participatory_weak_verification, participatory_weak_verification_full_budget, core_v0_tutored_mandated_agenda, core_v0_tutored_distributed_agenda
 
 | architecture | budget spent | unspent | funded rate | actual value/budget | verified value/budget | reported value/budget | visibility gap | leakage | funding Gini | sel(value) | central plan corr | distributed plan corr | salience corr |

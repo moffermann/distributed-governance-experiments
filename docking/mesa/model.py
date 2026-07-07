@@ -151,7 +151,7 @@ _CORE_BASE = {
     "reputationLoss": 0.20,
     "futureSelectionLoss": 0.15,
     "socialProofDamping": 0.60,
-    "passiveAllocationMode": "planning",
+    "passiveAllocationMode": "prioritization",
 }
 
 ARCHITECTURES = {
@@ -159,7 +159,7 @@ ARCHITECTURES = {
         "id": "status_quo",
         "label": "Status quo / central low-information planning / audit-after-fact",
         "centralPlanner": True,
-        "planningSource": "central",
+        "prioritizationSource": "central",
         "citizenAllocation": False,
         "fundingCaps": True,
         "informationNoise": 0.45,
@@ -176,7 +176,7 @@ ARCHITECTURES = {
         "id": "participatory_weak_verification",
         "label": "Participatory / weak verification / low absorption",
         "centralPlanner": False,
-        "planningSource": "none",
+        "prioritizationSource": "none",
         "citizenAllocation": True,
         "fundingCaps": False,
         "informationNoise": 0.35,
@@ -193,7 +193,7 @@ ARCHITECTURES = {
         "id": "participatory_weak_verification_full_budget",
         "label": "Participatory / weak verification / full budget via salience",
         "centralPlanner": False,
-        "planningSource": "none",
+        "prioritizationSource": "none",
         "citizenAllocation": True,
         "fundingCaps": False,
         "informationNoise": 0.35,
@@ -208,15 +208,15 @@ ARCHITECTURES = {
     },
     "core_v0_tutored_mandated_agenda": {
         "id": "core_v0_tutored_mandated_agenda",
-        "label": "Core v0 - tutored regime, mandated agenda (transition scaffold: incumbent default vector)",
+        "label": "Core v0 - tutored regime, mandated agenda (transition scaffold: incumbent central prioritization)",
         **_CORE_BASE,
-        "planningSource": "central",
+        "prioritizationSource": "central",
     },
     "core_v0_tutored_distributed_agenda": {
         "id": "core_v0_tutored_distributed_agenda",
         "label": "Core v0 - tutored regime, distributed agenda",
         **_CORE_BASE,
-        "planningSource": "distributed",
+        "prioritizationSource": "distributed",
     },
 }
 
@@ -250,12 +250,12 @@ def make_project(rng: random.Random, pid: str, scenario: dict) -> dict:
         0.01, 0.99,
     )
 
-    central_mix = p_cfg.get("centralPlanningSignalMix",
-                            p_cfg.get("planningWeightCorrelation", 0.15))
-    distributed_mix = p_cfg.get("distributedPlanningSignalMix", 0.70)
-    central_planning_weight = clamp(
+    central_mix = p_cfg.get("centralPrioritizationSignalMix",
+                            p_cfg.get("prioritizationWeightCorrelation", 0.15))
+    distributed_mix = p_cfg.get("distributedPrioritizationSignalMix", 0.70)
+    central_prioritization_weight = clamp(
         central_mix * latent_value + (1 - central_mix) * rng.random(), 0.01, 0.99)
-    distributed_planning_weight = clamp(
+    distributed_prioritization_weight = clamp(
         distributed_mix * latent_value + (1 - distributed_mix) * rng.random(), 0.01, 0.99)
 
     verification_difficulty = sample_dist(rng, p_cfg["verificationDifficulty"])
@@ -271,8 +271,8 @@ def make_project(rng: random.Random, pid: str, scenario: dict) -> dict:
         "id": pid,
         "latentValue": latent_value,
         "salience": salience,
-        "centralPlanningWeight": central_planning_weight,
-        "distributedPlanningWeight": distributed_planning_weight,
+        "centralPrioritizationWeight": central_prioritization_weight,
+        "distributedPrioritizationWeight": distributed_prioritization_weight,
         "verificationDifficulty": verification_difficulty,
         "executionDifficulty": execution_difficulty,
         "fraudOpportunity": fraud_opportunity,
@@ -305,8 +305,8 @@ class ProjectAgent(mesa.Agent):
         # Static, world-level attributes (shared across architectures).
         self.latentValue = tpl["latentValue"]
         self.salience = tpl["salience"]
-        self.centralPlanningWeight = tpl["centralPlanningWeight"]
-        self.distributedPlanningWeight = tpl["distributedPlanningWeight"]
+        self.centralPrioritizationWeight = tpl["centralPrioritizationWeight"]
+        self.distributedPrioritizationWeight = tpl["distributedPrioritizationWeight"]
         self.verificationDifficulty = tpl["verificationDifficulty"]
         self.executionDifficulty = tpl["executionDifficulty"]
         self.fraudOpportunity = tpl["fraudOpportunity"]
@@ -348,11 +348,11 @@ class GovernanceModel(mesa.Model):
     def open_projects(self) -> list:
         return [p for p in self.projects if not p.closed]
 
-    def planning_score(self, p: ProjectAgent) -> float:
-        """JS: planningScore (agendaCapture disabled -> plain base weight)."""
-        if self.arch["planningSource"] == "distributed":
-            return p.distributedPlanningWeight
-        return p.centralPlanningWeight
+    def prioritization_score(self, p: ProjectAgent) -> float:
+        """JS: prioritizationScore (agendaCapture disabled -> plain base weight)."""
+        if self.arch["prioritizationSource"] == "distributed":
+            return p.distributedPrioritizationWeight
+        return p.centralPrioritizationWeight
 
     def visibility_score(self, p: ProjectAgent) -> float:
         """JS: visibilityScore."""
@@ -378,7 +378,7 @@ class GovernanceModel(mesa.Model):
         """JS: allocateCentral. Central planner spends citizens/cycle down the
         planning-score ranking; stops when it can make no further progress."""
         budget = self.scn["population"]["citizens"]
-        projects = sorted(self.open_projects(), key=self.planning_score, reverse=True)
+        projects = sorted(self.open_projects(), key=self.prioritization_score, reverse=True)
         for p in projects:
             if budget <= 0:
                 break
@@ -458,7 +458,7 @@ class GovernanceModel(mesa.Model):
         if count <= 0:
             return
         budget = count
-        projects = sorted(self.open_projects(), key=self.planning_score, reverse=True)
+        projects = sorted(self.open_projects(), key=self.prioritization_score, reverse=True)
         for p in projects:
             if budget <= 0:
                 break
@@ -477,7 +477,7 @@ class GovernanceModel(mesa.Model):
         attentive = js_round(N * pop["attentiveShare"])
         salience = js_round(N * pop["salienceShare"])
 
-        has_default_layer = arch["passiveAllocationMode"] == "planning"
+        has_default_layer = arch["passiveAllocationMode"] == "prioritization"
         profile = js_round(N * pop.get("profileShare", 0)) if has_default_layer else 0
         delegated = js_round(N * pop.get("delegatorShare", 0)) if has_default_layer else 0
         remaining = N - attentive - salience - profile - delegated
@@ -493,7 +493,7 @@ class GovernanceModel(mesa.Model):
             leftover += self.allocate_delegated(delegated)
 
         mode = arch["passiveAllocationMode"]
-        if mode == "planning":
+        if mode == "prioritization":
             self.allocate_default(remaining + leftover)
         elif mode == "salience":
             self.allocate_salience(remaining)

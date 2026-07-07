@@ -169,15 +169,15 @@ const coreBase = {
   reputationLoss: 0.20,
   futureSelectionLoss: 0.15,
   socialProofDamping: 0.60,
-  passiveAllocationMode: "planning",
+  passiveAllocationMode: "prioritization",
 };
 
 const ARCHITECTURES = {
   status_quo: {
     id: "status_quo",
-    label: "Status quo / central low-information planning / audit-after-fact",
+    label: "Status quo / central low-information prioritization / audit-after-fact",
     centralPlanner: true,
-    planningSource: "central",
+    prioritizationSource: "central",
     citizenAllocation: false,
     fundingCaps: true,
     informationNoise: 0.45,
@@ -194,7 +194,7 @@ const ARCHITECTURES = {
     id: "participatory_weak_verification",
     label: "Participatory / weak verification / low absorption",
     centralPlanner: false,
-    planningSource: "none",
+    prioritizationSource: "none",
     citizenAllocation: true,
     fundingCaps: false,
     informationNoise: 0.35,
@@ -211,7 +211,7 @@ const ARCHITECTURES = {
     id: "participatory_weak_verification_full_budget",
     label: "Participatory / weak verification / full budget via salience",
     centralPlanner: false,
-    planningSource: "none",
+    prioritizationSource: "none",
     citizenAllocation: true,
     fundingCaps: false,
     informationNoise: 0.35,
@@ -230,15 +230,15 @@ const ARCHITECTURES = {
   // tutored regime with distributed agenda. Old ids kept as legacy aliases.
   core_v0_tutored_mandated_agenda: {
     id: "core_v0_tutored_mandated_agenda",
-    label: "Core v0 — tutored regime, mandated agenda (transition scaffold: incumbent default vector)",
+    label: "Core v0 — tutored regime, mandated agenda (transition scaffold: incumbent central prioritization)",
     ...coreBase,
-    planningSource: "central",
+    prioritizationSource: "central",
   },
   core_v0_tutored_distributed_agenda: {
     id: "core_v0_tutored_distributed_agenda",
     label: "Core v0 — tutored regime, distributed agenda",
     ...coreBase,
-    planningSource: "distributed",
+    prioritizationSource: "distributed",
   },
 };
 // Legacy aliases (pre-docs/110 names); they resolve to the canonical variants.
@@ -260,10 +260,10 @@ const makeProject = (rng, id, scenario) => {
   const latentValue = sampleDist(rng, pCfg.latentValue);
   const salience = clamp(pCfg.salienceCorrelation * latentValue + (1 - pCfg.salienceCorrelation) * rng(), 0.01, 0.99);
 
-  const centralMix = pCfg.centralPlanningSignalMix ?? pCfg.planningWeightCorrelation ?? 0.15;
-  const distributedMix = pCfg.distributedPlanningSignalMix ?? 0.70;
-  const centralPlanningWeight = clamp(centralMix * latentValue + (1 - centralMix) * rng(), 0.01, 0.99);
-  const distributedPlanningWeight = clamp(distributedMix * latentValue + (1 - distributedMix) * rng(), 0.01, 0.99);
+  const centralMix = pCfg.centralPrioritizationSignalMix ?? pCfg.prioritizationWeightCorrelation ?? 0.15;
+  const distributedMix = pCfg.distributedPrioritizationSignalMix ?? 0.70;
+  const centralPrioritizationWeight = clamp(centralMix * latentValue + (1 - centralMix) * rng(), 0.01, 0.99);
+  const distributedPrioritizationWeight = clamp(distributedMix * latentValue + (1 - distributedMix) * rng(), 0.01, 0.99);
 
   const verificationDifficulty = sampleDist(rng, pCfg.verificationDifficulty);
   const executionDifficulty = sampleDist(rng, pCfg.executionDifficulty);
@@ -275,8 +275,8 @@ const makeProject = (rng, id, scenario) => {
     id,
     latentValue,
     salience,
-    centralPlanningWeight,
-    distributedPlanningWeight,
+    centralPrioritizationWeight,
+    distributedPrioritizationWeight,
     verificationDifficulty,
     executionDifficulty,
     fraudOpportunity,
@@ -336,10 +336,10 @@ const availableBudget = (scenario) => scenario.population.citizens * scenario.cy
 // exists only in the tutored-with-mandated-agenda regime. It therefore measures
 // the price of keeping that choke point, NOT a vulnerability of distributed
 // construction — whose analog attack is coordinatedSignalBias (measured, robust).
-const planningScore = (p, arch, sim, scenario) => {
-  const base = arch.planningSource === "distributed" ? p.distributedPlanningWeight : p.centralPlanningWeight;
+const prioritizationScore = (p, arch, sim, scenario) => {
+  const base = arch.prioritizationSource === "distributed" ? p.distributedPrioritizationWeight : p.centralPrioritizationWeight;
   const capture = scenario.attacks?.agendaCapture;
-  if (capture?.enabled && arch.planningSource === "distributed" && sim?.capturedSet) {
+  if (capture?.enabled && arch.prioritizationSource === "distributed" && sim?.capturedSet) {
     const severity = capture.severity ?? 0.3;
     return (1 - severity) * base + severity * (sim.capturedSet.has(projectIndex(p)) ? 1 : 0);
   }
@@ -381,7 +381,7 @@ const drawSample = (rng, projects, k) => {
 
 const allocateCentral = (sim, arch, scenario) => {
   let budget = scenario.population.citizens;
-  const projects = openProjects(sim).sort((a, b) => planningScore(b, arch, sim, scenario) - planningScore(a, arch, sim, scenario));
+  const projects = openProjects(sim).sort((a, b) => prioritizationScore(b, arch, sim, scenario) - prioritizationScore(a, arch, sim, scenario));
   for (const p of projects) {
     if (budget <= 0) break;
     const before = budget;
@@ -457,7 +457,7 @@ const allocateSalience = (rng, sim, arch, scenario, count) => {
 const allocateDefault = (sim, arch, scenario, count) => {
   if (count <= 0) return;
   let budget = count;
-  const projects = openProjects(sim).sort((a, b) => planningScore(b, arch, sim, scenario) - planningScore(a, arch, sim, scenario));
+  const projects = openProjects(sim).sort((a, b) => prioritizationScore(b, arch, sim, scenario) - prioritizationScore(a, arch, sim, scenario));
   for (const p of projects) {
     if (budget <= 0) break;
     const room = arch.fundingCaps ? Math.max(0, p.budgetTarget - p.funded) : Infinity;
@@ -475,7 +475,7 @@ const allocateCitizen = (rng, sim, arch, scenario) => {
   // Profile and delegated channels exist only where the platform provides a
   // default layer (AGENT_DECISION_MODEL, passive citizen: "if
   // architecture.hasDefaultLayer"); elsewhere those shares stay in the passive block.
-  const hasDefaultLayer = arch.passiveAllocationMode === "planning";
+  const hasDefaultLayer = arch.passiveAllocationMode === "prioritization";
   const profile = hasDefaultLayer ? Math.round(N * (pop.profileShare ?? 0)) : 0;
   const delegated = hasDefaultLayer ? Math.round(N * (pop.delegatorShare ?? 0)) : 0;
   const remaining = N - attentive - salience - profile - delegated;
@@ -498,7 +498,7 @@ const allocateCitizen = (rng, sim, arch, scenario) => {
   leftover += allocateSalience(rng, sim, arch, scenario, salience);
   if (profile > 0) leftover += allocateProfile(rng, sim, arch, scenario, profile);
   if (delegated > 0) leftover += allocateDelegated(rng, sim, arch, scenario, delegated);
-  if (arch.passiveAllocationMode === "planning") {
+  if (arch.passiveAllocationMode === "prioritization") {
     // docs/101: unexercised allocation follows the public default rule.
     allocateDefault(sim, arch, scenario, remaining + leftover);
   } else if (arch.passiveAllocationMode === "salience") {
@@ -607,8 +607,8 @@ const computeMetrics = (sim, arch, scenario) => {
   const fundedFlag = projects.map((p) => p.execution ? 1 : 0);
   const values = projects.map((p) => p.latentValue);
   const saliences = projects.map((p) => p.salience);
-  const centralPlanningWeights = projects.map((p) => p.centralPlanningWeight);
-  const distributedPlanningWeights = projects.map((p) => p.distributedPlanningWeight);
+  const centralPrioritizationWeights = projects.map((p) => p.centralPrioritizationWeight);
+  const distributedPrioritizationWeights = projects.map((p) => p.distributedPrioritizationWeight);
   const fundedAmounts = projects.map((p) => p.funded);
   const budgetSpent = fundedAmounts.reduce((a, b) => a + b, 0);
   const totalAvailableBudget = availableBudget(scenario);
@@ -626,7 +626,7 @@ const computeMetrics = (sim, arch, scenario) => {
   return {
     architecture: arch.id,
     architectureLabel: arch.label,
-    planningSource: arch.planningSource,
+    prioritizationSource: arch.prioritizationSource,
     totalAvailableBudget,
     budgetSpent,
     unspentBudget: Math.max(0, totalAvailableBudget - budgetSpent),
@@ -646,8 +646,8 @@ const computeMetrics = (sim, arch, scenario) => {
     selectionValueCorrelation: pearson(fundedFlag, values),
     selectionSalienceCorrelation: pearson(fundedFlag, saliences),
     salienceValueCorrelation: pearson(saliences, values),
-    centralPlanningValueCorrelation: pearson(centralPlanningWeights, values),
-    distributedPlanningValueCorrelation: pearson(distributedPlanningWeights, values),
+    centralPlanningValueCorrelation: pearson(centralPrioritizationWeights, values),
+    distributedPlanningValueCorrelation: pearson(distributedPrioritizationWeights, values),
     fundedValueMean: mean(funded.map((p) => p.latentValue)),
     unfundedValueMean: mean(unfunded.map((p) => p.latentValue)),
     qualityGap: mean(funded.map((p) => p.latentValue)) - mean(unfunded.map((p) => p.latentValue)),
@@ -699,7 +699,7 @@ const markdownTable = (summary, scenario) => {
   const lines = [];
   lines.push(`scenario: ${scenario.scenario_id} v${scenario.scenario_version ?? "n/a"} | engine: v${ENGINE_VERSION}`);
   lines.push(`runs: ${scenario.runs}, base seed: ${scenario.seed}, cycles: ${scenario.cycles}, citizens: ${scenario.population.citizens}, projects: ${scenario.projects.activePool}`);
-  lines.push(`centralPlanningSignalMix: ${scenario.projects.centralPlanningSignalMix ?? scenario.projects.planningWeightCorrelation ?? "n/a"}, distributedPlanningSignalMix: ${scenario.projects.distributedPlanningSignalMix ?? "n/a"}`);
+  lines.push(`centralPrioritizationSignalMix: ${scenario.projects.centralPrioritizationSignalMix ?? scenario.projects.prioritizationWeightCorrelation ?? "n/a"}, distributedPrioritizationSignalMix: ${scenario.projects.distributedPrioritizationSignalMix ?? "n/a"}`);
   lines.push(`architectures: ${scenario.architectures.join(", ")}`);
   lines.push("");
   lines.push("| architecture | budget spent | unspent | funded rate | actual value/budget | verified value/budget | reported value/budget | visibility gap | leakage | funding Gini | sel(value) | central plan corr | distributed plan corr | salience corr |");
@@ -778,8 +778,8 @@ if (isMain) {
   const scenario = JSON.parse(readFileSync(scenarioPath, "utf8"));
   if (cli.runs) scenario.runs = Number.parseInt(cli.runs, 10);
   if (cli.seed) scenario.seed = Number.parseInt(cli.seed, 10);
-  if (cli.centralPlanningSignalMix) scenario.projects.centralPlanningSignalMix = Number.parseFloat(cli.centralPlanningSignalMix);
-  if (cli.distributedPlanningSignalMix) scenario.projects.distributedPlanningSignalMix = Number.parseFloat(cli.distributedPlanningSignalMix);
+  if (cli.centralPrioritizationSignalMix) scenario.projects.centralPrioritizationSignalMix = Number.parseFloat(cli.centralPrioritizationSignalMix);
+  if (cli.distributedPrioritizationSignalMix) scenario.projects.distributedPrioritizationSignalMix = Number.parseFloat(cli.distributedPrioritizationSignalMix);
   const result = runScenario(scenario);
   console.log(markdownTable(result.summary, scenario));
   const outDir = writeOutputs(result, scenario);

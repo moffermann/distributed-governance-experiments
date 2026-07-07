@@ -31,10 +31,10 @@ intact reference: V=0.277±0.043, leak=0.010, visGap=0.006, sel=0.616, ratio vs 
 | opportunisticShare | 0.3 | 0.277 | 0.010 | 2.17x |
 | opportunisticShare | 0.5 | 0.276 | 0.011 | 2.24x |
 | opportunisticShare | 0.7 | 0.277 | 0.011 | 2.39x |
-| distributedPlanningSignalMix | 0.2 | 0.206 | 0.000 | 1.63x |
-| distributedPlanningSignalMix | 0.4 | 0.232 | 0.012 | 1.83x |
-| distributedPlanningSignalMix | 0.66 | 0.277 | 0.010 | 2.19x |
-| distributedPlanningSignalMix | 0.8 | 0.298 | 0.009 | 2.35x |
+| distributedPrioritizationSignalMix | 0.2 | 0.206 | 0.000 | 1.63x |
+| distributedPrioritizationSignalMix | 0.4 | 0.232 | 0.012 | 1.83x |
+| distributedPrioritizationSignalMix | 0.66 | 0.277 | 0.010 | 2.19x |
+| distributedPrioritizationSignalMix | 0.8 | 0.298 | 0.009 | 2.35x |
 | delegationBlockSize | 1 | 0.279 | 0.010 | 2.20x |
 | delegationBlockSize | 3 | 0.280 | 0.010 | 2.21x |
 | delegationBlockSize | 10 | 0.279 | 0.017 | 2.20x |

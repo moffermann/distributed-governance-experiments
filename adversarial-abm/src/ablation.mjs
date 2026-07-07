@@ -45,7 +45,7 @@ const knockouts = [
   ["K3 financial terms -> status quo", over({ retention: 0.05, guarantee: 0.02 })],
   ["K4 reputational memory OFF", over({ reputationLoss: 0.02, futureSelectionLoss: 0.02 })],
   ["K5 default layer -> salience", over({ passiveAllocationMode: "salience" })],
-  ["K6 planning vector -> central", over({ planningSource: "central" })],
+  ["K6 planning vector -> central", over({ prioritizationSource: "central" })],
   ["K7 delegation channel OFF", (s) => { s.population.passiveShare += s.population.delegatorShare; s.population.delegatorShare = 0; }],
   ["K8 profile channel OFF", (s) => { s.population.passiveShare += s.population.profileShare; s.population.profileShare = 0; }],
   ["K9 herding brake OFF", over({ socialProofDamping: 1.0 })],
@@ -65,7 +65,7 @@ const sweep = (name, values, mutate) => {
 };
 sweep("detectionBase", [0.15, 0.25, 0.35, 0.55, 0.75], (s, v) => { s.architectureOverrides = { [CORE]: { detectionBase: v } }; });
 sweep("opportunisticShare", [0.1, 0.3, 0.5, 0.7], (s, v) => { s.executors.opportunisticShare = v; s.executors.honestShare = 1 - v; });
-sweep("distributedPlanningSignalMix", [0.2, 0.4, 0.66, 0.8], (s, v) => { s.projects.distributedPlanningSignalMix = v; });
+sweep("distributedPrioritizationSignalMix", [0.2, 0.4, 0.66, 0.8], (s, v) => { s.projects.distributedPrioritizationSignalMix = v; });
 sweep("delegationBlockSize", [1, 3, 10, 50], (s, v) => { s.population.delegationBlockSize = v; });
 sweep("socialProofWeight", [1, 3, 6], (s, v) => { s.attacks.salienceCascade.socialProofWeight = v; });
 
