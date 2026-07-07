@@ -1,0 +1,478 @@
+{
+ "rates": {
+  "gemma": {
+   "fp": 0.2,
+   "fp_k": 11,
+   "fp_n": 55,
+   "ff": 0.2653061224489796,
+   "ff_k": 13,
+   "ff_n": 49,
+   "fp_ci": [
+    0.1155209712045974,
+    0.3236513150690593
+   ],
+   "ff_ci": [
+    0.1621113124514944,
+    0.4026255615265835
+   ],
+   "per_flaw": {
+    "inflated_unit_prices": [
+     0,
+     10
+    ],
+    "compressed_timeline": [
+     3,
+     9
+    ],
+    "photo_coverage_gap": [
+     5,
+     9
+    ],
+    "quantity_shortfall": [
+     0,
+     10
+    ],
+    "related_party": [
+     3,
+     7
+    ],
+    "threshold_structuring": [
+     0,
+     10
+    ]
+   }
+  },
+  "qwen": {
+   "fp": 0.0,
+   "fp_k": 0,
+   "fp_n": 60,
+   "ff": 0.9807692307692307,
+   "ff_k": 51,
+   "ff_n": 52,
+   "fp_ci": [
+    0.0,
+    0.06017393047793289
+   ],
+   "ff_ci": [
+    0.8987925373197556,
+    0.9965972795909344
+   ],
+   "per_flaw": {
+    "inflated_unit_prices": [
+     0,
+     10
+    ],
+    "compressed_timeline": [
+     0,
+     10
+    ],
+    "photo_coverage_gap": [
+     0,
+     10
+    ],
+    "quantity_shortfall": [
+     0,
+     10
+    ],
+    "related_party": [
+     0,
+     10
+    ],
+    "threshold_structuring": [
+     0,
+     10
+    ]
+   }
+  },
+  "deepseek": {
+   "fp": 0.2,
+   "fp_k": 12,
+   "fp_n": 60,
+   "ff": 0.5666666666666667,
+   "ff_k": 34,
+   "ff_n": 60,
+   "fp_ci": [
+    0.11828389736858964,
+    0.3178204609181701
+   ],
+   "ff_ci": [
+    0.44103214654694856,
+    0.6842779960559936
+   ],
+   "per_flaw": {
+    "inflated_unit_prices": [
+     0,
+     10
+    ],
+    "compressed_timeline": [
+     3,
+     10
+    ],
+    "photo_coverage_gap": [
+     3,
+     10
+    ],
+    "quantity_shortfall": [
+     0,
+     10
+    ],
+    "related_party": [
+     4,
+     10
+    ],
+    "threshold_structuring": [
+     2,
+     10
+    ]
+   }
+  },
+  "gpt": {
+   "fp": 0.08333333333333333,
+   "fp_k": 5,
+   "fp_n": 60,
+   "ff": 0.03333333333333333,
+   "ff_k": 2,
+   "ff_n": 60,
+   "fp_ci": [
+    0.03611992405048589,
+    0.18069168468112481
+   ],
+   "ff_ci": [
+    0.009189126490150246,
+    0.11363987528925378
+   ],
+   "per_flaw": {
+    "inflated_unit_prices": [
+     0,
+     10
+    ],
+    "compressed_timeline": [
+     4,
+     10
+    ],
+    "photo_coverage_gap": [
+     1,
+     10
+    ],
+    "quantity_shortfall": [
+     0,
+     10
+    ],
+    "related_party": [
+     0,
+     10
+    ],
+    "threshold_structuring": [
+     0,
+     10
+    ]
+   }
+  },
+  "claude": {
+   "fp": 0.08333333333333333,
+   "fp_k": 5,
+   "fp_n": 60,
+   "ff": 0.08333333333333333,
+   "ff_k": 5,
+   "ff_n": 60,
+   "fp_ci": [
+    0.03611992405048589,
+    0.18069168468112481
+   ],
+   "ff_ci": [
+    0.03611992405048589,
+    0.18069168468112481
+   ],
+   "per_flaw": {
+    "inflated_unit_prices": [
+     0,
+     10
+    ],
+    "compressed_timeline": [
+     5,
+     10
+    ],
+    "photo_coverage_gap": [
+     0,
+     10
+    ],
+    "quantity_shortfall": [
+     0,
+     10
+    ],
+    "related_party": [
+     0,
+     10
+    ],
+    "threshold_structuring": [
+     0,
+     10
+    ]
+   }
+  }
+ },
+ "pairs": {
+  "gemma-qwen": {
+   "phi": null,
+   "joint": 0,
+   "n": 55,
+   "p": "1.000"
+  },
+  "gemma-deepseek": {
+   "phi": 0.20454545454545456,
+   "joint": 4,
+   "n": 55,
+   "p": "0.202"
+  },
+  "gemma-gpt": {
+   "phi": 0.4743416490252569,
+   "joint": 4,
+   "n": 55,
+   "p": "0.004"
+  },
+  "gemma-claude": {
+   "phi": 0.3850770231077027,
+   "joint": 3,
+   "n": 55,
+   "p": "0.022"
+  },
+  "qwen-deepseek": {
+   "phi": null,
+   "joint": 0,
+   "n": 60,
+   "p": "1.000"
+  },
+  "qwen-gpt": {
+   "phi": null,
+   "joint": 0,
+   "n": 60,
+   "p": "1.000"
+  },
+  "qwen-claude": {
+   "phi": null,
+   "joint": 0,
+   "n": 60,
+   "p": "1.000"
+  },
+  "deepseek-gpt": {
+   "phi": 0.15075567228888181,
+   "joint": 2,
+   "n": 60,
+   "p": "0.259"
+  },
+  "deepseek-claude": {
+   "phi": 0.15075567228888181,
+   "joint": 2,
+   "n": 60,
+   "p": "0.259"
+  },
+  "gpt-claude": {
+   "phi": 0.7818181818181819,
+   "joint": 4,
+   "n": 60,
+   "p": "0.000"
+  }
+ },
+ "ensembles": [
+  {
+   "stack": "gemma+qwen",
+   "k": 2,
+   "joint": 0,
+   "n": 55,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity,
+   "ci": "n/a"
+  },
+  {
+   "stack": "gemma+deepseek",
+   "k": 2,
+   "joint": 4,
+   "n": 55,
+   "measured": 0.07272727272727272,
+   "indep": 0.04000000000000001,
+   "ratio": 1.8181818181818177,
+   "ci": "[0.5, 3.4]x"
+  },
+  {
+   "stack": "gemma+gpt",
+   "k": 2,
+   "joint": 4,
+   "n": 55,
+   "measured": 0.07272727272727272,
+   "indep": 0.018181818181818184,
+   "ratio": 3.999999999999999,
+   "ci": "[2.0, 7.9]x"
+  },
+  {
+   "stack": "gemma+claude",
+   "k": 2,
+   "joint": 3,
+   "n": 55,
+   "measured": 0.05454545454545454,
+   "indep": 0.014545454545454545,
+   "ratio": 3.75,
+   "ci": "[0.0, 7.9]x"
+  },
+  {
+   "stack": "qwen+deepseek",
+   "k": 2,
+   "joint": 0,
+   "n": 60,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity,
+   "ci": "n/a"
+  },
+  {
+   "stack": "qwen+gpt",
+   "k": 2,
+   "joint": 0,
+   "n": 60,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity,
+   "ci": "n/a"
+  },
+  {
+   "stack": "qwen+claude",
+   "k": 2,
+   "joint": 0,
+   "n": 60,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity,
+   "ci": "n/a"
+  },
+  {
+   "stack": "deepseek+gpt",
+   "k": 2,
+   "joint": 2,
+   "n": 60,
+   "measured": 0.03333333333333333,
+   "indep": 0.016666666666666666,
+   "ratio": 2.0,
+   "ci": "[0.0, 5.0]x"
+  },
+  {
+   "stack": "deepseek+claude",
+   "k": 2,
+   "joint": 2,
+   "n": 60,
+   "measured": 0.03333333333333333,
+   "indep": 0.016666666666666666,
+   "ratio": 2.0,
+   "ci": "[0.0, 5.0]x"
+  },
+  {
+   "stack": "gpt+claude",
+   "k": 2,
+   "joint": 4,
+   "n": 60,
+   "measured": 0.06666666666666667,
+   "indep": 0.006944444444444444,
+   "ratio": 9.6,
+   "ci": "[4.7, 30.0]x"
+  },
+  {
+   "stack": "gemma+qwen+deepseek",
+   "k": 3,
+   "joint": 0,
+   "n": 55,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity,
+   "ci": "n/a"
+  },
+  {
+   "stack": "gemma+qwen+gpt",
+   "k": 3,
+   "joint": 0,
+   "n": 55,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity,
+   "ci": "n/a"
+  },
+  {
+   "stack": "gemma+qwen+claude",
+   "k": 3,
+   "joint": 0,
+   "n": 55,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity,
+   "ci": "n/a"
+  },
+  {
+   "stack": "gemma+deepseek+gpt",
+   "k": 3,
+   "joint": 1,
+   "n": 55,
+   "measured": 0.01818181818181818,
+   "indep": 0.0036363636363636372,
+   "ratio": 4.999999999999998,
+   "ci": "[0.0, 22.4]x"
+  },
+  {
+   "stack": "gemma+deepseek+claude",
+   "k": 3,
+   "joint": 1,
+   "n": 55,
+   "measured": 0.01818181818181818,
+   "indep": 0.0029090909090909093,
+   "ratio": 6.249999999999999,
+   "ci": "[0.0, 25.9]x"
+  },
+  {
+   "stack": "gemma+gpt+claude",
+   "k": 3,
+   "joint": 3,
+   "n": 55,
+   "measured": 0.05454545454545454,
+   "indep": 0.001322314049586777,
+   "ratio": 41.24999999999999,
+   "ci": "[0.0, 189.1]x"
+  },
+  {
+   "stack": "qwen+deepseek+gpt",
+   "k": 3,
+   "joint": 0,
+   "n": 60,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity,
+   "ci": "n/a"
+  },
+  {
+   "stack": "qwen+deepseek+claude",
+   "k": 3,
+   "joint": 0,
+   "n": 60,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity,
+   "ci": "n/a"
+  },
+  {
+   "stack": "qwen+gpt+claude",
+   "k": 3,
+   "joint": 0,
+   "n": 60,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity,
+   "ci": "n/a"
+  },
+  {
+   "stack": "deepseek+gpt+claude",
+   "k": 3,
+   "joint": 2,
+   "n": 60,
+   "measured": 0.03333333333333333,
+   "indep": 0.0013888888888888887,
+   "ratio": 24.000000000000004,
+   "ci": "[0.0, 128.6]x"
+  }
+ ]
+}

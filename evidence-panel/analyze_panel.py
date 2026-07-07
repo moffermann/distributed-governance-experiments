@@ -203,7 +203,7 @@ def main() -> None:
         lines.append("")
     suffix = "" if INSTRUMENT == "v1" else f"_{INSTRUMENT}"
     (HERE / f"F0{suffix.upper()}_RESULTS.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    (HERE / f"f0{suffix}_results.json").write_text(json.dumps({"rates": rates, "pairs": {f"{a}-{b}": p for (a, b), p in pair_phis.items()}, "ensembles": ens}, indent=1, default=str), encoding="utf-8")
+    (HERE / f"f0{suffix}_results.json").write_text(json.dumps({"rates": rates, "pairs": pair_phis, "ensembles": ens}, indent=1, default=str), encoding="utf-8")
     print("\n".join(lines))
 
 
