@@ -46,6 +46,7 @@ run(["node", "adversarial-abm/src/longitudinal.mjs"])
 run(["node", "adversarial-abm/src/e_sensitivity_k.mjs"])
 run(["node", "adversarial-abm/src/e1c.mjs"])
 run(["node", "adversarial-abm/src/e1b.mjs"])
+run(["node", "adversarial-abm/src/e1d.mjs"])
 
 # 6. Cross-framework docking (optional: requires mesa).
 if not QUICK:
