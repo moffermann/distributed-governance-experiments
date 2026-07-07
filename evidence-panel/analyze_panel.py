@@ -20,14 +20,21 @@ import math
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-CASES = {c["id"]: c for c in json.loads((HERE / "vignettes.json").read_text(encoding="utf-8"))["cases"]}
+import os
+INSTRUMENT = os.environ.get("PANEL_INSTRUMENT", "v1")
+_vfile = "vignettes.json" if INSTRUMENT == "v1" else f"vignettes_{INSTRUMENT}.json"
+CASES = {c["id"]: c for c in json.loads((HERE / _vfile).read_text(encoding="utf-8"))["cases"]}
 FAMILIES = ["gemma", "qwen", "deepseek", "gpt", "claude"]
-FLAWS = ["fabricated_progress", "metadata_inconsistency", "wrong_location",
-         "recycled_evidence", "quantity_mismatch", "plausible_staging"]
+if INSTRUMENT == "v1":
+    FLAWS = ["fabricated_progress", "metadata_inconsistency", "wrong_location",
+             "recycled_evidence", "quantity_mismatch", "plausible_staging"]
+else:
+    FLAWS = ["inflated_unit_prices", "compressed_timeline", "photo_coverage_gap",
+             "quantity_shortfall", "related_party", "threshold_structuring"]
 
 
 def load(family: str) -> dict[str, str]:
-    path = HERE / "results" / f"{family}.jsonl"
+    path = HERE / ("results" if INSTRUMENT == "v1" else f"results-{INSTRUMENT}") / f"{family}.jsonl"
     out: dict[str, str] = {}
     if not path.exists():
         return out
@@ -133,8 +140,9 @@ def main() -> None:
         lines.append(f"- best 2-stack ({best['stack']}): measured {best['measured']:.3f}, indep {best['indep']:.4f} -> rho_eff = {rho_eff:.3f}")
         lines.append(f"- median 2-stack ({med['stack']}): rho_eff = {rho_med:.3f}")
         lines.append("")
-    (HERE / "F0_RESULTS.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    (HERE / "f0_results.json").write_text(json.dumps({"rates": rates, "pairs": {f"{a}-{b}": p for (a, b), p in pair_phis.items()}, "ensembles": ens}, indent=1, default=str), encoding="utf-8")
+    suffix = "" if INSTRUMENT == "v1" else f"_{INSTRUMENT}"
+    (HERE / f"F0{suffix.upper()}_RESULTS.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (HERE / f"f0{suffix}_results.json").write_text(json.dumps({"rates": rates, "pairs": {f"{a}-{b}": p for (a, b), p in pair_phis.items()}, "ensembles": ens}, indent=1, default=str), encoding="utf-8")
     print("\n".join(lines))
 
 

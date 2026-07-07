@@ -24,8 +24,11 @@ import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-VIGNETTES = json.loads((HERE / "vignettes.json").read_text(encoding="utf-8"))["cases"]
-RESULTS_DIR = HERE / "results"
+import os
+INSTRUMENT = os.environ.get("PANEL_INSTRUMENT", "v1")
+_vfile = "vignettes.json" if INSTRUMENT == "v1" else f"vignettes_{INSTRUMENT}.json"
+VIGNETTES = json.loads((HERE / _vfile).read_text(encoding="utf-8"))["cases"]
+RESULTS_DIR = HERE / ("results" if INSTRUMENT == "v1" else f"results-{INSTRUMENT}")
 RESULTS_DIR.mkdir(exist_ok=True)
 
 FAMILIES = {
