@@ -1,0 +1,9 @@
+v2 : El t‚rmino 'v2' no se reconoce como nombre de un cmdlet, funci¢n, archivo de script o programa ejecutable. 
+Compruebe si escribi¢ correctamente el nombre o, si incluy¢ una ruta de acceso, compruebe que dicha ruta es correcta e 
+int‚ntelo de nuevo.
+En l¡nea: 1 Car cter: 25
++ $env:PANEL_INSTRUMENT = v2; python -u evidence-panel/run_panel.py --f ...
++                         ~~
+    + CategoryInfo          : ObjectNotFound: (v2:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 

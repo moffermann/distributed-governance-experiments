@@ -141,6 +141,19 @@ Source: `adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1D_RESULTS.md`; frontier des
 
 Sources: `evidence-panel/F0_RESULTS.md`, `adversarial-abm/RUN_2026_07_07_EXPERIMENT_F_RESULTS.md`, `adversarial-abm/results/experiment-f/`.
 
+## Experiment F-0 v2: subtle fraud (the correlation story, delivered)
+
+| Finding | Number |
+|---|---|
+| Subtle fraud separates the families | false-pass: gpt 0.033, claude 0.083, gemma 0.119, deepseek 0.217 (qwen 0.000 trivially — it approves nothing) |
+| **PF0-1/2 confirmed on v2** | positive false-pass correlations (deepseek–claude φ=0.427; gpt–claude 0.280); measured 2-stacks run **1.9×–6.0× worse than independence** |
+| Shared blind spot | **compressed timelines** (10–50% false-pass everywhere — world knowledge about work durations) |
+| **Evidence richness moves operating points more than model choice** | claude: 95% false-flags on v1 cleans → **5%** on v2's reference-rich bundles (same model, same prompt) |
+| Adopted rule | evidence contracts include **comparison references** (market benchmarks, duration bands, thresholds): judgeable-by-construction |
+| Calibration probe (gpt) | 80% → 27% false-flags by instruction alone, at 97% → 85% recall — the operating point is chosen, not given |
+
+Source: `adversarial-abm/RUN_2026_07_07_EXPERIMENT_F0V2_RESULTS.md`, `evidence-panel/F0_V2_RESULTS.md`.
+
 ## Bridge to the master paper (E8, lives in the master repository)
 
 The behavioral trajectories replaced the paper engine's imposed participation: headline V(A2)/V(S′) = 2.26 [2.23, 2.30] at scale (vs 2.22 imposed), 2.15–2.9× across populations and scales, launch dynamics cost 1.7%. Recorded in the master repository's `research/simulation-results.md` §E8.

@@ -32,3 +32,6 @@ PF1-4,f-1,adversarial-abm/EXPERIMENT_F_LAYERED_VERIFICATION_DESIGN.md,Worst swep
 PF2-1,f-2,adversarial-abm/EXPERIMENT_F_LAYERED_VERIFICATION_DESIGN.md,V-per-total gain close to control share saved,confirmed,adversarial-abm/RUN_2026_07_07_EXPERIMENT_F_RESULTS.md
 PF2-2,f-2,adversarial-abm/EXPERIMENT_F_LAYERED_VERIFICATION_DESIGN.md,Binding control cost relocates to evidence production,confirmed,adversarial-abm/RUN_2026_07_07_EXPERIMENT_F_RESULTS.md
 PF2-3,f-2,adversarial-abm/EXPERIMENT_F_LAYERED_VERIFICATION_DESIGN.md,Evidence-premium crossover where layered stops dominating triage,refuted_informative_layered_triage_wash,adversarial-abm/RUN_2026_07_07_EXPERIMENT_F_RESULTS.md
+PF0-1v2,f-0v2,evidence-panel/generate_vignettes_v2.py,Pairwise false-pass correlation substantially positive (subtle instrument),confirmed,adversarial-abm/RUN_2026_07_07_EXPERIMENT_F0V2_RESULTS.md
+PF0-2v2,f-0v2,evidence-panel/generate_vignettes_v2.py,Ensembles beat best single but less than independence predicts,confirmed_1.9x_to_6x_worse_than_independence,adversarial-abm/RUN_2026_07_07_EXPERIMENT_F0V2_RESULTS.md
+PF0-3v2,f-0v2,evidence-panel/generate_vignettes_v2.py,Correlation flaw-class-structured; judgment classes carry the errors,confirmed_compressed_timelines_shared_blindspot,adversarial-abm/RUN_2026_07_07_EXPERIMENT_F0V2_RESULTS.md

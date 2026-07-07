@@ -1,0 +1,218 @@
+{
+ "rates": {
+  "gemma": {
+   "fp": 0.11864406779661017,
+   "ff": 0.4576271186440678,
+   "per_flaw": {
+    "inflated_unit_prices": 0.0,
+    "compressed_timeline": 0.2,
+    "photo_coverage_gap": 0.2,
+    "quantity_shortfall": 0.0,
+    "related_party": 0.3,
+    "threshold_structuring": 0.0
+   }
+  },
+  "qwen": {
+   "fp": 0.0,
+   "ff": 1.0,
+   "per_flaw": {
+    "inflated_unit_prices": 0.0,
+    "compressed_timeline": 0.0,
+    "photo_coverage_gap": 0.0,
+    "quantity_shortfall": 0.0,
+    "related_party": 0.0,
+    "threshold_structuring": 0.0
+   }
+  },
+  "deepseek": {
+   "fp": 0.21666666666666667,
+   "ff": 0.31666666666666665,
+   "per_flaw": {
+    "inflated_unit_prices": 0.0,
+    "compressed_timeline": 0.4,
+    "photo_coverage_gap": 0.3,
+    "quantity_shortfall": 0.0,
+    "related_party": 0.3,
+    "threshold_structuring": 0.3
+   }
+  },
+  "gpt": {
+   "fp": 0.03333333333333333,
+   "ff": 0.8,
+   "per_flaw": {
+    "inflated_unit_prices": 0.0,
+    "compressed_timeline": 0.1,
+    "photo_coverage_gap": 0.1,
+    "quantity_shortfall": 0.0,
+    "related_party": 0.0,
+    "threshold_structuring": 0.0
+   }
+  },
+  "claude": {
+   "fp": 0.08333333333333333,
+   "ff": 0.05,
+   "per_flaw": {
+    "inflated_unit_prices": 0.0,
+    "compressed_timeline": 0.5,
+    "photo_coverage_gap": 0.0,
+    "quantity_shortfall": 0.0,
+    "related_party": 0.0,
+    "threshold_structuring": 0.0
+   }
+  }
+ },
+ "pairs": {
+  "gemma-qwen": null,
+  "gemma-deepseek": 0.1843304856980013,
+  "gemma-gpt": -0.0687266093198987,
+  "gemma-claude": 0.2647558216463711,
+  "qwen-deepseek": null,
+  "qwen-gpt": null,
+  "qwen-claude": null,
+  "deepseek-gpt": 0.12771129753395252,
+  "deepseek-claude": 0.4269245178795329,
+  "gpt-claude": 0.2799462554779271
+ },
+ "ensembles": [
+  {
+   "stack": "gemma+qwen",
+   "k": 2,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity
+  },
+  {
+   "stack": "gemma+deepseek",
+   "k": 2,
+   "measured": 0.05084745762711865,
+   "indep": 0.026141913243320884,
+   "ratio": 1.9450549450549453
+  },
+  {
+   "stack": "gemma+gpt",
+   "k": 2,
+   "measured": 0.0,
+   "indep": 0.004021832806664752,
+   "ratio": 0.0
+  },
+  {
+   "stack": "gemma+claude",
+   "k": 2,
+   "measured": 0.03389830508474576,
+   "indep": 0.010054582016661878,
+   "ratio": 3.371428571428572
+  },
+  {
+   "stack": "qwen+deepseek",
+   "k": 2,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity
+  },
+  {
+   "stack": "qwen+gpt",
+   "k": 2,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity
+  },
+  {
+   "stack": "qwen+claude",
+   "k": 2,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity
+  },
+  {
+   "stack": "deepseek+gpt",
+   "k": 2,
+   "measured": 0.016666666666666666,
+   "indep": 0.007222222222222223,
+   "ratio": 2.3076923076923075
+  },
+  {
+   "stack": "deepseek+claude",
+   "k": 2,
+   "measured": 0.06666666666666667,
+   "indep": 0.018055555555555554,
+   "ratio": 3.6923076923076925
+  },
+  {
+   "stack": "gpt+claude",
+   "k": 2,
+   "measured": 0.016666666666666666,
+   "indep": 0.0027777777777777775,
+   "ratio": 6.000000000000001
+  },
+  {
+   "stack": "gemma+qwen+deepseek",
+   "k": 3,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity
+  },
+  {
+   "stack": "gemma+qwen+gpt",
+   "k": 3,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity
+  },
+  {
+   "stack": "gemma+qwen+claude",
+   "k": 3,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity
+  },
+  {
+   "stack": "gemma+deepseek+gpt",
+   "k": 3,
+   "measured": 0.0,
+   "indep": 0.0008861665506210469,
+   "ratio": 0.0
+  },
+  {
+   "stack": "gemma+deepseek+claude",
+   "k": 3,
+   "measured": 0.03389830508474576,
+   "indep": 0.002215416376552617,
+   "ratio": 15.301098901098902
+  },
+  {
+   "stack": "gemma+gpt+claude",
+   "k": 3,
+   "measured": 0.0,
+   "indep": 0.0003408332887004027,
+   "ratio": 0.0
+  },
+  {
+   "stack": "qwen+deepseek+gpt",
+   "k": 3,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity
+  },
+  {
+   "stack": "qwen+deepseek+claude",
+   "k": 3,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity
+  },
+  {
+   "stack": "qwen+gpt+claude",
+   "k": 3,
+   "measured": 0.0,
+   "indep": 0.0,
+   "ratio": Infinity
+  },
+  {
+   "stack": "deepseek+gpt+claude",
+   "k": 3,
+   "measured": 0.016666666666666666,
+   "indep": 0.0006018518518518519,
+   "ratio": 27.69230769230769
+  }
+ ]
+}
