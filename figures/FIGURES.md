@@ -21,3 +21,7 @@ Line chart over 104 weeks, four population shares per scenario (solid lines: syn
 ## semi_open_transition_path.png
 
 Line chart: blended verified value per budget as the semi-open envelope share e sweeps 0→1, against a dashed status-quo reference line. Above the granularity floor the curve rises monotonically and near-linearly — 0.127 at e=0, break-even near e≈0.08–0.10, 0.193 (1.52×) at e=0.5, 0.276 (2.18×) at e=1 — with a single dip at e=0.05 caused by two-project portfolio granularity, not by the regime. The transition from status quo to open equivalence is a dial, not a leap.
+
+## e1a_release_policies.png
+
+Two horizontal bar panels over the release-policy grid (day-zero, uniform, front-loaded x3, pull x4, approval-conditioned x4). Left: verified value per budget-year with SD whiskers — best is pull W=8mo at 0.304; day-zero reaches 0.286 and uniform 0.287; approval-conditioned peaks at 0.269. Right: frozen work-in-progress in months of budget — day-zero freezes 5.2 months, the pull family holds 4.1-4.7 with far lower verification queues. The pull family dominates the value-vs-freeze trade.

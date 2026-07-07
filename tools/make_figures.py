@@ -217,12 +217,48 @@ def fig_semi_open_transition() -> None:
     ])
 
 
+def fig_release_policies() -> None:
+    import json
+    data = json.loads((ROOT / "adversarial-abm" / "results" / "experiment-e" / "e1a-release-policies-seed1-runs20.json").read_text(encoding="utf-8"))
+    rows = [r for r in data["rows"] if "refine" not in r["family"]]
+    labels = [f"{r['family'].split(' ', 1)[1]} {r['param']}".strip() for r in rows]
+    V = [r["core"]["verifiedValuePerBudgetYear"]["mean"] for r in rows]
+    sds = [r["core"]["verifiedValuePerBudgetYear"]["sd"] for r in rows]
+    wip = [r["core"]["meanFrozenWip"]["mean"] for r in rows]
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4.6), sharey=False)
+    y = range(len(rows))
+    ax1.barh(list(y), V, xerr=sds, color="#2a7", capsize=2)
+    ax1.set_yticks(list(y))
+    ax1.set_yticklabels(labels, fontsize=8)
+    ax1.invert_yaxis()
+    ax1.set_xlabel("valor verificado / presupuesto-año")
+    ax1.set_title("E-1a: políticas de liberación (brazo Core)")
+    ax2.barh(list(y), wip, color="#a52")
+    ax2.set_yticks(list(y))
+    ax2.set_yticklabels([""] * len(rows))
+    ax2.invert_yaxis()
+    ax2.set_xlabel("WIP congelado (meses de presupuesto)")
+    ax2.set_title("capital congelado en escrow")
+    fig.tight_layout()
+    fig.savefig(FIG / "e1a_release_policies.png", dpi=130)
+    plt.close(fig)
+    best = max(range(len(rows)), key=lambda i: V[i])
+    descriptions.extend([
+        "## e1a_release_policies.png",
+        "",
+        "Two horizontal bar panels over the release-policy grid (day-zero, uniform, front-loaded x3, pull x4, approval-conditioned x4). Left: verified value per budget-year with SD whiskers — "
+        f"best is {labels[best]} at {V[best]:.3f}; day-zero reaches {V[0]:.3f} and uniform {V[1]:.3f}; approval-conditioned peaks at 0.269. Right: frozen work-in-progress in months of budget — day-zero freezes {wip[0]:.1f} months, the pull family holds 4.1-4.7 with far lower verification queues. The pull family dominates the value-vs-freeze trade.",
+        "",
+    ])
+
+
 def main() -> None:
     fig_architectures()
     fig_expc_ratios()
     fig_planning_ladder()
     fig_behavioral_trajectories()
     fig_semi_open_transition()
+    fig_release_policies()
     (FIG / "FIGURES.md").write_text("\n".join(descriptions), encoding="utf-8")
     print(f"figures + FIGURES.md -> {FIG}")
 
