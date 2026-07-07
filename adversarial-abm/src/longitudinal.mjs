@@ -21,7 +21,13 @@ import {
   ARCHITECTURES, mulberry32, clamp, sigmoid, normal, sampleDist, weightedPick, drawSample,
 } from "./index.mjs";
 
-export const LONG_ENGINE_VERSION = "0.9.0";
+export const LONG_ENGINE_VERSION = "0.10.0";
+// v0.10 (F-3/F-4, author questions 2026-07-07): contraposed independent
+// evidence — cfg.contraposition = { coverage, catch }: a diverted milestone
+// with independent evidence coverage risks a machine-detected contradiction
+// that routes it to human review with a contradiction dossier; opportunists
+// anticipate the coverage in the deterrence inequality. Plus a diversion-
+// attempts metric. Zero RNG when disabled; anchors reproduce.
 // v0.9 (Experiment F-1, ../EXPERIMENT_F_LAYERED_VERIFICATION_DESIGN.md):
 // multi-layer AI verification with a common-cause correlation model —
 // cfg.ai.layers = { k, rho }: with probability rho a diverted milestone is
@@ -75,6 +81,8 @@ const DEFAULTS = {
   // from startCycle (model degradation/capture); lane-c sampling is the only
   // instrument that can notice. Opportunists are NOT drift-aware (declared).
   aiDrift: null,          // { startCycle, rate }
+  // F-4: independent contraposed evidence (author design 2026-07-07).
+  contraposition: null,   // { coverage, catch }
 };
 
 const loadPopulation = () => {
@@ -337,6 +345,11 @@ const activateReady = (rng, state, arch, cfg, cycle) => {
       if (cfg.timingAware && cfg.staleness) {
         effDetection *= Math.max(cfg.staleness.floor, 1 - cfg.staleness.rate * (state.verifyQueue.length / cfg.verifyCapacity));
       }
+      // Contraposition (F-4): independent evidence coverage raises the
+      // end-to-end chance a fabrication surfaces — anticipated by opportunists.
+      if (cfg.contraposition) {
+        effDetection = 1 - (1 - effDetection) * (1 - cfg.contraposition.coverage * cfg.contraposition.catch);
+      }
       const x = -1.0
         + 4.0 * fraudGain
         + 2.0 * p.verificationDifficulty
@@ -395,6 +408,13 @@ const progressExecution = (rng, state, arch, cfg, cycle) => {
     while (p.status === "active" && p.milestonesDone < p.milestoneCycles.length && p.milestoneCycles[p.milestonesDone] <= cycle) {
       p.milestonesDone++;
       const milestone = p.milestonesDone;
+      // Contraposition (F-4): a diverted milestone with independent evidence
+      // coverage risks a machine-detected contradiction — routed to human
+      // review with a contradiction dossier regardless of the AI lanes.
+      if (cfg.contraposition && p.diverted && p.detectedAt === null && rng() < cfg.contraposition.coverage * cfg.contraposition.catch) {
+        state.verifyQueue.push({ p, milestone, completedCycle: cycle, flagged: true, contradiction: true });
+        continue;
+      }
       if (!cfg.ai) {
         state.verifyQueue.push({ p, milestone, completedCycle: cycle });
         continue;
@@ -457,6 +477,9 @@ const verifyOne = (rng, state, arch, cfg, item, cycle) => {
   if (p.status !== "active" && !(audit && p.status === "done")) return; // terminated/expired while queued
   state.humanVerifications++;
   let dHuman = cfg.ai ? clamp(detectionProbability(p, arch) * (cfg.ai.dossierBoost ?? 1), 0.01, 0.98) : detectionProbability(p, arch);
+  // A contradiction dossier (independent evidence vs executor evidence) makes
+  // the human check near-decisive.
+  if (item.contradiction) dHuman = Math.max(dHuman, 0.9);
   // Staleness (E-1b): evidence goes cold while it waits in the backlog.
   if (cfg.staleness) dHuman *= Math.max(cfg.staleness.floor, 1 - cfg.staleness.rate * (cycle - item.completedCycle));
   if (audit) {
@@ -603,6 +626,7 @@ export const runLongitudinal = (archId, policyFn, cfg, seed) => {
   }
 
   const done = state.projects.filter((p) => p.status === "done" || p.status === "terminated");
+  const diversionAttempts = state.projects.filter((p) => p.diverted).length;
   const verifiedValue = state.projects.reduce((a, p) => a + p.verifiedValue, 0);
   const leakage = state.projects.reduce((a, p) => a + p.leakage, 0);
   const paidOut = state.projects.reduce((a, p) => a + p.paidOut, 0);
@@ -624,6 +648,7 @@ export const runLongitudinal = (archId, policyFn, cfg, seed) => {
     expired: state.expiredCount,
     expiredDemandRatio: state.expiredDemand / Math.max(1, totalBudget),
     detections: state.detections,
+    diversionAttempts,
     unreleasedEnd: state.treasury / totalBudget,
     autoReleasedShare: state.autoReleased / Math.max(1, state.autoReleased + state.humanVerifications),
     humanLoadPerCycle: state.humanVerifications / cycles,
