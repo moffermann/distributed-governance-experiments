@@ -65,6 +65,10 @@ const DEFAULTS = {
   evidenceGaming: null,   // { skill }: diverted milestones raise AI false-pass
   archOverride: null,     // per-run architecture field overrides (degraded-stack cells)
   reputationCompounding: true, // false = stake scale 1 and reputation-blind selection (P5 isolation)
+  // E-1d (verifier-displacement frontier): the AI's false-pass drifts upward
+  // from startCycle (model degradation/capture); lane-c sampling is the only
+  // instrument that can notice. Opportunists are NOT drift-aware (declared).
+  aiDrift: null,          // { startCycle, rate }
 };
 
 const loadPopulation = () => {
@@ -387,7 +391,10 @@ const progressExecution = (rng, state, arch, cfg, cycle) => {
         state.verifyQueue.push({ p, milestone, completedCycle: cycle });
         continue;
       }
-      const fpEff = p.diverted && cfg.evidenceGaming ? Math.min(0.95, cfg.ai.falsePass + cfg.evidenceGaming.skill) : cfg.ai.falsePass;
+      let fpEff = p.diverted && cfg.evidenceGaming ? Math.min(0.95, cfg.ai.falsePass + cfg.evidenceGaming.skill) : cfg.ai.falsePass;
+      if (cfg.aiDrift && cycle >= cfg.aiDrift.startCycle && p.diverted) {
+        fpEff = Math.min(0.95, fpEff + cfg.aiDrift.rate * (cycle - cfg.aiDrift.startCycle));
+      }
       const cleared = p.diverted ? rng() < fpEff : !(rng() < cfg.ai.falseFlag);
       if (!cleared) {
         // Lane b: flagged referral (the human sees the AI dossier).
@@ -431,6 +438,7 @@ const verifyOne = (rng, state, arch, cfg, item, cycle) => {
   if (audit) {
     // Lane c: the tranche is already paid; a hit claws back what remains.
     if (p.diverted && p.detectedAt === null && rng() < dHuman) {
+      state.auditCatchCycles.push(cycle);
       if (p.status === "done") { // fully paid before the audit landed;
         // its leak was already recorded by payMilestone's done branch.
         p.detectedAt = cycle;
@@ -517,6 +525,7 @@ export const runLongitudinal = (archId, policyFn, cfg, seed) => {
     stalled: [],
     autoReleased: 0,
     humanVerifications: 0,
+    auditCatchCycles: [],
     verifiedByYear: new Array(cfg.years).fill(0),
     leakByYear: new Array(cfg.years).fill(0),
     treasury: 0,
@@ -596,6 +605,14 @@ export const runLongitudinal = (archId, policyFn, cfg, seed) => {
     humanLoadPerCycle: state.humanVerifications / cycles,
     ...Object.fromEntries(state.verifiedByYear.map((v, i) => [`vy${i + 1}`, v / cfg.annualBudget])),
     ...Object.fromEntries(state.leakByYear.map((v, i) => [`ly${i + 1}`, v / cfg.annualBudget])),
+    ...(cfg.aiDrift ? {
+      // Drift-detection latency: cycles from drift onset to the first lane-c
+      // catch of an AI-cleared diversion (censored at horizon if none).
+      driftCatchLatency: (() => {
+        const first = state.auditCatchCycles.find((c) => c >= cfg.aiDrift.startCycle);
+        return (first === undefined ? cycles : first) - cfg.aiDrift.startCycle;
+      })(),
+    } : {}),
   };
 };
 

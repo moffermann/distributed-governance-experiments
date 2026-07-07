@@ -39,7 +39,7 @@ The author selected the longitudinal option and enriched it with the program's s
 - Phase 1 ✔ — Experiment E program (E-1a, E-1c, E-1b).
 - Phase 2 ✔ — Mesa dock **15/15 PASS** (`docking/DOCKING_REPORT.md`); internal cross-engine docks recorded.
 - Phase 3 ✔ — `STATISTICAL_ANNEX.md` (paired 95% t-intervals; all headline differences exclude zero), `tools/reproduce_all.py`.
-- Phase 4 ◐ — draft v0.1 (`drafts/paper.md`) under five-profile adversarial self-review; revision pending review round.
+- Phase 4 ✔ — draft v0.2 (`drafts/paper.md`): five-profile adversarial review round applied (`drafts/REVIEW_ROUND_1.md` — political scientist and practitioner fatals dissolved into legal-layer framing + PB-literature benchmark; replicator checks all PASS; verifier-displacement frontier deployed to §8 with its E-1d evaluation). **Author read pending.**
 - Phase 5 ◐ — `.zenodo.json` + `CITATION.cff` prepared; **deposit gated on author read and verdict**.
 - Master queue ✔ — v1.9 queue carries Q5 (release rule + verification ceiling) and Q6 (AI verification + second instance); the verifier-displacement design is recorded in the master's verification-throughput note.
 

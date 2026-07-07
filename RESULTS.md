@@ -118,6 +118,17 @@ Source: `adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1C_RESULTS.md`.
 
 Program closure: **size the capacity (E-1a), meter the release (E-1a), protect the margin (docs/111)** — everything else is optimization. Source: `adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1B_RESULTS.md`. Evidence bundle for the master pipeline complete, pending author verdict.
 
+## Experiment E-1d: the verifier-displacement frontier, evaluated (engine v0.8 + drift)
+
+| Finding | Number |
+|---|---|
+| Drifting AI verifier (5% → ~95% false-pass) on an intact stack | costs ~0.002 V — deterrence does the work |
+| Passive lane-c sampling detecting the drift | **never**, at s = 0.02 and 0.05 (horizon-censored); mostly censored at 0.15 |
+| Mechanism | deterrence keeps true positives ≈ 0 → false-pass rate unmeasurable from outcomes; the healthier the system, the blinder its audit |
+| Design consequence (adopted) | **seeded positive controls** at rate q: drift-detection latency ∝ 1/(q·π), independent of the deterred diversion rate — q is the epistemic knob, s_min serves exposure/appeals |
+
+Source: `adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1D_RESULTS.md`; frontier design in the master's verification-throughput note.
+
 ## Bridge to the master paper (E8, lives in the master repository)
 
 The behavioral trajectories replaced the paper engine's imposed participation: headline V(A2)/V(S′) = 2.26 [2.23, 2.30] at scale (vs 2.22 imposed), 2.15–2.9× across populations and scales, launch dynamics cost 1.7%. Recorded in the master repository's `research/simulation-results.md` §E8.
