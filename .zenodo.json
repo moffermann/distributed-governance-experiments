@@ -1,0 +1,32 @@
+{
+  "title": "Distributed Governance — Computational Experiments",
+  "description": "<p>Satellite computational-experiments workspace of the distributed governance research program: adversarial and behavioral agent-based models stress-testing, calibrating, and extending the Core v0 public-resource allocation architecture. Companion to the working paper (doi:10.5281/zenodo.21228492). Includes the adversarial architecture-comparison engine, the behavioral adoption model, the planning-vector construction program, the longitudinal pipeline engine (budget-release policy, verification throughput, AI triage, adaptive adversaries), LLM-elicited calibration panels with provenance, pre-registered designs with public prediction accounting, cross-framework docking, figures with accessible descriptions, and one-command reproduction.</p>",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "Offermann, Mauricio"
+    }
+  ],
+  "keywords": [
+    "agent-based modeling",
+    "distributed governance",
+    "participatory budgeting",
+    "public accountability",
+    "adversarial validation",
+    "model docking"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.21228492",
+      "relation": "isSupplementTo",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://github.com/moffermann/distributed-governance-experiments",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}
