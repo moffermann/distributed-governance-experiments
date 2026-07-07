@@ -30,8 +30,8 @@ Overlap notes: E-1c AI-vs-human differences at calibrated capacity (K=6) are wit
 
 ## Multiple-comparison note
 
-The program reports many cells; headline claims rest on pre-registered predictions (one test per prediction), and exploratory sweeps are labeled as such in their run documents. No p-value shopping: predictions were written before runs, and refuted predictions are reported as findings.
+Headline claims rest on the 23 pre-registered predictions committed in `predictions.csv` (prediction → design file → outcome → source), one test per prediction; exploratory sweeps are labeled as such in their run documents. Under Benjamini-Hochberg at q=0.05 over the confirmatory set, every confirmed prediction's paired difference remains significant (the paired differences exclude zero by multiples of their interval half-widths); refuted and null predictions are published as findings, so the accounting is symmetric.
 
 ## Seed sensitivity
 
-All headline experiments run 20 seeds; the E-1a/E-1c regression anchor (V = 0.303844218531) verifies engine-version stability across v0.6-v0.8 on the identical stream. Static-engine baselines are byte-identical across engine versions v0.4-v0.5.1 (committed regression checks in the run documents).
+Within-batch: all headline experiments run 20 world-replications; the E-1a/E-1c regression anchor (V = 0.303844218531) verifies engine-version stability across v0.6-v0.8 on the identical stream, and static-engine baselines are byte-identical across engine versions v0.4-v0.5.1. Between-batch: the multi-base-seed check (`tools/multiseed_check.mjs`, `results/multiseed/multiseed-check.md`) reruns the two headline cells across five independent base seeds — the static core-vs-status-quo ratio spans 2.19x-2.28x (between-seed sd 0.03) and the longitudinal pull cell spans 0.291-0.304 (sd 0.005): base seed 1, used throughout, sits at the low end of the core distribution, so single-seed reporting is conservative for the headline and the intervals reported above understate no directional claim.

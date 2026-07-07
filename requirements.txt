@@ -1,0 +1,4 @@
+# Python dependencies for tools/ and docking/ (engines A/planning/E are Node.js >= 18, dependency-free).
+matplotlib>=3.8,<4
+# Docking replication (optional elsewhere; required for docking/mesa):
+mesa>=3.5,<4

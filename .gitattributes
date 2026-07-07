@@ -1,0 +1,5 @@
+# Normalize line endings so `git diff` reproduction checks are content-only
+# (reviewer finding: autocrlf on Windows produced phantom modification flags).
+* text=auto eol=lf
+*.png binary
+*.pyc binary

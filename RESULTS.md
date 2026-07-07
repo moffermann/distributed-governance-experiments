@@ -13,7 +13,7 @@ Verified value per unit of budget (mean over 20 runs, seed 1, engine v0.4.x):
 | Status quo | 0.128 | 0.127 | 0.127 | 0.127 | 0.128 |
 | Participatory (salience full-budget) | 0.104 | 0.104 | 0.103 | 0.105 | 0.107 |
 | Participatory (no default layer) | 0.029 | **0.000** | **0.000** | **0.000** | **0.000** |
-| **Core distributed ÷ status quo** | **2.05×** | **2.42×** | **2.18×** | **2.68×** | **2.34×** |
+| **Core distributed ÷ status quo** (ratio of full-precision means) | **2.05×** | **2.42×** | **2.19×** | **2.69×** | **2.35×** |
 
 Source: `adversarial-abm/results/*/…summary.csv`; interpretation and prediction accounting in `adversarial-abm/RUN_2026_07_06_BEHAVIORAL_INTEGRATION_RESULTS.md`.
 

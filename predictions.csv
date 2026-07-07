@@ -1,0 +1,24 @@
+id,program,design_file,prediction_summary,outcome,outcome_source
+P1,ablation,adversarial-abm/ABLATION_AND_SENSITIVITY_DESIGN.md,K5 default-layer knockout largest verified-value loss with collapse toward participatory levels,refuted_informative,adversarial-abm/RUN_2026_07_06_ABLATION_RESULTS.md
+P2,ablation,adversarial-abm/ABLATION_AND_SENSITIVITY_DESIGN.md,Memory knockout costs more than detection knockout,refuted_informative,adversarial-abm/RUN_2026_07_06_ABLATION_RESULTS.md
+P3,ablation,adversarial-abm/ABLATION_AND_SENSITIVITY_DESIGN.md,Financial terms and memory partially substitutable; neither alone reproduces zero-control leak,confirmed_completed_by_K10,adversarial-abm/RUN_2026_07_06_ABLATION_RESULTS.md
+P4,ablation,adversarial-abm/ABLATION_AND_SENSITIVITY_DESIGN.md,Central-planning knockout approximates committed core-central gap,confirmed,adversarial-abm/RUN_2026_07_06_ABLATION_RESULTS.md
+P5,ablation,adversarial-abm/ABLATION_AND_SENSITIVITY_DESIGN.md,Agenda capture most damaging attack per severity,confirmed,adversarial-abm/RUN_2026_07_06_ABLATION_RESULTS.md
+P6,ablation,adversarial-abm/ABLATION_AND_SENSITIVITY_DESIGN.md,Advantage >1.5x in audit-anchored ranges; ~1.0x only under agendaCapture >=0.5,mixed,adversarial-abm/RUN_2026_07_06_ABLATION_RESULTS.md
+E1,experiment-e,adversarial-abm/EXPERIMENT_E_LONGITUDINAL_DESIGN.md,Day-zero maximizes frozen capital without maximizing V,confirmed_with_metric_correction,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1A_RESULTS.md
+E2,experiment-e,adversarial-abm/EXPERIMENT_E_LONGITUDINAL_DESIGN.md,Pull weakly dominates push; W* tracks verification capacity,confirmed_refined,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1A_RESULTS.md
+E3,experiment-e,adversarial-abm/EXPERIMENT_E_LONGITUDINAL_DESIGN.md,Fragmentation freeze when release exceeds arrival absorption; TTL bounds it,transformed,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1A_RESULTS.md
+E4,experiment-e,adversarial-abm/EXPERIMENT_E_LONGITUDINAL_DESIGN.md,Approval-conditioned alpha slightly above 1 approaches pull optimum,refuted_informative,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1A_RESULTS.md
+E5,experiment-e,adversarial-abm/EXPERIMENT_E_LONGITUDINAL_DESIGN.md,Advantage grows over time via reputation compounding unless adversaries offset,null_in_range,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1B_RESULTS.md
+E6,experiment-e,adversarial-abm/EXPERIMENT_E_LONGITUDINAL_DESIGN.md,Timing-aware adversaries exceed uniform attack damage; frozen capital is a security cost,refuted_in_magnitude_confirmed_in_form,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1B_RESULTS.md
+E7,experiment-e,adversarial-abm/EXPERIMENT_E_LONGITUDINAL_DESIGN.md,Ranking survives every release policy,confirmed,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1A_RESULTS.md
+PC1,e-1c,adversarial-abm/EXPERIMENT_E1C_VERIFICATION_DESIGN.md,AI triage with fp<=0.05 and s>=0.05 dominates pure human at both K,confirmed_strongest_at_scarce_K,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1C_RESULTS.md
+PC2,e-1c,adversarial-abm/EXPERIMENT_E1C_VERIFICATION_DESIGN.md,Dominance crossover fp* between 0.10 and 0.20 at s=0.05,refuted_in_range,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1C_RESULTS.md
+PC3,e-1c,adversarial-abm/EXPERIMENT_E1C_VERIFICATION_DESIGN.md,Raising s moves fp* upward materially,refuted_in_range,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1C_RESULTS.md
+PC4,e-1c,adversarial-abm/EXPERIMENT_E1C_VERIFICATION_DESIGN.md,Windows reduce tail latency and mortality; never raise the ceiling,confirmed,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1C_RESULTS.md
+PC5,e-1c,adversarial-abm/EXPERIMENT_E1C_VERIFICATION_DESIGN.md,Smoothing yields small free gain at K=6; near-additive with AI,refuted_implementation_caveat,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1C_RESULTS.md
+PB1,e-1b,adversarial-abm/EXPERIMENT_E1B_ADVERSARIES_DESIGN.md,Timing damage under day-zero exceeds pull by factor >=2,refuted_in_magnitude_confirmed_in_form,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1B_RESULTS.md
+PB2,e-1b,adversarial-abm/EXPERIMENT_E1B_ADVERSARIES_DESIGN.md,Staleness alone costs modestly under pull and more under day-zero,confirmed_under_joint_failure_only,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1B_RESULTS.md
+PB3,e-1b,adversarial-abm/EXPERIMENT_E1B_ADVERSARIES_DESIGN.md,Intact stack bounds gaming; degraded+gamed AI collapses below degraded-human,half_confirmed_half_revised_sharper,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1B_RESULTS.md
+PB4,e-1b,adversarial-abm/EXPERIMENT_E1B_ADVERSARIES_DESIGN.md,Compounding lowers yearly leak and raises V over 8 years,null_declared,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1B_RESULTS.md
+PB5,e-1b,adversarial-abm/EXPERIMENT_E1B_ADVERSARIES_DESIGN.md,Worst adaptive intact cell stays above status quo,confirmed,adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1B_RESULTS.md

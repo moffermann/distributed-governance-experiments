@@ -32,14 +32,40 @@ Five-profile simulated review of draft v0.1 (the master program's house method a
 | R3 | Headline numbers present in their claimed sources (2.26 bridge; 0.304 E-1a; 0.316 E-1c; 0.87× ablation; anchor 0.303844218531) | **PASS** — all found |
 | R4 | Mesa dock independent reproduction | **PASS** — 15/15 distributional equivalence (docking report) |
 
-## Methods/statistics (self-audit applied; agent findings appended on receipt)
+## Methodologist (agent findings, reviewed against draft v0.1; several already fixed in v0.2)
 
-| # | Severity | Issue | Disposition |
+| # | Severity | Objection | Disposition |
 |---|---|---|---|
-| M1 | minor | Draft claimed "twenty-two predictions, nine refuted"; the verifiable count is 23 pre-registered predictions (ablation 6, E-1a 7, E-1c 5, E-1b 5), of which 8 refuted/null and 1 transformed | **Fixed in v0.2** (exact count now stated) |
-| M2 | minor | E-1a's frozen-*ratio* metric artifact (denominator favors day-zero) | Already declared in the E-1a run document; the draft uses absolute frozen-months throughout — no change needed |
-| M3 | note | Longitudinal cells report t-intervals from summary stats, not per-run raws | Declared in the annex header; acceptable, flagged for a per-run raw dump in a revision |
+| M1 | major | §9 docking was an unfilled placeholder citing a nonexistent report; SQ divergence (0.1345 vs 0.1267 → dock-side ratio ≈2.07×) undisclosed | **Fixed in v0.2/v0.3**: the report exists (15/15 PASS table committed) and §9 now carries the numbers *and discloses the SQ divergence explicitly*, restating the docking claim as ordinal/distributional (~5% ratio agreement), with a pre-specified TOST margin named for revision |
+| M2 | major | Blanket pre-registration claim false for ablation/E-1b (atomic commits) and semi-open (no design file) | **Fixed in v0.3**: §2 now states the verifiability gradient honestly (separate-commit designs for E-1a/E-1c; atomic for ablation/E-1b; semi-open classed exploratory); `predictions.csv` registry committed |
+| M3 | major | "Advantage peaks under low adoption" rides on the stipulated honest high-quality default vector | **Fixed in v0.3**: Finding 1 names the condition and prices it with the existing signal-mix sweep (1.63× at mix 0.2) — conditional claim, never below the status quo in range |
+| M4 | major | E8 cross-validation not reproducible from this repo | **Fixed in v0.3**: E8 scoped explicitly as external evidence reproducible in the master repository |
+| M5 | minor | Finding 3 range misattributed (across scenarios, not prior sources) and "insensitive to adoption" self-contradictory | **Fixed in v0.3**: attribution corrected (2.5% high-friction → 5.1% AI-assisted onboarding; all prior sources land inside), "bounded disposition" replaces "insensitive"; 0.309 attributed to the master's §E8 record |
+| M6 | minor | Experiment C mapping and archetype weights not cited by path / no weight sensitivity | Mapping is `behavioral-adoption-abm/OUTPUT_TO_ADVERSARIAL_ABM.md` (outline's claims map); archetype-weight sensitivity added to future work — **partially addressed, flagged open** |
+
+## Statistician (agent findings)
+
+| # | Severity | Objection | Disposition |
+|---|---|---|---|
+| S1 | major | All CIs conditional on a single base RNG seed | **Fixed in v0.3**: multi-base-seed check committed (`tools/multiseed_check.mjs`) — 5 independent base seeds: static ratio spans 2.19–2.28× (sd 0.03), longitudinal pull 0.291–0.304 (sd 0.005); seed 1 sits at the low end, so single-seed reporting was conservative; annex updated |
+| S2 | major | Docking equivalence criterion undefined/unfalsifiable | **Fixed in v0.3**: criterion (2-pooled-SE per cell, fixed in the docking brief before the port ran) now stated in §9 with the residual divergence disclosed; TOST named for revision |
+| S3 | major | Ratio drift across artifacts (2.18/2.19 etc.), no ratio CIs | **Fixed in v0.3**: RESULTS.md regenerated on the full-precision ratio-of-means convention (2.19/2.69/2.35), intra-file inconsistency removed; ratio CIs (Fieller/bootstrap) flagged for revision |
+| S4 | major | Cross-model discipline exercised only at n=90; N=1,000 single-family; convergence is within-model | **Fixed in v0.3**: §2 restates the limits plainly; second frontier-scale family named future work |
+| S5 | major | Mean-sufficiency asserted, not demonstrated | **Fixed in v0.3**: §2 now cites the committed distribution-vs-means fixed-seed analysis as the test (it was performed, the draft failed to cite it) |
+| S6 | minor | Multiple-comparison control narrative; no committed registry | **Fixed in v0.3**: `predictions.csv` committed (23 rows, outcome-labeled); annex adds the BH/FDR statement over the confirmatory set |
+
+## Replicator (agent findings + checks executed directly)
+
+| # | Severity | Finding | Disposition |
+|---|---|---|---|
+| R1 | pass | Static engine rerun == committed to full float precision; annex regeneration byte-identical; docking JS reference matches fresh run | — |
+| R2 | medium | RESULTS.md ratios disagree with annex/paper (rounded-input convention) | **Fixed in v0.3** (see S3) |
+| R3 | medium | reproduce_all never exercised the Experiment C scenario builder | **Fixed in v0.3**: builder wired into the pipeline (4 sources) |
+| R4 | medium | Longitudinal numbers verified only against committed artifacts (per the no-sweep instruction) | Accepted; `reproduce_all.py` covers the reruns; multi-seed check adds independent replication |
+| R5 | medium | Clean-clone fragility: no requirements.txt, unpinned matplotlib/mesa, autocrlf phantom diffs | **Fixed in v0.3**: `requirements.txt` (matplotlib, mesa pinned to the docking major), `.gitattributes` with eol normalization |
+| R6 | low-med | E8 bridge unverifiable from this repo | **Fixed in v0.3** (see M4) |
+| R7 | process | Repo was a moving target during review; claims should pin to a tag | **Fixed in v0.3**: review baseline tagged `paper-v0.3` |
 
 ## Round outcome
 
-Applied in draft v0.2 (same date). The two "fatal" practitioner objections dissolve into legal-layer framing that the master corpus already carries (docs/102, docs/43, docs/110) but the draft failed to import — the fix is exposition plus one pre-committed engine run (lapsing-funds E-1a variant); the political scientist's fatal (literature engagement) is a genuine gap fixed with the PB benchmark, which — notably — *supports* Finding 3 rather than weakening it. The verifier-displacement frontier was deployed to the paper (§8) with its E-1d evaluation, which corrected the design's own epistemics (seeded positive controls as the drift-detection instrument). Any further rev-methods/rev-repro agent findings are appended and dispositioned on receipt.
+Applied across drafts v0.2–v0.3 (same date, tagged `paper-v0.3`). The two "fatal" practitioner objections dissolve into legal-layer framing the master corpus already carries (docs/102, docs/43, docs/110) but the draft failed to import; the political scientist's fatal (literature engagement) is fixed with the PB benchmark, which *supports* Finding 3; the methodologist's and statistician's majors produced real new artifacts (multi-base-seed check, predictions registry, honest pre-registration gradient, SQ-divergence disclosure, requirements/eol infrastructure) and honest reframings (conditional low-adoption claim, external E8 scope, single-family panel limits). The verifier-displacement frontier was deployed to §8 with its E-1d evaluation (seeded positive controls as the drift-detection instrument). Items left open for the venue revision, named: TOST margins for docking, Fieller/bootstrap ratio CIs, archetype-weight sensitivity, a second frontier-scale panel family, the lapsing-funds E-1a variant, and a per-run raw dump for longitudinal cells.
