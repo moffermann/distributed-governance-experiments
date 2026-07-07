@@ -43,6 +43,7 @@ planning-behavior-calibration  — behavioral elicitation instrument (LLM panels
 3. **The attentive share is structural**: ~2.5–5% of citizens contribute explicit planning signals, regardless of prior source (synthetic, LLM n=90, LLM N=1000 weighted) — and it lands inside the range the planning-vector experiment had assumed.
 4. **The master paper's participation assumptions were behaviorally realizable**: the imposed informed share (0.30) emerges at 0.309 from the LLM-calibrated population; the master's E8 (in the master repository) shows its headline surviving these populations at 2.26 [2.23, 2.30].
 5. **The deterrence stack is individually redundant and jointly indispensable** (ablation program): removing any single term costs ≤ 0.003 in verified value; removing the whole stack collapses the architecture below the status quo (0.87×). The only attack that bites is capture of a *published* vector — a choke point that exists only in the tutored-with-mandated-agenda regime, so its price (−13% value, −35% selection) is evidence for distributed agenda construction, whose analog attack (coordinated signal corruption) is measured robust. No single-parameter sweep pushes the advantage below 1.63×.
+6. **The semi-open transition is a dial, not a leap** (docs/110's first quantification): blended value rises monotonically and near-linearly with the envelope share — break-even near 8–10%, 1.5× at half the budget, 2.18× at full — so adoption can be gradual without a performance valley.
 
 ## Reading order
 

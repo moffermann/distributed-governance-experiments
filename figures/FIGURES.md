@@ -17,3 +17,7 @@ Dot plot with error bars, one row per planning-vector variant sorted by correlat
 ## behavioral_adoption_trajectories.png
 
 Line chart over 104 weeks, four population shares per scenario (solid lines: synthetic baseline; dashed: LLM-calibrated priors). Registration and activity grow from near zero and plateau (week-104 registered 0.53 baseline vs 0.68 calibrated; active 0.27 vs 0.47); the default-rule share mirrors activity downward (0.73 vs 0.53 at week 104); the planning-attentive share stays low and flat throughout (0.053 vs 0.074 in the final round) — the structural ~4–5% regardless of priors.
+
+## semi_open_transition_path.png
+
+Line chart: blended verified value per budget as the semi-open envelope share e sweeps 0→1, against a dashed status-quo reference line. Above the granularity floor the curve rises monotonically and near-linearly — 0.127 at e=0, break-even near e≈0.08–0.10, 0.193 (1.52×) at e=0.5, 0.276 (2.18×) at e=1 — with a single dip at e=0.05 caused by two-project portfolio granularity, not by the regime. The transition from status quo to open equivalence is a dial, not a leap.

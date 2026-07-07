@@ -191,11 +191,38 @@ def fig_behavioral_trajectories() -> None:
     ])
 
 
+def fig_semi_open_transition() -> None:
+    import json
+    data = json.loads((ROOT / "adversarial-abm" / "results" / "semi-open" / "semi-open-transition-seed1-runs20.json").read_text(encoding="utf-8"))
+    rows = data["rows"]
+    e = [r["envelope"] for r in rows]
+    blended = [r["blended"] for r in rows]
+    sq = blended[0]
+    fig, ax = plt.subplots(figsize=(8, 4.5))
+    ax.plot(e, blended, "o-", color="#2a7", linewidth=2, label="V(blend) semi-abierto")
+    ax.axhline(sq, color="#888", linestyle="--", linewidth=1, label=f"status quo puro ({sq:.3f})")
+    ax.set_xlabel("proporción del presupuesto en el envelope (e)")
+    ax.set_ylabel("valor verificado / presupuesto (blend)")
+    ax.set_title("Régimen semi-abierto: la curva del camino de transición (docs/110)")
+    ax.legend(fontsize=8)
+    fig.tight_layout()
+    fig.savefig(FIG / "semi_open_transition_path.png", dpi=130)
+    plt.close(fig)
+    descriptions.extend([
+        "## semi_open_transition_path.png",
+        "",
+        "Line chart: blended verified value per budget as the semi-open envelope share e sweeps 0→1, against a dashed status-quo reference line. "
+        f"Above the granularity floor the curve rises monotonically and near-linearly — {blended[0]:.3f} at e=0, break-even near e≈0.08–0.10, {blended[5]:.3f} (1.52×) at e=0.5, {blended[-1]:.3f} (2.18×) at e=1 — with a single dip at e=0.05 caused by two-project portfolio granularity, not by the regime. The transition from status quo to open equivalence is a dial, not a leap.",
+        "",
+    ])
+
+
 def main() -> None:
     fig_architectures()
     fig_expc_ratios()
     fig_planning_ladder()
     fig_behavioral_trajectories()
+    fig_semi_open_transition()
     (FIG / "FIGURES.md").write_text("\n".join(descriptions), encoding="utf-8")
     print(f"figures + FIGURES.md -> {FIG}")
 

@@ -68,6 +68,16 @@ Engine v0.5, `behavioral-llm-calibrated` population, intact reference V = 0.277 
 
 Sources: `adversarial-abm/RUN_2026_07_06_ABLATION_RESULTS.md`, `adversarial-abm/results/ablation/`.
 
+## Semi-open regime: the transition path (docs/110's first quantification)
+
+Fiscal-parallel blend, envelope share e of budget and project pool on Core v0 distributed machinery, complement on status quo:
+
+| e | 0% | 5% | 10% | 20% | 35% | 50% | 75% | 100% |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| vs status quo | 1.00× | 0.97× | 1.06× | 1.17× | 1.40× | 1.52× | 1.91× | 2.18× |
+
+The transition is a dial, not a leap: monotone and near-linear above the portfolio-granularity floor (~10%); the 5% dip is two-project lumpiness, not the regime. Source: `adversarial-abm/RUN_2026_07_06_SEMI_OPEN_RESULTS.md`.
+
 ## Bridge to the master paper (E8, lives in the master repository)
 
 The behavioral trajectories replaced the paper engine's imposed participation: headline V(A2)/V(S′) = 2.26 [2.23, 2.30] at scale (vs 2.22 imposed), 2.15–2.9× across populations and scales, launch dynamics cost 1.7%. Recorded in the master repository's `research/simulation-results.md` §E8.
