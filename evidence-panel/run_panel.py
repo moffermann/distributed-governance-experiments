@@ -62,7 +62,7 @@ def parse_verdict(raw: str) -> dict:
 
 
 def call_ollama(model: str, prompt: str) -> str:
-    proc = subprocess.run(["ollama", "run", model, prompt], capture_output=True, timeout=900)
+    proc = subprocess.run(["ollama", "run", model, prompt], capture_output=True, timeout=900, stdin=subprocess.DEVNULL)
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.decode("utf-8", "replace")[-300:])
     return proc.stdout.decode("utf-8", "replace")
@@ -92,7 +92,7 @@ def call_codex(prompt: str) -> str:
 
 def call_claude(prompt: str) -> str:
     claude = shutil.which("claude.cmd") or shutil.which("claude") or "claude"
-    proc = subprocess.run([claude, "-p", "--output-format", "text", prompt], capture_output=True, timeout=600)
+    proc = subprocess.run([claude, "-p", "--output-format", "text", prompt], capture_output=True, timeout=600, stdin=subprocess.DEVNULL)
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.decode("utf-8", "replace")[-300:])
     return proc.stdout.decode("utf-8", "replace")

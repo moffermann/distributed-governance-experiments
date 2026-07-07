@@ -21,7 +21,13 @@ import {
   ARCHITECTURES, mulberry32, clamp, sigmoid, normal, sampleDist, weightedPick, drawSample,
 } from "./index.mjs";
 
-export const LONG_ENGINE_VERSION = "0.8.0";
+export const LONG_ENGINE_VERSION = "0.9.0";
+// v0.9 (Experiment F-1, ../EXPERIMENT_F_LAYERED_VERIFICATION_DESIGN.md):
+// multi-layer AI verification with a common-cause correlation model —
+// cfg.ai.layers = { k, rho }: with probability rho a diverted milestone is
+// "ensemble-blind" (passes every layer); otherwise layers draw independently
+// (aggregate probability falsePass^k). Ensemble gaming adds to the shared
+// mass. Absent cfg.ai.layers, the single-layer E-1c path runs UNCHANGED.
 // v0.7 (Experiment E-1c, pre-registered in ../EXPERIMENT_E1C_VERIFICATION_DESIGN.md):
 // AI triage lanes on milestone verification, verification windows
 // (timeout-reassignment over stalling fiscalizers), and milestone demand
@@ -314,9 +320,17 @@ const activateReady = (rng, state, arch, cfg, cycle) => {
       if (cfg.ai) {
         const dHuman = clamp(effDetection * (cfg.ai.dossierBoost ?? 1), 0.01, 0.98);
         const { pi, sampleRate } = cfg.ai;
-        // Evidence gaming (E-1b): the gamer knows their own skill against the AI.
-        const fp = cfg.evidenceGaming ? Math.min(0.95, cfg.ai.falsePass + cfg.evidenceGaming.skill) : cfg.ai.falsePass;
-        effDetection = pi * ((1 - fp) * dHuman + fp * sampleRate * dHuman) + (1 - pi) * dHuman;
+        let aiClear;
+        if (cfg.ai.layers) {
+          // F-1: the opportunist anticipates the ENSEMBLE's end-to-end clearance.
+          const { k, rho } = cfg.ai.layers;
+          const rhoEff = cfg.evidenceGaming ? Math.min(0.95, rho + cfg.evidenceGaming.skill) : rho;
+          aiClear = rhoEff + (1 - rhoEff) * Math.pow(cfg.ai.falsePass, k);
+        } else {
+          // Evidence gaming (E-1b): the gamer knows their own skill against the AI.
+          aiClear = cfg.evidenceGaming ? Math.min(0.95, cfg.ai.falsePass + cfg.evidenceGaming.skill) : cfg.ai.falsePass;
+        }
+        effDetection = pi * ((1 - aiClear) * dHuman + aiClear * sampleRate * dHuman) + (1 - pi) * dHuman;
       }
       // Timing awareness (E-1b): the opportunist observes the verification
       // backlog and anticipates stale detection — congestion invites diversion.
@@ -391,11 +405,21 @@ const progressExecution = (rng, state, arch, cfg, cycle) => {
         state.verifyQueue.push({ p, milestone, completedCycle: cycle });
         continue;
       }
-      let fpEff = p.diverted && cfg.evidenceGaming ? Math.min(0.95, cfg.ai.falsePass + cfg.evidenceGaming.skill) : cfg.ai.falsePass;
+      let fpEff = p.diverted && cfg.evidenceGaming && !cfg.ai.layers ? Math.min(0.95, cfg.ai.falsePass + cfg.evidenceGaming.skill) : cfg.ai.falsePass;
       if (cfg.aiDrift && cycle >= cfg.aiDrift.startCycle && p.diverted) {
         fpEff = Math.min(0.95, fpEff + cfg.aiDrift.rate * (cycle - cfg.aiDrift.startCycle));
       }
-      const cleared = p.diverted ? rng() < fpEff : !(rng() < cfg.ai.falseFlag);
+      let cleared;
+      if (cfg.ai.layers) {
+        // F-1 ensemble: shared-blind mass rho (gaming adds here), else all k
+        // layers must independently false-pass; honest flags if ANY layer flags.
+        const { k, rho } = cfg.ai.layers;
+        const rhoEff = p.diverted && cfg.evidenceGaming ? Math.min(0.95, rho + cfg.evidenceGaming.skill) : rho;
+        if (p.diverted) cleared = rng() < (rhoEff + (1 - rhoEff) * Math.pow(fpEff, k));
+        else cleared = !(rng() < 1 - Math.pow(1 - cfg.ai.falseFlag, k));
+      } else {
+        cleared = p.diverted ? rng() < fpEff : !(rng() < cfg.ai.falseFlag);
+      }
       if (!cleared) {
         // Lane b: flagged referral (the human sees the AI dossier).
         state.verifyQueue.push({ p, milestone, completedCycle: cycle, flagged: true });

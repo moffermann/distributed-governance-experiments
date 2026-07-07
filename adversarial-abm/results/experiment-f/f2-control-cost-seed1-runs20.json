@@ -1,0 +1,439 @@
+{
+  "engine_version": "0.9.0",
+  "rho": 0.3,
+  "tranche": 400,
+  "rows": [
+    {
+      "K": 6,
+      "regime": "pure human",
+      "h": 0.03,
+      "e": 0.005,
+      "vTotal": 0.29404783125283324,
+      "controlShare": 0.033315625
+    },
+    {
+      "K": 6,
+      "regime": "pure human",
+      "h": 0.03,
+      "e": 0.02,
+      "vTotal": 0.2900401214983537,
+      "controlShare": 0.04759375
+    },
+    {
+      "K": 6,
+      "regime": "pure human",
+      "h": 0.03,
+      "e": 0.05,
+      "vTotal": 0.282343742536743,
+      "controlShare": 0.07615
+    },
+    {
+      "K": 6,
+      "regime": "pure human",
+      "h": 0.06,
+      "e": 0.005,
+      "vTotal": 0.28614018855232976,
+      "controlShare": 0.061871875
+    },
+    {
+      "K": 6,
+      "regime": "pure human",
+      "h": 0.06,
+      "e": 0.02,
+      "vTotal": 0.282343742536743,
+      "controlShare": 0.07615000000000001
+    },
+    {
+      "K": 6,
+      "regime": "pure human",
+      "h": 0.06,
+      "e": 0.05,
+      "vTotal": 0.27504526070248625,
+      "controlShare": 0.10470624999999999
+    },
+    {
+      "K": 6,
+      "regime": "pure human",
+      "h": 0.1,
+      "e": 0.005,
+      "vTotal": 0.2762353577584517,
+      "controlShare": 0.09994687499999999
+    },
+    {
+      "K": 6,
+      "regime": "pure human",
+      "h": 0.1,
+      "e": 0.02,
+      "vTotal": 0.272695567350325,
+      "controlShare": 0.11422500000000001
+    },
+    {
+      "K": 6,
+      "regime": "pure human",
+      "h": 0.1,
+      "e": 0.05,
+      "vTotal": 0.2658813473977771,
+      "controlShare": 0.14278125
+    },
+    {
+      "K": 6,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.03,
+      "e": 0.005,
+      "vTotal": 0.30052508969114106,
+      "controlShare": 0.017170886425247407
+    },
+    {
+      "K": 6,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.03,
+      "e": 0.02,
+      "vTotal": 0.29615349326441553,
+      "controlShare": 0.03218560248836591
+    },
+    {
+      "K": 6,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.03,
+      "e": 0.05,
+      "vTotal": 0.2877810630736129,
+      "controlShare": 0.06221503461460292
+    },
+    {
+      "K": 6,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.06,
+      "e": 0.005,
+      "vTotal": 0.2971509336574336,
+      "controlShare": 0.028720886425247404
+    },
+    {
+      "K": 6,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.06,
+      "e": 0.02,
+      "vTotal": 0.2928762525158495,
+      "controlShare": 0.043735602488365916
+    },
+    {
+      "K": 6,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.06,
+      "e": 0.05,
+      "vTotal": 0.2846855336315565,
+      "controlShare": 0.07376503461460292
+    },
+    {
+      "K": 6,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.1,
+      "e": 0.005,
+      "vTotal": 0.2927681802446638,
+      "controlShare": 0.0441208864252474
+    },
+    {
+      "K": 6,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.1,
+      "e": 0.02,
+      "vTotal": 0.28861778525429443,
+      "controlShare": 0.05913560248836591
+    },
+    {
+      "K": 6,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.1,
+      "e": 0.05,
+      "vTotal": 0.28066028761410855,
+      "controlShare": 0.08916503461460291
+    },
+    {
+      "K": 6,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.03,
+      "e": 0.005,
+      "vTotal": 0.3013373721145912,
+      "controlShare": 0.01894603671991322
+    },
+    {
+      "K": 6,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.03,
+      "e": 0.02,
+      "vTotal": 0.2969796282882742,
+      "controlShare": 0.033897586853029606
+    },
+    {
+      "K": 6,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.03,
+      "e": 0.05,
+      "vTotal": 0.2886316250304636,
+      "controlShare": 0.06380068711926239
+    },
+    {
+      "K": 6,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.06,
+      "e": 0.005,
+      "vTotal": 0.29742236840248115,
+      "controlShare": 0.03235853671991322
+    },
+    {
+      "K": 6,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.06,
+      "e": 0.02,
+      "vTotal": 0.2931763236945169,
+      "controlShare": 0.047310086853029606
+    },
+    {
+      "K": 6,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.06,
+      "e": 0.05,
+      "vTotal": 0.28503784088725803,
+      "controlShare": 0.07721318711926238
+    },
+    {
+      "K": 6,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.1,
+      "e": 0.005,
+      "vTotal": 0.29235791276935985,
+      "controlShare": 0.05024187005324656
+    },
+    {
+      "K": 6,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.1,
+      "e": 0.02,
+      "vTotal": 0.2882542411668639,
+      "controlShare": 0.06519342018636295
+    },
+    {
+      "K": 6,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.1,
+      "e": 0.05,
+      "vTotal": 0.280383066969162,
+      "controlShare": 0.09509652045259573
+    },
+    {
+      "K": 4,
+      "regime": "pure human",
+      "h": 0.03,
+      "e": 0.005,
+      "vTotal": 0.24705972330776607,
+      "controlShare": 0.02670208333333333
+    },
+    {
+      "K": 4,
+      "regime": "pure human",
+      "h": 0.03,
+      "e": 0.02,
+      "vTotal": 0.24433632008461267,
+      "controlShare": 0.03814583333333333
+    },
+    {
+      "K": 4,
+      "regime": "pure human",
+      "h": 0.03,
+      "e": 0.05,
+      "vTotal": 0.23906575284581724,
+      "controlShare": 0.06103333333333332
+    },
+    {
+      "K": 4,
+      "regime": "pure human",
+      "h": 0.06,
+      "e": 0.005,
+      "vTotal": 0.24167230378017465,
+      "controlShare": 0.049589583333333326
+    },
+    {
+      "K": 4,
+      "regime": "pure human",
+      "h": 0.06,
+      "e": 0.02,
+      "vTotal": 0.23906575284581724,
+      "controlShare": 0.06103333333333332
+    },
+    {
+      "K": 4,
+      "regime": "pure human",
+      "h": 0.06,
+      "e": 0.05,
+      "vTotal": 0.23401776663686874,
+      "controlShare": 0.08392083333333332
+    },
+    {
+      "K": 4,
+      "regime": "pure human",
+      "h": 0.1,
+      "e": 0.005,
+      "vTotal": 0.2348442411363144,
+      "controlShare": 0.08010624999999998
+    },
+    {
+      "K": 4,
+      "regime": "pure human",
+      "h": 0.1,
+      "e": 0.02,
+      "vTotal": 0.23238214706412008,
+      "controlShare": 0.09154999999999998
+    },
+    {
+      "K": 4,
+      "regime": "pure human",
+      "h": 0.1,
+      "e": 0.05,
+      "vTotal": 0.22760965296648783,
+      "controlShare": 0.11443749999999996
+    },
+    {
+      "K": 4,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.03,
+      "e": 0.005,
+      "vTotal": 0.3003708009558016,
+      "controlShare": 0.016992486384215008
+    },
+    {
+      "K": 4,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.03,
+      "e": 0.02,
+      "vTotal": 0.29602897799339806,
+      "controlShare": 0.031908598178085855
+    },
+    {
+      "K": 4,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.03,
+      "e": 0.05,
+      "vTotal": 0.2877113147003336,
+      "controlShare": 0.061740821765827535
+    },
+    {
+      "K": 4,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.06,
+      "e": 0.005,
+      "vTotal": 0.29703930673358186,
+      "controlShare": 0.028398736384215015
+    },
+    {
+      "K": 4,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.06,
+      "e": 0.02,
+      "vTotal": 0.2927925814865012,
+      "controlShare": 0.043314848178085855
+    },
+    {
+      "K": 4,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.06,
+      "e": 0.05,
+      "vTotal": 0.2846532928600459,
+      "controlShare": 0.07314707176582755
+    },
+    {
+      "K": 4,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.1,
+      "e": 0.005,
+      "vTotal": 0.2927105963204479,
+      "controlShare": 0.04360706971754835
+    },
+    {
+      "K": 4,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.1,
+      "e": 0.02,
+      "vTotal": 0.2885858836507336,
+      "controlShare": 0.05852318151141919
+    },
+    {
+      "K": 4,
+      "regime": "triage 1-layer (E-1c)",
+      "h": 0.1,
+      "e": 0.05,
+      "vTotal": 0.280675638003954,
+      "controlShare": 0.08835540509916089
+    },
+    {
+      "K": 4,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.03,
+      "e": 0.005,
+      "vTotal": 0.2999778158277976,
+      "controlShare": 0.018813255185379057
+    },
+    {
+      "K": 4,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.03,
+      "e": 0.02,
+      "vTotal": 0.295716851232463,
+      "controlShare": 0.03349326814882671
+    },
+    {
+      "K": 4,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.03,
+      "e": 0.05,
+      "vTotal": 0.2875480338918203,
+      "controlShare": 0.062853294075722
+    },
+    {
+      "K": 4,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.06,
+      "e": 0.005,
+      "vTotal": 0.2960871453460913,
+      "controlShare": 0.032200755185379064
+    },
+    {
+      "K": 4,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.06,
+      "e": 0.02,
+      "vTotal": 0.29193522732043425,
+      "controlShare": 0.04688076814882671
+    },
+    {
+      "K": 4,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.06,
+      "e": 0.05,
+      "vTotal": 0.28397118628957646,
+      "controlShare": 0.076240794075722
+    },
+    {
+      "K": 4,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.1,
+      "e": 0.005,
+      "vTotal": 0.2910539071732426,
+      "controlShare": 0.050050755185379055
+    },
+    {
+      "K": 4,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.1,
+      "e": 0.02,
+      "vTotal": 0.28704099117778026,
+      "controlShare": 0.06473076814882671
+    },
+    {
+      "K": 4,
+      "regime": "layered k=2 (rho=0.3)",
+      "h": 0.1,
+      "e": 0.05,
+      "vTotal": 0.2793382200835578,
+      "controlShare": 0.094090794075722
+    }
+  ]
+}

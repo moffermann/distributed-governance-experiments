@@ -56,7 +56,7 @@ def parse_verdict(raw: str) -> dict:
 
 def run_ollama(model: str) -> tuple[dict, float]:
     t0 = time.time()
-    proc = subprocess.run(["ollama", "run", model, PROBE], capture_output=True, timeout=900)
+    proc = subprocess.run(["ollama", "run", model, PROBE], capture_output=True, timeout=900, stdin=subprocess.DEVNULL)
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.decode("utf-8", "replace")[-300:])
     return parse_verdict(proc.stdout.decode("utf-8", "replace")), time.time() - t0
@@ -84,7 +84,7 @@ def run_codex() -> tuple[dict, float]:
 def run_claude() -> tuple[dict, float]:
     claude = shutil.which("claude.cmd") or shutil.which("claude") or "claude"
     t0 = time.time()
-    proc = subprocess.run([claude, "-p", "--output-format", "text", PROBE], capture_output=True, timeout=600)
+    proc = subprocess.run([claude, "-p", "--output-format", "text", PROBE], capture_output=True, timeout=600, stdin=subprocess.DEVNULL)
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.decode("utf-8", "replace")[-300:])
     return parse_verdict(proc.stdout.decode("utf-8", "replace")), time.time() - t0
