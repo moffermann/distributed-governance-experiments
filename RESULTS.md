@@ -78,6 +78,19 @@ Fiscal-parallel blend, envelope share e of budget and project pool on Core v0 di
 
 The transition is a dial, not a leap: monotone and near-linear above the portfolio-granularity floor (~10%); the 5% dip is two-project lumpiness, not the regime. Source: `adversarial-abm/RUN_2026_07_06_SEMI_OPEN_RESULTS.md`.
 
+## Experiment E-1a: budget-release policies (longitudinal engine v0.6)
+
+| Finding | Number |
+|---|---|
+| Best policy: **pull (WIP ceiling)**, W\* ≈ 7 months of budget | V = 0.304/budget-year (2.7× SQ) |
+| Day-zero release (the WIP freeze) | V = 0.286; 5.2 months frozen in escrow; verification queue saturated |
+| Uniform monthly (the old hard-coded default) | V = 0.287; highest project mortality (23 expired) |
+| Approval-conditioned on activation *flow* | V = 0.269 — right instinct, wrong variable: condition on the WIP *stock* (= pull) |
+| Verification-scarce ceiling (K=4) | V ≤ 0.255 under every policy; over-release destroys value (0.236 at W=11) |
+| Ranking vs status quo | 2.4×–2.95× under every policy — policy moves magnitude, never ordering |
+
+Candidate Core v0 rule: meter release against throughput × cycle time of the delivery-and-verification pipeline, never against the calendar. Source: `adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1A_RESULTS.md`.
+
 ## Bridge to the master paper (E8, lives in the master repository)
 
 The behavioral trajectories replaced the paper engine's imposed participation: headline V(A2)/V(S′) = 2.26 [2.23, 2.30] at scale (vs 2.22 imposed), 2.15–2.9× across populations and scales, launch dynamics cost 1.7%. Recorded in the master repository's `research/simulation-results.md` §E8.

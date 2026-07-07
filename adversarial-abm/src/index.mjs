@@ -766,6 +766,9 @@ const writeOutputs = ({ raw, summary }, scenario) => {
 };
 
 export { ENGINE_VERSION, ARCHITECTURES, resolveArchitectures, runScenario, markdownTable, csvTable, writeOutputs };
+// Shared primitives consumed by the longitudinal engine (v0.6, Experiment E);
+// exporting them changes no behavior here and keeps one source of truth.
+export { mulberry32, clamp, sigmoid, normal, sampleDist, weightedPick, drawSample };
 
 // CLI entry point: unchanged behavior when the engine is run directly.
 const isMain = process.argv[1] && resolve(process.argv[1]) === resolve(HERE, "index.mjs");
