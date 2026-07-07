@@ -1,6 +1,6 @@
 # Stress-Testing a Distributed Public-Resource Governance Architecture: Adversarial and Behavioral Agent-Based Evidence
 
-**Draft v0.4 — 2026-07-07. Companion to the working paper "Distributed Resource Governance: An Architecture for Transparent Public Resource Allocation with Adversarial Validation" (doi:10.5281/zenodo.21228492), hereafter "the architecture paper".**
+**Draft v0.4 — 2026-07-07. Companion to the working paper "Distributed Resource Governance: An Architecture for Transparent Public Resource Allocation with Adversarial Validation" (doi:10.5281/zenodo.21193846), hereafter "the architecture paper".**
 
 ## Abstract
 
@@ -145,7 +145,7 @@ All engines, scenarios, results, figures (with accessible textual descriptions),
 - Malesky, E., P. Schuler, and A. Tran (2012). "The Adverse Effects of Sunshine: A Field Experiment on Legislative Transparency in an Authoritarian Assembly." *American Political Science Review* 106(4).
 - Milgrom, P., and J. Roberts (1990). "The Economics of Modern Manufacturing: Technology, Strategy, and Organization." *American Economic Review* 80(3).
 - Milgrom, P., and J. Roberts (1995). "Complementarities and Fit: Strategy, Structure, and Organizational Change in Manufacturing." *Journal of Accounting and Economics* 19(2–3).
-- Offermann, M. (2026). "Distributed Resource Governance: An Architecture for Transparent Public Resource Allocation with Adversarial Validation." Working paper, doi:10.5281/zenodo.21228492.
+- Offermann, M. (2026). "Distributed Resource Governance: An Architecture for Transparent Public Resource Allocation with Adversarial Validation." Working paper, doi:10.5281/zenodo.21193846.
 - Ostrom, E. (1990). *Governing the Commons: The Evolution of Institutions for Collective Action.* Cambridge University Press.
 - Railsback, S. F., and V. Grimm (2019). *Agent-Based and Individual-Based Modeling: A Practical Introduction.* 2nd ed., Princeton University Press.
 - Sintomer, Y., C. Herzberg, and A. Röcke (2008). "Participatory Budgeting in Europe: Potentials and Challenges." *International Journal of Urban and Regional Research* 32(1).
