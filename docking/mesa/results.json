@@ -1,0 +1,146 @@
+{
+  "scenario_id": "behavioral-llm-calibrated",
+  "scenario_version": "0.4",
+  "runs": 20,
+  "base_seed": 1,
+  "cycles": 24,
+  "engine": "mesa-docking",
+  "mesa_version": "3.5.1",
+  "summary": {
+    "status_quo": {
+      "label": "Status quo / central low-information planning / audit-after-fact",
+      "verifiedValuePerBudget": {
+        "mean": 0.1344630040138963,
+        "sd": 0.01770717982990292
+      },
+      "leakageRate": {
+        "mean": 0.07212098687523368,
+        "sd": 0.05056621489181534
+      },
+      "selectionValueCorrelation": {
+        "mean": 0.32604218041442384,
+        "sd": 0.16471959236529113
+      },
+      "fundedRate": {
+        "mean": 0.31875,
+        "sd": 0.03021305921896061
+      },
+      "budgetSpent": {
+        "mean": 240000.0,
+        "sd": 0.0
+      },
+      "budgetUtilizationRate": {
+        "mean": 1.0,
+        "sd": 0.0
+      }
+    },
+    "participatory_weak_verification": {
+      "label": "Participatory / weak verification / low absorption",
+      "verifiedValuePerBudget": {
+        "mean": 0.0,
+        "sd": 0.0
+      },
+      "leakageRate": {
+        "mean": 0.0,
+        "sd": 0.0
+      },
+      "selectionValueCorrelation": {
+        "mean": 0.0,
+        "sd": 0.0
+      },
+      "fundedRate": {
+        "mean": 0.0,
+        "sd": 0.0
+      },
+      "budgetSpent": {
+        "mean": 36984.0,
+        "sd": 0.0
+      },
+      "budgetUtilizationRate": {
+        "mean": 0.1541,
+        "sd": 0.0
+      }
+    },
+    "participatory_weak_verification_full_budget": {
+      "label": "Participatory / weak verification / full budget via salience",
+      "verifiedValuePerBudget": {
+        "mean": 0.10338961008309096,
+        "sd": 0.01791760509601313
+      },
+      "leakageRate": {
+        "mean": 0.061088943221058054,
+        "sd": 0.042490264277509994
+      },
+      "selectionValueCorrelation": {
+        "mean": 0.21111277780197635,
+        "sd": 0.144379194318689
+      },
+      "fundedRate": {
+        "mean": 0.2375,
+        "sd": 0.02867696673382022
+      },
+      "budgetSpent": {
+        "mean": 240000.0,
+        "sd": 0.0
+      },
+      "budgetUtilizationRate": {
+        "mean": 1.0,
+        "sd": 0.0
+      }
+    },
+    "core_v0_tutored_mandated_agenda": {
+      "label": "Core v0 - tutored regime, mandated agenda (transition scaffold: incumbent default vector)",
+      "verifiedValuePerBudget": {
+        "mean": 0.22705262557211808,
+        "sd": 0.029820312993674044
+      },
+      "leakageRate": {
+        "mean": 0.00417727110364158,
+        "sd": 0.013092367338037269
+      },
+      "selectionValueCorrelation": {
+        "mean": 0.38413275816954057,
+        "sd": 0.12121623085386181
+      },
+      "fundedRate": {
+        "mean": 0.20875,
+        "sd": 0.024702173354202113
+      },
+      "budgetSpent": {
+        "mean": 240000.0,
+        "sd": 0.0
+      },
+      "budgetUtilizationRate": {
+        "mean": 1.0,
+        "sd": 0.0
+      }
+    },
+    "core_v0_tutored_distributed_agenda": {
+      "label": "Core v0 - tutored regime, distributed agenda",
+      "verifiedValuePerBudget": {
+        "mean": 0.27797657444928336,
+        "sd": 0.03721151524469576
+      },
+      "leakageRate": {
+        "mean": 0.006628835626106942,
+        "sd": 0.01692179273006341
+      },
+      "selectionValueCorrelation": {
+        "mean": 0.585586001936538,
+        "sd": 0.09770858212108814
+      },
+      "fundedRate": {
+        "mean": 0.21375000000000002,
+        "sd": 0.0348634554557604
+      },
+      "budgetSpent": {
+        "mean": 240000.0,
+        "sd": 0.0
+      },
+      "budgetUtilizationRate": {
+        "mean": 1.0,
+        "sd": 0.0
+      }
+    }
+  }
+}

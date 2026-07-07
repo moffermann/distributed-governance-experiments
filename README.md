@@ -50,7 +50,7 @@ planning-behavior-calibration  — behavioral elicitation instrument (LLM panels
 
 ## Satellite paper
 
-This repository is the working home of the computational satellite paper; the plan, claims inventory, flagship-experiment options, and cross-validation (model docking) strategy live in [`PAPER_ROADMAP.md`](PAPER_ROADMAP.md).
+This repository is the working home of the computational satellite paper: plan in [`PAPER_ROADMAP.md`](PAPER_ROADMAP.md), outline and claims-to-evidence map in [`PAPER_OUTLINE.md`](PAPER_OUTLINE.md), draft in [`drafts/paper.md`](drafts/paper.md), statistical annex in [`STATISTICAL_ANNEX.md`](STATISTICAL_ANNEX.md), cross-framework docking in [`docking/`](docking/), one-command reproduction via `python tools/reproduce_all.py`.
 
 ## Reading order
 
