@@ -27,8 +27,15 @@ import random
 from datetime import date, timedelta
 from pathlib import Path
 
-SEED = 20260708
-OUT = Path(__file__).resolve().parent / "vignettes_v2.json"
+# v3 (2026-07-07): de-leaked instrument. v2's clean bundles all carried an
+# above-threshold invoice item with no approval record, which models correctly
+# flagged and were then scored as false-flags (review round 2, evals E1). v3
+# attaches proper approval records to every above-threshold amount in every
+# bundle, so a clean bundle violates no referenced control rule; the
+# threshold-structuring fraud (items split UNDER the threshold to avoid
+# approval) remains the only structuring signal.
+SEED = 20260709
+OUT = Path(__file__).resolve().parent / "vignettes_v3.json"
 
 # type, unit, qty, target, market unit price (CLP), plausible duration days (lo, hi)
 PROJECT_TYPES = [
@@ -58,6 +65,27 @@ def line_items(rng: random.Random, total: int, n: int) -> list[dict]:
     items = [{"description": f"work package {i + 1}", "amount_clp": int(total * s / 100)} for i, s in enumerate(shares)]
     items[-1]["amount_clp"] = total - sum(it["amount_clp"] for it in items[:-1])
     return items
+
+
+def approve_over_threshold(rng: random.Random, bundle: dict) -> None:
+    """De-leak fix (2026-07-07, review round 2 / evals E1): any amount above the
+    published per-item approval threshold in a COMPLIANT bundle carries a proper
+    approval record, so a clean bundle violates no referenced control rule. The
+    threshold-structuring fraud is the one that splits items UNDER the threshold
+    precisely to avoid this approval — that pattern remains the only signal."""
+    inv = bundle["invoice"]
+    approvals = []
+    amounts = [(it["description"], it["amount_clp"]) for it in inv.get("line_items", [])]
+    if inv.get("unit_price_clp", 0) > APPROVAL_THRESHOLD:
+        amounts.append(("unit price", inv["unit_price_clp"]))
+    for desc, amt in amounts:
+        if amt > APPROVAL_THRESHOLD:
+            approvals.append({"item": desc, "amount_clp": amt,
+                              "approval_id": f"APR-2026-{rng.randint(1000, 9999)}",
+                              "approved_by": "municipal finance committee",
+                              "date": inv["date"]})
+    if approvals:
+        inv["over_threshold_approvals"] = approvals
 
 
 def make_base(rng: random.Random, idx: int) -> tuple[dict, dict]:
@@ -145,17 +173,22 @@ def main() -> None:
     cases = []
     for i in range(60):
         b, _ = make_base(rng, i)
+        approve_over_threshold(rng, b)  # de-leak: clean bundles are genuinely compliant
         cases.append({"id": f"V{i:03d}", "ground_truth": "clean", "bundle": b})
     idx = 60
     for flaw in flaws:
         for _ in range(10):
             b, meta = make_base(rng, idx)
             inject(rng, b, meta, flaw)
+            # Approve incidental above-threshold amounts on every flaw except the
+            # one whose signal IS the missing approval (threshold structuring).
+            if flaw != "threshold_structuring":
+                approve_over_threshold(rng, b)
             cases.append({"id": f"V{idx:03d}", "ground_truth": flaw, "bundle": b})
             idx += 1
     rng.shuffle(cases)
-    OUT.write_text(json.dumps({"seed": SEED, "version": 2, "n": len(cases), "cases": cases}, indent=1), encoding="utf-8")
-    print(f"wrote {len(cases)} v2 vignettes -> {OUT}")
+    OUT.write_text(json.dumps({"seed": SEED, "version": 3, "n": len(cases), "cases": cases}, indent=1), encoding="utf-8")
+    print(f"wrote {len(cases)} v3 vignettes -> {OUT}")
 
 
 if __name__ == "__main__":

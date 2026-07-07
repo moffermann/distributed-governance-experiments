@@ -128,15 +128,21 @@ def main() -> None:
     fam = FAMILIES[args.family]
     out_path = RESULTS_DIR / f"{args.family}.jsonl"
     done = set()
+    attempts = {}
     if out_path.exists():
         for line in out_path.read_text(encoding="utf-8").splitlines():
             try:
                 rec = json.loads(line)
-                if rec.get("verdict") in ("pass", "flag"):  # errors are retried on rerun
+                attempts[rec["id"]] = attempts.get(rec["id"], 0) + 1
+                if rec.get("verdict") in ("pass", "flag"):
                     done.add(rec["id"])
             except (json.JSONDecodeError, KeyError):
                 continue
-    todo = [c for c in VIGNETTES if c["id"] not in done]
+    # v3 discipline (review round 2): no high-temperature rescue. A case that has
+    # failed to parse MAX_ATTEMPTS times is left as a recorded no-verdict, not
+    # re-sampled at a different config.
+    MAX_ATTEMPTS = 3
+    todo = [c for c in VIGNETTES if c["id"] not in done and attempts.get(c["id"], 0) < MAX_ATTEMPTS]
     print(f"[{args.family}] {len(done)} done, {len(todo)} to go", flush=True)
     with out_path.open("a", encoding="utf-8") as fh:
         for i, case in enumerate(todo):
