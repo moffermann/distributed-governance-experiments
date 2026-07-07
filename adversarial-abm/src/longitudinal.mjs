@@ -21,7 +21,12 @@ import {
   ARCHITECTURES, mulberry32, clamp, sigmoid, normal, sampleDist, weightedPick, drawSample,
 } from "./index.mjs";
 
-export const LONG_ENGINE_VERSION = "0.6.0";
+export const LONG_ENGINE_VERSION = "0.7.0";
+// v0.7 (Experiment E-1c, pre-registered in ../EXPERIMENT_E1C_VERIFICATION_DESIGN.md):
+// AI triage lanes on milestone verification, verification windows
+// (timeout-reassignment over stalling fiscalizers), and milestone demand
+// smoothing. All three are OFF by default and consume zero RNG draws when
+// disabled — v0.6 runs reproduce exactly (regression-anchored).
 const HERE = decodeURIComponent(new URL(".", import.meta.url).pathname).replace(/^\/([A-Za-z]:)/, "$1");
 
 // ---------------------------------------------------------------------------
@@ -45,6 +50,10 @@ const DEFAULTS = {
   reputationGain: 0.05,    // per successfully verified project (scaled by quality)
   reputationPenalty: 0.30, // on detected diversion
   selectionReputationWeight: 1.0, // funder preference: weight = 0.25 + w*reputation
+  // E-1c extensions (all disabled by default; zero RNG cost when off):
+  ai: null,        // { pi, falsePass, falseFlag, sampleRate, dossierBoost }
+  stall: null,     // { pStall, stallCycles, timeout } (timeout null = no window)
+  smoothing: false, // stagger milestone due dates (+/- 2 cycles) to flatten demand
 };
 
 const loadPopulation = () => {
@@ -266,6 +275,16 @@ const activateReady = (rng, state, arch, cfg, cycle) => {
     p.duration = cfg.durationMin + Math.floor(rng() * (cfg.durationMax - cfg.durationMin + 1));
     p.milestoneCycles = [];
     for (let m = 1; m <= cfg.milestones; m++) p.milestoneCycles.push(cycle + Math.ceil((p.duration * m) / cfg.milestones));
+    if (cfg.smoothing) {
+      // Demand smoothing: stagger due dates (+/- 2 cycles) to flatten the
+      // verification demand curve; monotone and strictly after activation.
+      let prev = cycle;
+      p.milestoneCycles = p.milestoneCycles.map((c) => {
+        const jittered = Math.max(prev + 1, c + Math.floor(rng() * 5) - 2);
+        prev = jittered;
+        return jittered;
+      });
+    }
     // Diversion/quality decision at activation (static engine's formulas; the
     // reputation terms scale with the executor's stake, normalized to 1 at the
     // initial reputation 0.5 so t=0 matches the static inequality).
@@ -273,10 +292,19 @@ const activateReady = (rng, state, arch, cfg, cycle) => {
     const stakeScale = ex.reputation / 0.5;
     if (ex.type === "opportunistic") {
       const fraudGain = p.fraudOpportunity * (1 - arch.retention);
+      // Under AI triage, sophisticated opportunists anticipate the END-TO-END
+      // detection probability (the E-1c deterrence coupling): a leaky AI lane
+      // weakens deterrence upstream, not only downstream leakage.
+      let effDetection = detectionProbability(p, arch);
+      if (cfg.ai) {
+        const dHuman = clamp(effDetection * (cfg.ai.dossierBoost ?? 1), 0.01, 0.98);
+        const { pi, falsePass, sampleRate } = cfg.ai;
+        effDetection = pi * ((1 - falsePass) * dHuman + falsePass * sampleRate * dHuman) + (1 - pi) * dHuman;
+      }
       const x = -1.0
         + 4.0 * fraudGain
         + 2.0 * p.verificationDifficulty
-        - 5.0 * detectionProbability(p, arch)
+        - 5.0 * effDetection
         - 3.0 * arch.retention
         - 2.0 * arch.guarantee
         - 3.0 * arch.reputationLoss * stakeScale
@@ -298,54 +326,130 @@ const activateReady = (rng, state, arch, cfg, cycle) => {
   return activated;
 };
 
-const progressExecution = (state, cycle) => {
+// Disburse a verified milestone tranche and accrue its value. `confidence` is
+// the review confidence of whoever verified (human or AI lane).
+const payMilestone = (state, cfg, p, confidence, cycle) => {
+  const M = cfg.milestones;
+  const tranche = p.budgetTarget / M;
+  const potentialValue = p.budgetTarget * p.latentValue;
+  p.escrow -= tranche;
+  p.paidOut += tranche;
+  p.actualValue += (potentialValue * p.executionQuality) / M;
+  p.verifiedValue += (potentialValue * p.executionQuality * confidence) / M;
+  p.milestonesVerified++;
+  if (p.milestonesVerified >= M) {
+    p.status = "done";
+    p.finishedCycle = cycle;
+    if (p.diverted) p.leakage = p.diversionShare * p.budgetTarget; // never caught
+    state.releasedPool += Math.max(0, p.escrow);
+    p.escrow = 0;
+    p.executor.reputation = clamp(p.executor.reputation + cfg.reputationGain * p.executionQuality, 0, 1);
+  }
+};
+
+const reviewConfidenceOf = (p, arch) => clamp(arch.reviewConfidence * (1 - 0.35 * p.verificationDifficulty), 0.05, 1);
+
+const progressExecution = (rng, state, arch, cfg, cycle) => {
   for (const p of state.projects) {
     if (p.status !== "active") continue;
-    while (p.milestonesDone < p.milestoneCycles.length && p.milestoneCycles[p.milestonesDone] <= cycle) {
+    while (p.status === "active" && p.milestonesDone < p.milestoneCycles.length && p.milestoneCycles[p.milestonesDone] <= cycle) {
       p.milestonesDone++;
-      state.verifyQueue.push({ p, milestone: p.milestonesDone, completedCycle: cycle });
+      const milestone = p.milestonesDone;
+      if (!cfg.ai) {
+        state.verifyQueue.push({ p, milestone, completedCycle: cycle });
+        continue;
+      }
+      // AI triage (E-1c). Lane decision per milestone:
+      const protocolizable = rng() < cfg.ai.pi;
+      if (!protocolizable) {
+        state.verifyQueue.push({ p, milestone, completedCycle: cycle });
+        continue;
+      }
+      const cleared = p.diverted ? rng() < cfg.ai.falsePass : !(rng() < cfg.ai.falseFlag);
+      if (!cleared) {
+        // Lane b: flagged referral (the human sees the AI dossier).
+        state.verifyQueue.push({ p, milestone, completedCycle: cycle, flagged: true });
+        continue;
+      }
+      // Lane a: auto-release — instant, no human slot consumed. AI review
+      // confidence on protocolizable classes = the human formula (conservative).
+      state.autoReleased++;
+      payMilestone(state, cfg, p, reviewConfidenceOf(p, arch), cycle);
+      // Lane c: unconditional random sampling of AI-cleared milestones.
+      if (rng() < cfg.ai.sampleRate) state.verifyQueue.push({ p, milestone, completedCycle: cycle, audit: true });
     }
   }
 };
 
+// Terminate a detected diversion: stop remaining tranches, recycle escrow and
+// guarantee, record the leak on what was already paid (+ the tranche in hand
+// for in-line detections; audits catch after payment, so nothing in hand).
+const terminateDetected = (state, arch, cfg, p, cycle, trancheInHand) => {
+  p.detectedAt = cycle;
+  p.status = "terminated";
+  p.finishedCycle = cycle;
+  p.leakage = p.diversionShare * p.paidOut + p.diversionShare * trancheInHand;
+  const recovered = Math.max(0, p.escrow - trancheInHand) + arch.guarantee * p.budgetTarget;
+  state.releasedPool += recovered;
+  state.recoveredTotal += recovered;
+  p.escrow = 0;
+  p.executor.reputation = clamp(p.executor.reputation - cfg.reputationPenalty, 0, 1);
+  state.detections++;
+};
+
+const verifyOne = (rng, state, arch, cfg, item, cycle) => {
+  const { p, milestone, audit } = item;
+  if (p.status !== "active" && !(audit && p.status === "done")) return; // terminated/expired while queued
+  state.humanVerifications++;
+  const dHuman = cfg.ai ? clamp(detectionProbability(p, arch) * (cfg.ai.dossierBoost ?? 1), 0.01, 0.98) : detectionProbability(p, arch);
+  if (audit) {
+    // Lane c: the tranche is already paid; a hit claws back what remains.
+    if (p.diverted && p.detectedAt === null && rng() < dHuman) {
+      if (p.status === "done") { // fully paid before the audit landed
+        p.detectedAt = cycle;
+        p.leakage = p.diversionShare * p.budgetTarget;
+        state.releasedPool += arch.guarantee * p.budgetTarget;
+        state.recoveredTotal += arch.guarantee * p.budgetTarget;
+        p.executor.reputation = clamp(p.executor.reputation - cfg.reputationPenalty, 0, 1);
+        state.detections++;
+      } else {
+        terminateDetected(state, arch, cfg, p, cycle, 0);
+      }
+    }
+    return;
+  }
+  const tranche = p.budgetTarget / cfg.milestones;
+  if (p.diverted && p.detectedAt === null && rng() < dHuman) {
+    terminateDetected(state, arch, cfg, p, cycle, tranche);
+    return;
+  }
+  payMilestone(state, cfg, p, reviewConfidenceOf(p, arch), cycle);
+};
+
 const verifyCycle = (rng, state, arch, cfg, cycle) => {
-  let capacity = cfg.verifyCapacity;
+  // Verification windows (E-1c): stalled assignments hold their fiscalizer
+  // slot; a timeout reassigns the item (fresh slot later), no timeout means
+  // the slow fiscalizer eventually delivers from the held slot.
+  if (cfg.stall) {
+    const still = [];
+    for (const s of state.stalled) {
+      s.remaining--;
+      if (s.remaining > 0) { still.push(s); continue; }
+      if (s.timedOut) state.verifyQueue.unshift(s.item); // reassignment
+      else verifyOne(rng, state, arch, cfg, s.item, cycle); // slow delivery from the held slot
+    }
+    state.stalled = still;
+  }
+  let capacity = Math.max(0, cfg.verifyCapacity - state.stalled.length);
   while (capacity > 0 && state.verifyQueue.length) {
-    const { p, milestone } = state.verifyQueue.shift();
+    const item = state.verifyQueue.shift();
     capacity--;
-    if (p.status !== "active") continue; // terminated while queued
-    const M = cfg.milestones;
-    const tranche = p.budgetTarget / M;
-    const potentialValue = p.budgetTarget * p.latentValue;
-    if (p.diverted && p.detectedAt === null && rng() < detectionProbability(p, arch)) {
-      // Milestone gating does its job: detection stops the remaining tranches.
-      p.detectedAt = cycle;
-      p.status = "terminated";
-      p.finishedCycle = cycle;
-      p.leakage = p.diversionShare * p.paidOut + p.diversionShare * tranche; // taken from paid + current tranche
-      const recovered = Math.max(0, p.escrow - tranche) + arch.guarantee * p.budgetTarget;
-      state.releasedPool += recovered;             // unpaid escrow + guarantee recycle
-      state.recoveredTotal += recovered;
-      p.escrow = 0;
-      p.executor.reputation = clamp(p.executor.reputation - cfg.reputationPenalty, 0, 1);
-      state.detections++;
+    if (cfg.stall && rng() < cfg.stall.pStall) {
+      const horizon = cfg.stall.timeout ? Math.min(cfg.stall.timeout, cfg.stall.stallCycles) : cfg.stall.stallCycles;
+      state.stalled.push({ item, remaining: horizon, timedOut: Boolean(cfg.stall.timeout && cfg.stall.timeout < cfg.stall.stallCycles) });
       continue;
     }
-    // Verified milestone: tranche disburses; value accrues.
-    const reviewConfidence = clamp(arch.reviewConfidence * (1 - 0.35 * p.verificationDifficulty), 0.05, 1);
-    p.escrow -= tranche;
-    p.paidOut += tranche;
-    p.actualValue += (potentialValue * p.executionQuality) / M;
-    p.verifiedValue += (potentialValue * p.executionQuality * reviewConfidence) / M;
-    p.milestonesVerified++;
-    if (p.milestonesVerified >= M) {
-      p.status = "done";
-      p.finishedCycle = cycle;
-      if (p.diverted) p.leakage = p.diversionShare * p.budgetTarget; // never caught
-      state.releasedPool += Math.max(0, p.escrow); // rounding residue recycles
-      p.escrow = 0;
-      p.executor.reputation = clamp(p.executor.reputation + cfg.reputationGain * p.executionQuality, 0, 1);
-    }
+    verifyOne(rng, state, arch, cfg, item, cycle);
   }
 };
 
@@ -383,6 +487,9 @@ export const runLongitudinal = (archId, policyFn, cfg, seed) => {
     projects: [],
     executors: [],
     verifyQueue: [],
+    stalled: [],
+    autoReleased: 0,
+    humanVerifications: 0,
     treasury: 0,
     releasedPool: 0,
     releasedCum: 0,
@@ -420,7 +527,7 @@ export const runLongitudinal = (archId, policyFn, cfg, seed) => {
     state.releasedCum += release;
     allocateCycle(rng, state, arch, cfg);
     state.activatedFundingPrev = activateReady(rng, state, arch, cfg, cycle);
-    progressExecution(state, cycle);
+    progressExecution(rng, state, arch, cfg, cycle);
     verifyCycle(rng, state, arch, cfg, cycle);
     let sub = 0, wip = 0;
     for (const p of state.projects) {
@@ -456,6 +563,8 @@ export const runLongitudinal = (archId, policyFn, cfg, seed) => {
     expiredDemandRatio: state.expiredDemand / Math.max(1, totalBudget),
     detections: state.detections,
     unreleasedEnd: state.treasury / totalBudget,
+    autoReleasedShare: state.autoReleased / Math.max(1, state.autoReleased + state.humanVerifications),
+    humanLoadPerCycle: state.humanVerifications / cycles,
   };
 };
 

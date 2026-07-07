@@ -91,6 +91,20 @@ The transition is a dial, not a leap: monotone and near-linear above the portfol
 
 Candidate Core v0 rule: meter release against throughput × cycle time of the delivery-and-verification pipeline, never against the calendar. Source: `adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1A_RESULTS.md`.
 
+## Experiment E-1c: verification throughput (engine v0.7)
+
+| Finding | Number |
+|---|---|
+| AI triage at scarce capacity (K=4) **lifts the ceiling no release policy could** | 0.254 → **0.316** (+24%), queue 0, human load 1.2/cycle |
+| AI triage at calibrated capacity (K=6) | modest: 0.304 → 0.316 at π=0.9 only |
+| Dominance frontier `falsePass*` | **≥ 0.20 everywhere at π ≥ 0.7** — no crossover in range: the deterrence stack's slack (docs/111) absorbs verifier error; conditional on an intact stack |
+| Sampling rate s | barely moves V — lane c's role is epistemic (measuring the AI), not leak-plugging |
+| Fiscalizer unresponsiveness, no window | pStall 25% costs **−38%** of delivered value |
+| **One-cycle timeout + reassignment** (author's instrument, corrected) | recovers ~80% of stall damage; longer timeouts bleed value; never exceeds the no-stall ceiling |
+| Demand smoothing as implemented | net harmful (delay-biased jitter) — demoted pending delay-neutral reimplementation |
+
+Source: `adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1C_RESULTS.md`. E-1b (adaptive adversaries, evidence gaming, degraded-stack coupling) completes the bundle before the master pipeline.
+
 ## Bridge to the master paper (E8, lives in the master repository)
 
 The behavioral trajectories replaced the paper engine's imposed participation: headline V(A2)/V(S′) = 2.26 [2.23, 2.30] at scale (vs 2.22 imposed), 2.15–2.9× across populations and scales, launch dynamics cost 1.7%. Recorded in the master repository's `research/simulation-results.md` §E8.
