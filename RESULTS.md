@@ -129,6 +129,18 @@ Program closure: **size the capacity (E-1a), meter the release (E-1a), protect t
 
 Source: `adversarial-abm/RUN_2026_07_06_EXPERIMENT_E1D_RESULTS.md`; frontier design in the master's verification-throughput note.
 
+## Experiment F: layered heterogeneous machine verification (F-0 panel + engine v0.9)
+
+| Finding | Number |
+|---|---|
+| F-0 fraud side (5 families × 120 vignettes): every mechanical flaw class caught | false-pass ≈ 0 everywhere (deepseek 0.05); all 2/3-stacks at 0.000 — correlation **not testable at this difficulty** (declared) |
+| **F-0 specificity spread on clean work (the unpredicted finding)** | gemma **0.167**, deepseek 0.317, gpt 0.767, claude 0.950, qwen **1.000**; hosted-pair conservatism correlated (φ=0.416), locals ≈ independent |
+| Design consequence | **specificity-first layer composition**: permissive-calibrated L1 for auto-release; strict families as referees; seeded controls (E-1d) calibrate operating points |
+| F-1 layers (swept ρ) | k\*=2 under independence (leak −25%); benefit **dies by ρ=0.3**; gaming passes all layers; each layer adds referral load |
+| F-2 control-cost frontier | human 3.3–14.3% of budget → machine regimes 1.7–9.4%; V per total budget +up to 3 points; binding cost relocates to the **court-grade evidence premium**; second layer economically neutral |
+
+Sources: `evidence-panel/F0_RESULTS.md`, `adversarial-abm/RUN_2026_07_07_EXPERIMENT_F_RESULTS.md`, `adversarial-abm/results/experiment-f/`.
+
 ## Bridge to the master paper (E8, lives in the master repository)
 
 The behavioral trajectories replaced the paper engine's imposed participation: headline V(A2)/V(S′) = 2.26 [2.23, 2.30] at scale (vs 2.22 imposed), 2.15–2.9× across populations and scales, launch dynamics cost 1.7%. Recorded in the master repository's `research/simulation-results.md` §E8.

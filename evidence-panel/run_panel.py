@@ -68,8 +68,18 @@ def call_ollama(model: str, prompt: str) -> str:
     import urllib.request
     body = {"model": model, "prompt": prompt, "stream": False, "format": "json",
             "options": {"temperature": 0}}
-    if "deepseek" in model or "qwen" in model:
+    if "qwen" in model:
         body["think"] = False  # thinking models emit empty/malformed JSON under grammar constraint
+    if "gemma" in model:
+        # gemma4 at temperature 0 falls into repetition loops on a minority of
+        # bundles (same failure family as r1); mild sampling breaks the attractor.
+        body["options"] = {"temperature": 0.2, "repeat_penalty": 1.15}
+    if "deepseek" in model:
+        # r1 distills loop at temperature 0 (known failure mode; vendor
+        # recommends 0.5-0.7) and echo the input under grammar constraint:
+        # natural thinking, no format, bounded generation, last-JSON parse.
+        body.pop("format", None)
+        body["options"] = {"temperature": 0.6, "num_predict": 2500}
     req = urllib.request.Request("http://localhost:11434/api/generate",
                                  data=json.dumps(body).encode("utf-8"),
                                  headers={"Content-Type": "application/json"})
@@ -118,7 +128,9 @@ def main() -> None:
     if out_path.exists():
         for line in out_path.read_text(encoding="utf-8").splitlines():
             try:
-                done.add(json.loads(line)["id"])
+                rec = json.loads(line)
+                if rec.get("verdict") in ("pass", "flag"):  # errors are retried on rerun
+                    done.add(rec["id"])
             except (json.JSONDecodeError, KeyError):
                 continue
     todo = [c for c in VIGNETTES if c["id"] not in done]
