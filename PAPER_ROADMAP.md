@@ -1,8 +1,44 @@
-# Satellite Paper Roadmap — Computational Experiments (A–D)
+# Satellite Paper Roadmap — Computational Experiments (A–G)
 
 Working title (to refine): **Adversarial and Behavioral Agent-Based Simulation for Public Resource Allocation: Stress-Testing Governance Architectures with Endogenous Participation**.
 
 Strategic frame (author decision, 2026-07-06, recorded in the master's v1.9 queue): this paper absorbs the computational program so the master paper can cite instead of contain, shrinking rather than growing.
+
+## Current state (2026-07-07)
+
+- **Draft v0.5** published: doi:10.5281/zenodo.21249060 (concept 10.5281/zenodo.21246089), GitHub release v0.5. Eight findings (F1–F6 mature; F7 machine verification rebuilt after a review-round-2 construct bug and framed as directional; F8 collusive adversary, new and pessimistic-by-construction).
+- **Two internal adversarial review rounds** applied and reported in the paper: round 1 (`drafts/REVIEW_ROUND_1.md`), round 2 (`drafts/REVIEW_ROUND_2.md`, five archetypes). Both are single-ecosystem process discipline, not independent validation.
+- **Engines** at v0.11 (longitudinal) / v0.5.1 (static); anchor V=0.303844218531 bit-stable v0.6→v0.11; Mesa dock 15/15; `predictions.csv` at 42 rows; `tools/reproduce_all.py` covers all deterministic E/F/G cells + panel scoring (only live-model panel runs excluded).
+
+## Corrections applied in v0.5 (from review round 2)
+
+1. **Construct bug fixed** — the F-0 v2 clean bundles carried an unapproved above-threshold item; the de-leaked v3 instrument (`generate_vignettes_v3.py`) attaches approvals, and the false-flag half was rebuilt (gpt 0.80→0.03). The temperament-spread and evidence-richness-rescue claims are **withdrawn** as artifacts.
+2. **Confidence intervals everywhere** — Wilson on rates, Fisher exact + bootstrap on correlations/ratios; qwen excluded from correlation stats (degenerate); correlations demoted to exploratory/underpowered.
+3. **F-3/F-4 relabeled** as stipulated-mechanism sensitivities (not "measured"); the measured-pair→engine mapping disclosed as a moment-matched reduced form.
+4. **Scope-limited** (fiscalizer): document-legible delivery-phase fraud only; "court-grade"→"tamper-evident"; human-touch flagged as project-count over-count of the value-weighted share; coverage selection unpublished.
+5. **Decoding disclosed** (`DECODING.md`), high-temperature rescues dropped, no-verdict category added; per-family N reported (not a nominal 600).
+6. **Ratio CIs** (Fieller + bootstrap, `RATIO_CIS.md`); lapsing-funds annuality variant; reproduce_all + stamp refresh.
+
+## Improvement points (named, for the venue revision)
+
+- **Power**: the F-0 correlation claims need ~10× the flawed cases before any ρ is quotable — the current n≈60 supports only "one of five 2-stacks separable from independence." A larger vignette set is the single biggest F-7 upgrade.
+- **Within-instrument evidence-richness manipulation**: the "references make verifiers judge" claim is currently a cross-instrument/probe hypothesis; run the *same* vignettes with and without comparison anchors to make it a controlled result.
+- **Second frontier-scale family** for the N=1000 calibration panel (currently single-family; the cross-family check is only at n=90) and for F-0 (currently the two frontier models are one hosted pair).
+- **Fixed-decoding sensitivity**: report each family across a small decoding grid so the family/decoding confound is bounded, not only disclosed.
+- **Value-weighted human-touch**: recompute the 15–25% figure on a real capital plan weighted by value with the mandatory-set triggers applied — expected well above 50%.
+- **TOST docking margins**: upgrade the 15/15 pooled-SE docking to a pre-specified equivalence test per cell.
+- **Longitudinal per-run raw dump** for the E/F/G cells (currently CIs come from summary stats), and **archetype-weight sensitivity** on the calibrated results (weights are declared-assumed, unswept).
+
+## Pending experiments (the frontier this program reached but did not close)
+
+- **F-0 v4 — subtler still + multimodal**: the mechanical and current-subtle instruments both saturate the frontier models on fraud detection; a harder, image-bearing instrument is needed to test real ensemble correlation, and to probe the physical-quality fraud the document layer cannot reach.
+- **Experiment G+ — collusion mechanism design**: G measured that collusion breaks the verification story; the *defenses* (verified beneficial ownership, contributor Sybil-resistance, decentralized assigner/seeder/floor-setter) are unmodeled. Also the long-con timing cell (PG5) and adversarially-selected operating points (A-a) and fabricated contraposition coverage (A-b).
+- **Seeded-controls operational design**: who seeds, blinding, control-manifold secrecy against a registry-reading captured operator — the E-1d/F drift instrument's unearned precondition.
+- **Experiment D (human)**: the D-lite pilot protocol (`planning-behavior-calibration/D_LITE_PILOT_PROTOCOL.md`) is ready; the full human study replaces the LLM priors.
+
+## The independence that matters most
+
+Every review round here is author-simulated. The two highest-value external inputs, named in the reviewer cover note: an **adversary-side second author** (does the F-8 collusion analysis hold; what does a real fraudster do the model does not), and an **evals-methodology reviewer** for F-7 beyond our own. These are gating for any claim of validation, as opposed to process discipline.
 
 ## What the paper claims (inventory)
 
