@@ -1,0 +1,50 @@
+{"id": "V051", "gt": "clean", "verdict": "flag", "reason": "invoice line items work package 2 (1,000,452 CLP) and work package 3 (1,619,780 CLP) exceed the stated per-item approval threshold of 1,000,000 CLP."}
+{"id": "V054", "gt": "clean", "verdict": "flag", "reason": "The invoice unit price is 1,325,826 CLP per shelter, which exceeds the stated per-item approval threshold of 1,000,000 CLP."}
+{"id": "V053", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V005", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V011", "gt": "clean", "verdict": "flag", "reason": "The invoice unit price of 1,166,931 CLP per play module exceeds the stated per-item approval threshold of 1,000,000 CLP."}
+{"id": "V042", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V033", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V048", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V006", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V026", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V045", "gt": "clean", "verdict": "flag", "reason": "The invoice bills 6 play modules at 1,021,183 CLP per unit, which exceeds the stated per-item approval threshold of 1,000,000 CLP."}
+{"id": "V050", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V025", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V028", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V024", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V038", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V030", "gt": "clean", "verdict": "flag", "reason": "The billed unit price is 1,127,769 CLP per play module, which exceeds the stated per-item approval threshold of 1,000,000 CLP."}
+{"id": "V021", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V049", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V020", "gt": "clean", "verdict": "flag", "reason": "invoice line items 'work package 4' (2,763,728 CLP) and 'work package 5' (1,096,720 CLP) exceed the stated per-item approval threshold of 1,000,000 CLP"}
+{"id": "V031", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V018", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V037", "gt": "clean", "verdict": "flag", "reason": "Invoice line items work package 4 (1,149,412 CLP) and work package 5 (1,563,202 CLP) exceed the stated per-item approval threshold of 1,000,000 CLP."}
+{"id": "V040", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V058", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V056", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V029", "gt": "clean", "verdict": "flag", "reason": "The invoice unit price is 1,164,435 CLP per play module, which exceeds the stated per-item approval threshold of 1,000,000 CLP."}
+{"id": "V016", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V027", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V010", "gt": "clean", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V072", "gt": "compressed_timeline", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V091", "gt": "quantity_shortfall", "verdict": "flag", "reason": "The completion certificate and invoice declare 6 play modules, but the final-state photo dated 2026-05-26 captions only 4 play modules completed."}
+{"id": "V110", "gt": "threshold_structuring", "verdict": "flag", "reason": "The invoice is structured into 19 identical line items of 922,800 CLP each, all just below the 1,000,000 CLP per-item approval threshold, indicating payment structuring."}
+{"id": "V078", "gt": "compressed_timeline", "verdict": "flag", "reason": "The completion certificate says 6 play modules were completed on 2026-01-07, but later photos show works still ongoing on 2026-01-31 and final completion only on 2026-02-02."}
+{"id": "V106", "gt": "related_party", "verdict": "flag", "reason": "The supervisor R. Gonzalez has the same contact address, Av. Quilin 3450, Macul, as the vendor Ingenieria Vega Ltda, indicating a specific conflict of interest."}
+{"id": "V095", "gt": "quantity_shortfall", "verdict": "flag", "reason": "The completion certificate and invoice declare 24 LED luminaires, but the final-state photo caption dated 2026-05-05 says only 12 LED luminaires completed."}
+{"id": "V074", "gt": "compressed_timeline", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V092", "gt": "quantity_shortfall", "verdict": "flag", "reason": "The final-state photo dated 2026-05-05 states only 3 play modules completed, contradicting the completion certificate and invoice declaring/billing 6 play modules."}
+{"id": "V093", "gt": "quantity_shortfall", "verdict": "flag", "reason": "The final photo dated 2026-05-08 captions only 13 LED luminaires completed, contradicting the completion certificate and invoice declaring 24 LED luminaires."}
+{"id": "V109", "gt": "related_party", "verdict": "flag", "reason": "Potential conflict of interest: completion and start certificates were signed by supervisor C. Fuentes, whose registry contact address is the same as the vendor's address, Walker Martinez 190, La Florida."}
+{"id": "V105", "gt": "related_party", "verdict": "flag", "reason": "The supervisor A. Riquelme has the same contact address as the vendor Constructora Andes SpA (Av. Grecia 5590, Penalolen), creating a specific conflict-of-interest concern."}
+{"id": "V086", "gt": "photo_coverage_gap", "verdict": "flag", "reason": "photo IMG_086_4 is captioned as final state with 6 play modules completed on 2026-04-27, but later photos on 2026-04-28 are captioned as works ongoing."}
+{"id": "V099", "gt": "quantity_shortfall", "verdict": "flag", "reason": "The final-state photo dated 2026-03-29 captions only 163 m2 of roofing completed, contradicting the completion certificate and invoice declaring 240 m2."}
+{"id": "V081", "gt": "photo_coverage_gap", "verdict": "pass", "reason": "no specific inconsistency found"}
+{"id": "V066", "gt": "inflated_unit_prices", "verdict": "flag", "reason": "The quantity evidence is contradictory: the 2026-02-05 final photo caption states 90 trees planted completed, but the 2026-02-11 completion certificate and invoice both state only 75 trees planted."}
+{"id": "V116", "gt": "threshold_structuring", "verdict": "flag", "reason": "The invoice total is split into nine identical partial-delivery line items of 862,440 CLP each, all just below the 1,000,000 CLP per-item approval threshold, indicating payment structuring."}
+{"id": "V112", "gt": "threshold_structuring", "verdict": "flag", "reason": "invoice is structured into 17 partial delivery line items of 949,425-949,440 CLP each, all just below the 1,000,000 CLP per-item approval threshold despite billing one 240 m2 roofing job"}
+{"id": "V097", "gt": "quantity_shortfall", "verdict": "flag", "reason": "The final-state photo dated 2026-02-25 documents only 107 m2 completed, contradicting the completion certificate and invoice declaring 180 m2 of sidewalk."}
+{"id": "V118", "gt": "threshold_structuring", "verdict": "flag", "reason": "invoice is split into five identical partial delivery line items of 941,490 CLP, each just below the 1,000,000 CLP per-item approval threshold, indicating payment structuring"}
+{"id": "V104", "gt": "related_party", "verdict": "flag", "reason": "specific conflict of interest: supervisor A. Riquelme has the same contact address (Av. Grecia 5590, Penalolen) as vendor Constructora Andes SpA."}
