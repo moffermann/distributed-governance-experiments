@@ -28,14 +28,9 @@ Strategic frame (author decision, 2026-07-06, recorded in the master's v1.9 queu
 
 Outline, venue shortlist (JASSS / Computational Economics / Governance+methods venues), claims-to-evidence table, repo `CITATION.cff`. Decide the paper's spine: method-first (the framework) vs findings-first (the architecture results).
 
-### Phase 1 — Flagship new experiment (2–3 sessions) — AUTHOR DECISION PENDING
+### Phase 1 — Flagship experiment: **Experiment E (author decision 2026-07-06: Option 1, enriched)**
 
-The program's genuinely unevaluated dimension is **time**: every engine runs a static world (fixed project pool, one executor generation, no reputation accumulation across projects, fixed attack severities). Options, my recommendation first:
-
-- **Option 1 (recommended): longitudinal adaptive stress test.** Dynamic engine (v0.6): project spawning/replacement, executor entry/exit, reputational memory compounding across generations — plus **adaptive adversaries**: attack parameters optimized against the architecture (search over severities/strategies rather than fixed grids; automated red-teaming). Question: does the architecture's advantage grow with time (memory compounds) or erode (adversaries adapt)? Both halves are unevaluated; the adaptive red-team is also a method contribution.
-- **Option 2: scale and federation.** 100k–1M citizens, multiple scopes/municipalities with cross-scope delegate markets and shared executor pools. Requires vectorization or a performance framework (see Phase 2 synergy with Agents.jl).
-- **Option 3: distributional equity.** Who benefits, by territory and group (the planning-vector engine already carries groups/territories; the adversarial engine does not): territorial Gini of delivered value, group-level capture, equity under the default layer vs salience. Connects to the master's A009/A028 boundaries.
-- **Option 4: full-lifecycle fidelity.** Milestones, complaint paths, fiscalizer assignment pools (the known simplifications). Highest fidelity, lowest novelty per effort.
+The author selected the longitudinal option and enriched it with the program's sharpest open question: **the authority's budget-release strategy and the freezing problem** — nothing in Core v0 specifies when the authority releases budget into the allocation machinery, and excess release may freeze capital (fragmentation below activation targets; WIP locked in escrow beyond verification capacity), starving new approvals. Pre-registered design: [`adversarial-abm/EXPERIMENT_E_LONGITUDINAL_DESIGN.md`](adversarial-abm/EXPERIMENT_E_LONGITUDINAL_DESIGN.md) — engine v0.6 (multi-cycle milestone escrow, verification capacity, docs/104 expiry valve, Poisson project arrivals, reputation compounding), five release-policy families (day-zero, uniform, front-loaded, pull/CONWIP, approval-conditioned commitment — the author's non-"leverage"), optimum search with Pareto frontier (V vs frozen ratio vs latency), then adaptive adversaries incl. congestion-timed attacks against the optimized configuration. The optimal release rule is a candidate new Core v0 object via the master pipeline. Deferred options (later additions, author's call): scale/federation, distributional equity, full-lifecycle fidelity.
 
 ### Phase 2 — Cross-validation dock (1–2 sessions) — AUTHOR DECISION PENDING
 
@@ -61,6 +56,6 @@ Zenodo deposit of this repository (satellite DOI) → the master's v1.9 moment o
 
 ## Decision points for the author
 
-1. Flagship experiment: Option 1 (longitudinal + adaptive adversaries) is my recommendation; 2–4 are alternatives or later additions.
-2. Docking targets: Dock 1 (Mesa) committed; Dock 2 (Julia) only if Option 2's scale is wanted; Dock 3 (NetLogo) optional.
-3. Paper spine: method-first or findings-first.
+1. ~~Flagship experiment~~ — **decided 2026-07-06**: Experiment E (longitudinal + release policies + freezing + adaptive adversaries); design pre-registered.
+2. Docking targets — deferred by the author to after Experiment E: Dock 1 (Mesa) recommended committed; Dock 2 (Julia) only if scale is wanted; Dock 3 (NetLogo) optional.
+3. Paper spine (method-first or findings-first) — deferred; naturally decided with the venue in Phase 0.
