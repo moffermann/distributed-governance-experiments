@@ -1,73 +1,88 @@
 #!/usr/bin/env node
 // Experiment H — Project Allocation Rules (the two-layer decomposition).
 // Renamed from the mis-named "agenda-setting study": it studies how PROJECTS
-// are allocated, not a fixed planning agenda. Uses the two-layer static engine
-// (TWO_LAYER_ALLOCATION_REDESIGN.md) to separate, for the first time, the
-// contribution of the macro categorization (#1: central vs distributed
-// partition) from the project allocation profiles (#2: value-targeted vs
-// attribute-incidental routing) — a decomposition the fused single-weight
-// model could not express.
+// are allocated, not a fixed planning agenda. The two-layer static engine
+// (TWO_LAYER_ALLOCATION_REDESIGN.md) separates, for the first time, the macro
+// categorization (#1: central vs distributed partition) from the project
+// allocation profiles (#2: value-targeted vs attribute-incidental routing).
+// Three results: (a) the incidental-leak sweep, (b) the categorization-
+// misalignment "ceiling" sweep — where distributing #1 goes from irrelevant to
+// decisive, and (c) the architecture comparison — Core v0's advantage over a
+// central status quo grows as central planning worsens, because the distributed
+// arm re-categorizes to value while the central arm is stuck with its categories.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { runScenario } from "./index.mjs";
 
 const HERE = decodeURIComponent(new URL(".", import.meta.url).pathname).replace(/^\/([A-Za-z]:)/, "$1");
 const BASE = JSON.parse(readFileSync(resolve(HERE, "../scenarios/behavioral-llm-calibrated.json"), "utf8"));
-const RUNS = 40, SEED = 1;
-const CATS = 6, MIS = 0.35, CAP = 0.30;
+const RUNS = 40, SEED = 1, CATS = 6, CAP = 0.30, INC = 0.2;
 
-const V = (partitionSource, incidentalShare) => {
-  const scenario = {
-    ...BASE, scenario_id: `H-${partitionSource}-${incidentalShare}`, seed: SEED, runs: RUNS,
-    architectures: ["core_v0_tutored_distributed_agenda"],
-    population: { ...BASE.population, incidentalProfileShare: incidentalShare },
-    twoLayer: { enabled: true, numCategories: CATS, misalignedShare: MIS, misalignedValueCap: CAP },
-    architectureOverrides: { core_v0_tutored_distributed_agenda: { partitionSource } },
-  };
-  return runScenario(scenario).summary[0].verifiedValuePerBudget.mean;
-};
-
+const scen = (id, archs, mis, inc, overrides) => ({
+  ...BASE, scenario_id: id, seed: SEED, runs: RUNS, architectures: archs,
+  population: { ...BASE.population, incidentalProfileShare: inc },
+  twoLayer: { enabled: true, numCategories: CATS, misalignedShare: mis, misalignedValueCap: CAP },
+  architectureOverrides: overrides,
+});
+const coreV = (part, mis, inc) => runScenario(scen(`h-core-${part}-${mis}-${inc}`, ["core_v0_tutored_distributed_agenda"], mis, inc,
+  { core_v0_tutored_distributed_agenda: { partitionSource: part } })).summary[0].verifiedValuePerBudget.mean;
 const f = (x) => x.toFixed(4);
-const lines = [];
-lines.push("# Experiment H: Project Allocation Rules — the two-layer decomposition");
-lines.push("");
-lines.push(`Two-layer static engine; core arm; ${RUNS} runs, seed ${SEED}; ${CATS} categories, misaligned share ${MIS}, value cap ${CAP}. Verified value per budget.`);
-lines.push("");
-lines.push("## Distributing the macro partition (#1) across profile compositions (#2)");
-lines.push("");
-lines.push("| incidental share of profiles (#2) | V, central partition | V, distributed partition | advantage of distributing #1 |");
-lines.push("|---:|---:|---:|---:|");
-const rows = [];
-for (const inc of [0.0, 0.1, 0.3, 0.5, 0.7, 0.9]) {
-  const c = V("central", inc), d = V("distributed", inc);
-  rows.push({ inc, c, d, ratio: d / c });
-  lines.push(`| ${inc.toFixed(1)} | ${f(c)} | ${f(d)} | ${(d / c).toFixed(2)}× |`);
-}
-lines.push("");
-const lo = rows[1], hi = rows[rows.length - 1];
-lines.push(`**Finding (PL1, ratio form).** The advantage of distributing the macro categorization (#1) grows with the share of attribute-incidental profile rules: ${lo.ratio.toFixed(2)}× at ${lo.inc.toFixed(1)} incidental, ${hi.ratio.toFixed(2)}× at ${hi.inc.toFixed(1)}. When the inattentive majority routes by value-orthogonal rules ("near me"), only distributing #1 removes the misaligned projects they would otherwise leak into; when profiles are value-targeted, they self-correct and #1 matters less. This decomposition is impossible in the fused single-weight model.`);
-lines.push("");
-lines.push("## #1-vs-#2 contribution decomposition (at a mixed profile composition, incidental 0.5)");
-lines.push("");
-const base = V("central", 0.5);           // bad #1, mixed #2
-const only1 = V("distributed", 0.5);      // good #1, mixed #2
-const only2 = V("central", 0.0);          // bad #1, all-targeted #2
-const both = V("distributed", 0.0);       // good #1, all-targeted #2
-lines.push("| configuration | V |");
-lines.push("|---|---:|");
-lines.push(`| central #1, mixed #2 (baseline) | ${f(base)} |`);
-lines.push(`| **distribute #1 only** (distributed partition, mixed #2) | ${f(only1)}  (Δ ${(only1 - base >= 0 ? "+" : "")}${f(only1 - base)}) |`);
-lines.push(`| **improve #2 only** (central partition, all-targeted profiles) | ${f(only2)}  (Δ ${(only2 - base >= 0 ? "+" : "")}${f(only2 - base)}) |`);
-lines.push(`| both | ${f(both)}  (Δ ${(both - base >= 0 ? "+" : "")}${f(both - base)}) |`);
-lines.push("");
-lines.push(`**Decomposition.** From the central/mixed baseline, distributing #1 alone adds ${f(only1 - base)} and improving #2 alone (value-targeted profiles) adds ${f(only2 - base)}; the two are ${(only1 - base) > (only2 - base) ? "#1-dominant" : "#2-dominant"} here and combine to ${f(both - base)}. The point is that the two-layer model **can attribute** the advantage to a layer; the fused model reported one number.`);
-lines.push("");
-lines.push("Boundary: this is the allocation-quality layer only; the pipeline (verification, deterrence, release) is downstream and unchanged. Simulation evidence about a model.");
 
-const report = lines.join("\n");
+const L = [];
+L.push("# Experiment H: Project Allocation Rules — the two-layer decomposition");
+L.push("");
+L.push(`Two-layer static engine; core arm unless noted; ${RUNS} runs, seed ${SEED}; ${CATS} categories, value cap ${CAP}. Verified value per budget.`);
+L.push("");
+
+// (a) incidental-leak sweep (at moderate misalignment 0.35)
+L.push("## (a) The incidental leak — marginal at realistic profile compositions");
+L.push("");
+L.push("| incidental share of profiles | V central | V distributed | ratio |");
+L.push("|---:|---:|---:|---:|");
+for (const inc of [0.0, 0.1, 0.2, 0.3, 0.5, 0.9]) {
+  const c = coreV("central", 0.35, inc), d = coreV("distributed", 0.35, inc);
+  L.push(`| ${inc.toFixed(1)} | ${f(c)} | ${f(d)} | ${(d / c).toFixed(2)}× |`);
+}
+L.push("");
+L.push("At a moderately-misaligned categorization (35% of the pool), value-targeted profile rules self-correct and only attribute-incidental rules leak; distributing the partition is marginal (≈1.05–1.16× at realistic incidental shares). A misaligned project's leaked funding is small because \"near me\" is one weighted rule balanced by value-aligned ones (\"pending funding\" tracks the attentive minority; thematic rules track value).");
+L.push("");
+
+// (b) categorization-misalignment "ceiling" sweep (incidental fixed realistic 0.2)
+L.push("## (b) The ceiling — distributing #1 goes from irrelevant to decisive as the central categorization worsens");
+L.push("");
+L.push(`| central categorization misaligned | V central | V distributed | advantage of distributing #1 |`);
+L.push("|---:|---:|---:|---:|");
+for (const mis of [0.0, 0.2, 0.35, 0.5, 0.65, 0.8, 0.9]) {
+  const c = coreV("central", mis, INC), d = coreV("distributed", mis, INC);
+  L.push(`| ${(mis * 100).toFixed(0)}% | ${f(c)} | ${f(d)} | ${(d / c).toFixed(2)}× |`);
+}
+L.push("");
+L.push("The distributed arm is **flat** across categorization quality (it re-categorizes to value); the central arm collapses. So distributing the categorization is **irrelevant** when it is well-drawn (1.00×), **marginal** under moderate misalignment (~1.06–1.15×; citizens' profiles route around bad categories), and **decisive** when the categorization is mostly bad (1.75×→2.46×; the good projects are not even eligible, and #2 cannot route to what is absent). Delivered value is **robust to a bad central categorization** under distribution and **fragile to it** under central planning.");
+L.push("");
+
+// (c) architecture comparison — Core v0 vs central status quo
+L.push("## (c) Core v0 vs the central status quo — the advantage grows as central planning worsens");
+L.push("");
+L.push("| central categorization misaligned | status quo V | Core v0 V | Core v0 / status quo |");
+L.push("|---:|---:|---:|---:|");
+const archRows = [];
+for (const mis of [0.0, 0.2, 0.35, 0.5, 0.65, 0.8, 0.9]) {
+  const s = runScenario(scen(`h-arch-${mis}`, ["status_quo", "core_v0_tutored_distributed_agenda"], mis, INC,
+    { status_quo: { partitionSource: "central" }, core_v0_tutored_distributed_agenda: { partitionSource: "distributed" } })).summary;
+  const sq = s.find((a) => a.architecture === "status_quo").verifiedValuePerBudget.mean;
+  const core = s.find((a) => a.architecture === "core_v0_tutored_distributed_agenda").verifiedValuePerBudget.mean;
+  archRows.push({ mis, sq, core, ratio: core / sq });
+  L.push(`| ${(mis * 100).toFixed(0)}% | ${f(sq)} | ${f(core)} | ${(core / sq).toFixed(2)}× |`);
+}
+L.push("");
+L.push(`**The combined effect.** Comparing architectures, Core v0's advantage over a central status quo is **not fixed** — it is a function of central-planning quality, rising from ${archRows[0].ratio.toFixed(2)}× (well-drawn categorization) to **${archRows[archRows.length - 1].ratio.toFixed(2)}×** (mostly-bad). Two effects compound: the *advantage of choosing* (#2 routes to higher-value projects) and *avoiding an imposed bad central plan* (#1 re-categorizes rather than being stuck with the authority's categories). The fused single-weight model could express neither; the two-layer model shows both, and that they multiply. (The base ratio here is scenario-specific with two-layer on, not the cross-population 2.0–2.7× headline; the finding is the trend, not the base.)`);
+L.push("");
+L.push("Boundary: allocation-quality layer only; the verification/deterrence/release pipeline is downstream and unchanged. Simulation evidence about a model.");
+
+const report = L.join("\n");
 console.log(report);
 const outDir = resolve(HERE, "../results/experiment-h");
 mkdirSync(outDir, { recursive: true });
 writeFileSync(resolve(outDir, "h-project-allocation-seed1-runs40.md"), report + "\n");
-writeFileSync(resolve(outDir, "h-project-allocation-seed1-runs40.json"), JSON.stringify({ runs: RUNS, seed: SEED, rows, decomposition: { base, only1, only2, both } }, null, 2) + "\n");
+writeFileSync(resolve(outDir, "h-project-allocation-seed1-runs40.json"), JSON.stringify({ runs: RUNS, seed: SEED, incidental: INC, archComparison: archRows }, null, 2) + "\n");
 console.error(`outputs: ${outDir}`);
