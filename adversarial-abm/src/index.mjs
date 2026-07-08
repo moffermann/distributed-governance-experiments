@@ -452,6 +452,26 @@ const allocateAttentive = (rng, sim, arch, scenario, count) =>
 const allocateProfile = (rng, sim, arch, scenario, count) =>
   allocateInformed(rng, sim, arch, scenario, count, { noiseScale: 1.5, nearCompletionBonus: 0.20 });
 
+// Incidental-profile citizens ("projects near me"): a profile rule keyed to an
+// attribute ORTHOGONAL to value, so it funds eligible projects regardless of
+// latent value — and thereby leaks funding into the misaligned (low-value)
+// projects a central partition admits, which the value-aware channels avoid.
+// (Two-layer model; only invoked when scenario.twoLayer is enabled.)
+const allocateIncidentalProfile = (rng, sim, arch, scenario, count) => {
+  let leftover = 0;
+  for (let i = 0; i < count; i++) {
+    let amount = 1;
+    const projects = fundable(sim, arch);
+    if (!projects.length) return leftover + (count - i);
+    for (let attempts = 0; attempts < 4 && amount > 0; attempts++) {
+      const picked = projects[Math.floor(rng() * projects.length)];
+      amount = contribute(picked, amount, arch);
+    }
+    leftover += amount;
+  }
+  return leftover;
+};
+
 // Delegating citizens (AGENT_DECISION_MODEL, "Delegating citizen"): delegates
 // allocate represented weight in blocks with attentive-grade information — the
 // trusted-microdelegation proxy (many small delegates, informed review).
@@ -523,7 +543,16 @@ const allocateCitizen = (rng, sim, arch, scenario) => {
   }
   leftover += allocateAttentive(rng, sim, arch, scenario, attentiveHonest);
   leftover += allocateSalience(rng, sim, arch, scenario, salience);
-  if (profile > 0) leftover += allocateProfile(rng, sim, arch, scenario, profile);
+  if (profile > 0) {
+    // Two-layer model: split the profile channel into value-targeted rules and
+    // attribute-incidental ("near me") rules. Off (incidental share 0) => all
+    // profiles targeted => identical to the fused model's single profile call.
+    const incFrac = scenario.twoLayer?.enabled ? (pop.incidentalProfileShare ?? 0) : 0;
+    const incidental = Math.round(profile * incFrac);
+    const targeted = profile - incidental;
+    if (targeted > 0) leftover += allocateProfile(rng, sim, arch, scenario, targeted);
+    if (incidental > 0) leftover += allocateIncidentalProfile(rng, sim, arch, scenario, incidental);
+  }
   if (delegated > 0) leftover += allocateDelegated(rng, sim, arch, scenario, delegated);
   if (arch.passiveAllocationMode === "prioritization") {
     // docs/101: unexercised allocation follows the public default rule.
