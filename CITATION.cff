@@ -5,7 +5,7 @@ authors:
   - family-names: "Offermann"
     given-names: "Mauricio"
 license: MIT
-doi: 10.5281/zenodo.21249060
+doi: 10.5281/zenodo.21252313
 repository-code: "https://github.com/moffermann/distributed-governance-experiments"
 abstract: >-
   Satellite computational-experiments workspace of the distributed governance

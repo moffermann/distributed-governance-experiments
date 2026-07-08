@@ -1,6 +1,6 @@
 # Distributed Governance — Computational Experiments
 
-**Release v0.5 archived at doi:10.5281/zenodo.21249060** (paper PDF/HTML + full repository snapshot).
+**Release v0.6 archived at doi:10.5281/zenodo.21252313** (paper PDF/HTML + full repository snapshot).
 
 Satellite experiments workspace of the distributed governance research program. The master architecture corpus, the working paper, and the E1–E8 simulation suite live in [moffermann/distributed-governance-research](https://github.com/moffermann/distributed-governance-research); this repository holds the experiment programs that stress-test, calibrate, and extend that architecture computationally, and it is the working home of a planned second (satellite) paper.
 
