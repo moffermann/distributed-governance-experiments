@@ -21,7 +21,14 @@ import {
   ARCHITECTURES, mulberry32, clamp, sigmoid, normal, sampleDist, weightedPick, drawSample,
 } from "./index.mjs";
 
-export const LONG_ENGINE_VERSION = "0.11.0";
+export const LONG_ENGINE_VERSION = "0.12.0";
+// v0.12 (TWO_LAYER_ALLOCATION_REDESIGN.md): two-layer allocation — a macro
+// categorization (#1: partitionSource central|distributed; a distributed
+// partition excludes misaligned projects) and project allocation profiles (#2:
+// value-targeted vs attribute-incidental "near me" rules, the latter leaking
+// into misaligned projects). Gated on cfg.twoLayer.enabled; OFF by default, so
+// the fused single-weight model (v0.6-v0.11) reproduces byte-identically and
+// the anchor 0.303844218531 holds exact.
 // v0.11 (Experiment G, ../EXPERIMENT_G_COLLUSIVE_ADVERSARY_DESIGN.md): a
 // collusive, multi-period, adaptive adversary. cfg.adversary = {
 //   collusion: {rate}      — a ring controls executor + its verifiers + its
@@ -159,7 +166,7 @@ const makeLongProject = (rng, cfg, cycle) => {
   const salience = clamp(pCfg.salienceCorrelation * latentValue + (1 - pCfg.salienceCorrelation) * rng(), 0.01, 0.99);
   const centralMix = pCfg.centralPrioritizationSignalMix ?? 0.15;
   const distributedMix = pCfg.distributedPrioritizationSignalMix ?? 0.70;
-  return {
+  const p = {
     id: `L-${String(++projectSeq).padStart(4, "0")}`,
     latentValue,
     salience,
@@ -190,6 +197,16 @@ const makeLongProject = (rng, cfg, cycle) => {
     actualValue: 0,
     leakage: 0,
   };
+  // Two-layer model (TWO_LAYER_ALLOCATION_REDESIGN.md): assign a macro category
+  // (#1) and mark the misaligned ones (low-value projects a central partition
+  // admits, a distributed partition excludes). Gated + drawn AFTER all base
+  // draws, so the fused model is byte-identical when twoLayer is off.
+  if (cfg.twoLayer?.enabled) {
+    p.category = Math.floor(rng() * (cfg.twoLayer.numCategories ?? 6));
+    p.misaligned = rng() < (cfg.twoLayer.misalignedShare ?? 0.35);
+    if (p.misaligned) p.latentValue = clamp(rng() * (cfg.twoLayer.misalignedValueCap ?? 0.30), 0.01, 0.99);
+  }
+  return p;
 };
 
 const makeExecutor = (rng, cfg, id) => ({
@@ -208,6 +225,13 @@ const makeExecutor = (rng, cfg, id) => ({
 // ---------------------------------------------------------------------------
 
 const fundingProjects = (state) => state.projects.filter((p) => p.status === "funding");
+// Two-layer eligibility (#1): a distributed partition excludes misaligned
+// projects. Doubly gated (misaligned unset unless twoLayer on; partitionSource
+// unset unless the arch declares it) -> inert for the fused model.
+const fundableLong = (state, arch) =>
+  arch?.partitionSource === "distributed"
+    ? state.projects.filter((p) => p.status === "funding" && !p.misaligned)
+    : fundingProjects(state);
 const fundingProgress = (p) => Math.max(0, p.funded / Math.max(1, p.budgetTarget));
 
 const contribute = (p, amount) => {
@@ -222,7 +246,7 @@ const allocateInformedUnits = (rng, state, arch, cfg, units, { noiseScale = 1.0,
   let leftover = 0;
   const actors = Math.floor(units / unitsPerActor);
   for (let i = 0; i < actors; i++) {
-    const open = fundingProjects(state);
+    const open = fundableLong(state, arch);
     if (!open.length) return leftover + (actors - i) * unitsPerActor;
     const sample = drawSample(rng, open, sampleSize);
     const scored = sample.map((p) => ({
@@ -247,7 +271,7 @@ const allocateSalienceUnits = (rng, state, arch, cfg, units) => {
   let leftover = 0;
   const visibility = (p) => p.salience * (1 + arch.socialProofDamping * fundingProgress(p));
   for (let i = 0; i < units; i++) {
-    const open = fundingProjects(state);
+    const open = fundableLong(state, arch);
     if (!open.length) return leftover + (units - i);
     let amount = 1;
     const top = [...open].sort((a, b) => visibility(b) - visibility(a)).slice(0, slots);
@@ -259,14 +283,33 @@ const allocateSalienceUnits = (rng, state, arch, cfg, units) => {
   return leftover;
 };
 
-const allocateDefaultUnits = (state, arch, amount) => {
+// Incidental-profile channel ("near me"): routes orthogonally to value, leaking
+// into the misaligned projects a central partition admits. Two-layer only.
+const allocateIncidentalUnits = (rng, state, arch, units) => {
+  let leftover = 0;
+  for (let i = 0; i < units; i++) {
+    const open = fundableLong(state, arch);
+    if (!open.length) return leftover + (units - i);
+    const p = open[Math.floor(rng() * open.length)];
+    leftover += contribute(p, 1);
+  }
+  return leftover;
+};
+
+const allocateDefaultUnits = (rng, state, arch, cfg, amount) => {
   const score = (p) => (arch.prioritizationSource === "distributed" ? p.distributedPrioritizationWeight : p.centralPrioritizationWeight);
-  const open = fundingProjects(state).sort((a, b) => score(b) - score(a));
-  let budget = amount;
+  // Two-layer: the never-engaged majority follows the aggregated default profile
+  // — value-targeted plus attribute-incidental ("near me", leaking). Off => the
+  // whole default is value-ranked, byte-identical (rng unused).
+  const incFrac = cfg?.twoLayer?.enabled ? (cfg.population.incidentalProfileShare ?? 0) : 0;
+  const incidentalBudget = Math.round(amount * incFrac);
+  let budget = amount - incidentalBudget;
+  const open = fundableLong(state, arch).sort((a, b) => score(b) - score(a));
   for (const p of open) {
     if (budget <= 0) break;
     budget = contribute(p, budget);
   }
+  if (incidentalBudget > 0) budget += allocateIncidentalUnits(rng, state, arch, incidentalBudget);
   return budget;
 };
 
@@ -275,7 +318,7 @@ const allocateCycle = (rng, state, arch, cfg) => {
   if (pool <= 0) return;
   let leftover = 0;
   if (arch.centralPlanner) {
-    leftover = allocateDefaultUnits(state, arch, pool);
+    leftover = allocateDefaultUnits(rng, state, arch, cfg, pool);
   } else {
     const pop = cfg.population;
     const hasDefaultLayer = arch.passiveAllocationMode === "prioritization";
@@ -287,12 +330,20 @@ const allocateCycle = (rng, state, arch, cfg) => {
     let lo = 0;
     lo += allocateInformedUnits(rng, state, arch, cfg, attentive);
     lo += allocateSalienceUnits(rng, state, arch, cfg, salience);
-    if (profile > 0) lo += allocateInformedUnits(rng, state, arch, cfg, profile, { noiseScale: 1.5, nearCompletionBonus: 0.20 });
+    if (profile > 0) {
+      // Two-layer: split profiles into value-targeted and attribute-incidental.
+      // Off (incidental share 0) => all targeted => single informed call as before.
+      const incFrac = cfg.twoLayer?.enabled ? (pop.incidentalProfileShare ?? 0) : 0;
+      const incidental = Math.round(profile * incFrac);
+      const targeted = profile - incidental;
+      if (targeted > 0) lo += allocateInformedUnits(rng, state, arch, cfg, targeted, { noiseScale: 1.5, nearCompletionBonus: 0.20 });
+      if (incidental > 0) lo += allocateIncidentalUnits(rng, state, arch, incidental);
+    }
     if (delegated > 0) {
       const blockSize = Math.max(1, Math.round(pop.delegationBlockSize ?? 3));
       lo += allocateInformedUnits(rng, state, arch, cfg, delegated, { unitsPerActor: blockSize });
     }
-    if (hasDefaultLayer) leftover = allocateDefaultUnits(state, arch, remaining + lo);
+    if (hasDefaultLayer) leftover = allocateDefaultUnits(rng, state, arch, cfg, remaining + lo);
     else leftover = remaining + lo; // no default layer: passive money stays unallocated
   }
   state.releasedPool = state.releasedPool - pool + leftover;

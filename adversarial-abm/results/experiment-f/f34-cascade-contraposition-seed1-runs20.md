@@ -1,4 +1,4 @@
-# F-3 / F-4: the cascade vs measured AI failures; contraposition coverage (engine v0.10.0)
+# F-3 / F-4: the cascade vs measured AI failures; contraposition coverage (engine v0.12.0)
 
 pull W*=7, 20 runs, seed 1; operating points from F-0 v2 (evidence-rich bundles)
 

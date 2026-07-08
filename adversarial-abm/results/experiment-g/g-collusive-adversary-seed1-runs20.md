@@ -1,4 +1,4 @@
-# Experiment G: collusive/adaptive adversary (engine v0.11.0)
+# Experiment G: collusive/adaptive adversary (engine v0.12.0)
 
 core arm w/ AI triage (pi 0.7, fp 0.05) + contraposition 50%; pull W*=7; 20 runs, seed 1; status-quo reference V=0.112
 
