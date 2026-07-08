@@ -348,6 +348,15 @@ const cloneWorld = (world) => ({
 });
 
 const openProjects = (sim) => sim.projects.filter((p) => !p.closed);
+
+// Two-layer eligibility (#1 macro partition): a distributed partition excludes
+// the misaligned (low-value) projects a central partition would admit. Doubly
+// gated — `misaligned` is unset unless twoLayer is on, and partitionSource is
+// unset unless an arch declares it — so this is inert for the fused model.
+const fundable = (sim, arch) =>
+  arch?.partitionSource === "distributed"
+    ? sim.projects.filter((p) => !p.closed && !p.misaligned)
+    : openProjects(sim);
 const availableBudget = (scenario) => scenario.population.citizens * scenario.cycles;
 // agendaCapture — author clarification (2026-07-06): this attack presupposes a
 // PUBLISHING CHOKE POINT (someone who can rewrite the published vector), which
@@ -399,7 +408,7 @@ const drawSample = (rng, projects, k) => {
 
 const allocateCentral = (sim, arch, scenario) => {
   let budget = scenario.population.citizens;
-  const projects = openProjects(sim).sort((a, b) => prioritizationScore(b, arch, sim, scenario) - prioritizationScore(a, arch, sim, scenario));
+  const projects = fundable(sim, arch).sort((a, b) => prioritizationScore(b, arch, sim, scenario) - prioritizationScore(a, arch, sim, scenario));
   for (const p of projects) {
     if (budget <= 0) break;
     const before = budget;
@@ -414,7 +423,7 @@ const allocateInformed = (rng, sim, arch, scenario, count, { noiseScale = 1.0, n
   const sampleSize = scenario.population.attentiveSampleSize ?? 8;
   let leftover = 0;
   for (let i = 0; i < count; i++) {
-    const projects = openProjects(sim);
+    const projects = fundable(sim, arch);
     if (!projects.length) return leftover + (count - i) * unitsPerActor;
     const sample = drawSample(rng, projects, sampleSize);
     const scored = sample.map((p) => ({
@@ -460,7 +469,7 @@ const allocateSalience = (rng, sim, arch, scenario, count) => {
   let leftover = 0;
   for (let i = 0; i < count; i++) {
     let amount = 1;
-    const projects = openProjects(sim);
+    const projects = fundable(sim, arch);
     if (!projects.length) return leftover + (count - i);
     const top = [...projects].sort((a, b) => visibilityScore(b, arch, scenario) - visibilityScore(a, arch, scenario)).slice(0, slots);
     for (let attempts = 0; attempts < Math.min(4, top.length) && amount > 0; attempts++) {
@@ -475,7 +484,7 @@ const allocateSalience = (rng, sim, arch, scenario, count) => {
 const allocateDefault = (sim, arch, scenario, count) => {
   if (count <= 0) return;
   let budget = count;
-  const projects = openProjects(sim).sort((a, b) => prioritizationScore(b, arch, sim, scenario) - prioritizationScore(a, arch, sim, scenario));
+  const projects = fundable(sim, arch).sort((a, b) => prioritizationScore(b, arch, sim, scenario) - prioritizationScore(a, arch, sim, scenario));
   for (const p of projects) {
     if (budget <= 0) break;
     const room = arch.fundingCaps ? Math.max(0, p.budgetTarget - p.funded) : Infinity;
