@@ -59,6 +59,7 @@ run(["node", "adversarial-abm/src/e_f1.mjs"])
 run(["node", "adversarial-abm/src/e_f2.mjs"])
 run(["node", "adversarial-abm/src/e_f34.mjs"])
 run(["node", "adversarial-abm/src/e_g.mjs"])
+run(["node", "adversarial-abm/src/e_h_project_allocation.mjs"])
 run([sys.executable, "tools/ratio_cis.py"])
 
 # 5b. F-0 panel SCORING (deterministic; reads committed verdict jsonl, no live
