@@ -308,6 +308,24 @@ const generateWorld = (seed, scenario) => {
     const rngB = mulberry32((seed ^ 0xb1a5) >>> 0);
     biasSet = pickFavored(rngB, projects.length, bias.favoredShare ?? 0.10);
   }
+  // Two-layer allocation model (TWO_LAYER_ALLOCATION_REDESIGN.md): assign each
+  // project a macro CATEGORY (#1) and mark the misaligned ones — low-societal-
+  // value projects that a central partition admits but a distributed partition
+  // excludes. Drawn from a DEDICATED stream only when enabled, so the fused
+  // (single-weight) model reproduces byte-identically when it is off.
+  if (scenario.twoLayer?.enabled) {
+    const rngT = mulberry32((seed ^ 0x7c2f) >>> 0);
+    const nCat = scenario.twoLayer.numCategories ?? 6;
+    const misShare = scenario.twoLayer.misalignedShare ?? 0.35;
+    const misCap = scenario.twoLayer.misalignedValueCap ?? 0.30;
+    for (const p of projects) {
+      p.category = Math.floor(rngT() * nCat);
+      p.misaligned = rngT() < misShare;
+      // A misaligned-category project carries low societal value; a distributed
+      // partition excludes it (eligibility), a central partition admits it.
+      if (p.misaligned) p.latentValue = clamp(rngT() * misCap, 0.01, 0.99);
+    }
+  }
   return { seed, projects, capturedSet, biasSet };
 };
 
