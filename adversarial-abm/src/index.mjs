@@ -501,16 +501,36 @@ const allocateSalience = (rng, sim, arch, scenario, count) => {
   return leftover;
 };
 
-const allocateDefault = (sim, arch, scenario, count) => {
+const allocateDefault = (rng, sim, arch, scenario, count) => {
   if (count <= 0) return;
-  let budget = count;
-  const projects = fundable(sim, arch).sort((a, b) => prioritizationScore(b, arch, sim, scenario) - prioritizationScore(a, arch, sim, scenario));
-  for (const p of projects) {
-    if (budget <= 0) break;
-    const room = arch.fundingCaps ? Math.max(0, p.budgetTarget - p.funded) : Infinity;
-    const paid = Math.min(budget, room);
+  const room = (p) => (arch.fundingCaps ? Math.max(0, p.budgetTarget - p.funded) : Infinity);
+  // Two-layer: the never-engaged majority IS the inattentive layer, so it
+  // follows the AGGREGATED default profile — a mix of value-targeted rules and
+  // attribute-incidental ("near me") rules that route orthogonally to value and
+  // leak into the misaligned projects a central partition admits. Off (or no
+  // twoLayer) => the whole default is value-ranked, byte-identical to before.
+  const incFrac = scenario.twoLayer?.enabled ? (scenario.population.incidentalProfileShare ?? 0) : 0;
+  const incidentalBudget = Math.round(count * incFrac);
+  let targetedBudget = count - incidentalBudget;
+  const ranked = fundable(sim, arch).sort((a, b) => prioritizationScore(b, arch, sim, scenario) - prioritizationScore(a, arch, sim, scenario));
+  for (const p of ranked) {
+    if (targetedBudget <= 0) break;
+    const paid = Math.min(targetedBudget, room(p));
     p.funded += paid;
-    budget -= paid;
+    targetedBudget -= paid;
+  }
+  if (incidentalBudget > 0) {
+    // spend incidentally in unit chunks into random eligible projects
+    let ib = incidentalBudget;
+    let guard = 0;
+    const pool = fundable(sim, arch);
+    while (ib > 0 && pool.length && guard < incidentalBudget * 8) {
+      guard++;
+      const p = pool[Math.floor(rng() * pool.length)];
+      const paid = Math.min(ib, room(p), 1);
+      if (paid > 0) { p.funded += paid; ib -= paid; }
+      else if (pool.every((q) => room(q) <= 0)) break;
+    }
   }
 };
 
@@ -556,7 +576,7 @@ const allocateCitizen = (rng, sim, arch, scenario) => {
   if (delegated > 0) leftover += allocateDelegated(rng, sim, arch, scenario, delegated);
   if (arch.passiveAllocationMode === "prioritization") {
     // docs/101: unexercised allocation follows the public default rule.
-    allocateDefault(sim, arch, scenario, remaining + leftover);
+    allocateDefault(rng, sim, arch, scenario, remaining + leftover);
   } else if (arch.passiveAllocationMode === "salience") {
     allocateSalience(rng, sim, arch, scenario, remaining);
   }
