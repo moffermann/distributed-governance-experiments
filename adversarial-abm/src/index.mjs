@@ -318,12 +318,23 @@ const generateWorld = (seed, scenario) => {
     const nCat = scenario.twoLayer.numCategories ?? 6;
     const misShare = scenario.twoLayer.misalignedShare ?? 0.35;
     const misCap = scenario.twoLayer.misalignedValueCap ?? 0.30;
+    const pc = scenario.projects;
+    const cm = pc.centralPrioritizationSignalMix ?? pc.prioritizationWeightCorrelation ?? 0.15;
+    const dm = pc.distributedPrioritizationSignalMix ?? 0.70;
     for (const p of projects) {
       p.category = Math.floor(rngT() * nCat);
       p.misaligned = rngT() < misShare;
       // A misaligned-category project carries low societal value; a distributed
-      // partition excludes it (eligibility), a central partition admits it.
-      if (p.misaligned) p.latentValue = clamp(rngT() * misCap, 0.01, 0.99);
+      // partition excludes it (eligibility), a central partition admits it. Its
+      // value-derived fields are recomputed from the depressed value so the
+      // value-aware channels correctly rank it low — only the incidental channel
+      // (routing orthogonally to value) then leaks into it.
+      if (p.misaligned) {
+        p.latentValue = clamp(rngT() * misCap, 0.01, 0.99);
+        p.salience = clamp(pc.salienceCorrelation * p.latentValue + (1 - pc.salienceCorrelation) * rngT(), 0.01, 0.99);
+        p.centralPrioritizationWeight = clamp(cm * p.latentValue + (1 - cm) * rngT(), 0.01, 0.99);
+        p.distributedPrioritizationWeight = clamp(dm * p.latentValue + (1 - dm) * rngT(), 0.01, 0.99);
+      }
     }
   }
   return { seed, projects, capturedSet, biasSet };

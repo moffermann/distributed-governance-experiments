@@ -204,7 +204,14 @@ const makeLongProject = (rng, cfg, cycle) => {
   if (cfg.twoLayer?.enabled) {
     p.category = Math.floor(rng() * (cfg.twoLayer.numCategories ?? 6));
     p.misaligned = rng() < (cfg.twoLayer.misalignedShare ?? 0.35);
-    if (p.misaligned) p.latentValue = clamp(rng() * (cfg.twoLayer.misalignedValueCap ?? 0.30), 0.01, 0.99);
+    // Recompute value-derived fields from the depressed value so value-aware
+    // channels rank a misaligned project low; only incidental routing leaks in.
+    if (p.misaligned) {
+      p.latentValue = clamp(rng() * (cfg.twoLayer.misalignedValueCap ?? 0.30), 0.01, 0.99);
+      p.salience = clamp(pCfg.salienceCorrelation * p.latentValue + (1 - pCfg.salienceCorrelation) * rng(), 0.01, 0.99);
+      p.centralPrioritizationWeight = clamp(centralMix * p.latentValue + (1 - centralMix) * rng(), 0.01, 0.99);
+      p.distributedPrioritizationWeight = clamp(distributedMix * p.latentValue + (1 - distributedMix) * rng(), 0.01, 0.99);
+    }
   }
   return p;
 };
